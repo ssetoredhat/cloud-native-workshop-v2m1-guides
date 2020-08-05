@@ -1,71 +1,60 @@
-= Workshop Environment
+= ワークショップ環境 
 :experimental:
 
-== First Step: Confirm Your Username!
+== 最初の一歩ユーザー名を確認してください！
 
-Look in the box at the top of your screen. Is your username set already? If so it will look like this:
+画面上部のボックスを見てください。ユーザー名はすでに設定されていますか？そうするとこんな感じになります。
 
 image::alreadyset.png[Set User ID above, 700]
 
-If your username is properly set, then you can move on. **If not, in the above box, enter the user ID you were assigned** like this:
+ユーザー名がきちんと設定されていれば、次に進めます。**割り当てられていない場合は、上記のボックスに、このように割り当てられたユーザーIDを入力します**。
 
 image::setuser.png[Set User ID above, 700]
 
-This will customize the links and copy/paste code for this workshop. If you accidently type the wrong username, just click the green recycle icon to reset it.
+これは、このワークショップのためのリンクとコピー＆ペーストのコードをカスタマイズします。ユーザー名を誤って入力してしまった場合は、緑色のリサイクルアイコンをクリックしてリセットしてください。
 
-Throughout this lab you'll discover how Quarkus can make your development of cloud native apps faster and more productive.
+このラボでは、Quarkus を使用することで、クラウドネイティブアプリの開発をより迅速かつ生産性の高いものにする方法をご紹介します。
 
 == Click-to-Copy
 
-You will see various code and command blocks throughout these exercises which can be copy/pasted directly by clicking anywhere on the block of text:
+これらの演習では、様々なコードやコマンドブロックを見れます。これは、テキストブロック上の任意の場所をクリックして直接コピー/ペーストできます。
 
 [source,java,role="copypaste"]
 ----
-/* A sample Java snippet that you can copy/paste by clicking */
+/* クリックしてコピー＆ペーストできるサンプルJavaスニペット */ 
 public class CopyMeDirectly {
     public static void main(String[] args) {
-        System.out.println("You can copy this whole class with a click!");
+        System.out.println("クリックでこのクラス全体をコピーできます！");
     }
 }
 ----
 
-Simply click once and the whole block is copied to your clipboard, ready to be pasted with kbd:[CTRL+V] (or kbd:[Command+V] on Mac OS).
+一度クリックするだけで、ブロック全体がクリップボードにコピーされ、kbd:[CTRL+V]（Mac OSの場合はkbd:[Command+V]）で貼り付けられます。
 
-There are also Linux shell commands that can also be copied and pasted into a Terminal in your Development Environment:
+また、開発環境のターミナルにコピー＆ペーストできるLinuxシェルコマンドもあります。
 
 [source,sh,role="copypaste"]
 ----
-echo "This is a bash shell command that you can copy/paste by clicking"
+echo "これはクリックしてコピー/ペーストできる bash シェルコマンドです"
 ----
 
-== The Workshop Environment You Are Using
+== 使用しているワークショップの環境
 
-Your workshop environment consists of several components which have been pre-installed and are ready to use. Depending on which
-parts of the workshop you’re doing, you will use one or more of:
+ワークショップの環境は、いくつかのコンポーネントで構成されています。それはプリインストールされており、使用する準備ができています。ワークショップのどの部分をやっているかにもよりますが、以下のうち 1 つまたは複数のものを使うことになります。
 
-* https://www.openshift.com/[Red Hat OpenShift^] - You’ll use one or more **projects** (Kubernetes namespaces)
-that are your own and are isolated from other workshop students
-* https://developers.redhat.com/products/codeready-workspaces/overview[Red Hat CodeReady Workspaces^] - based on
-*Eclipse Che*, it’s a cloud-based, in-browser IDE (similar to IntelliJ IDEA, VSCode, Eclipse IDE). You’ve been provisioned your
-own personal workspace for use with this workshop. You’ll write, test, and deploy code from here.
-* https://developers.redhat.com/products/rhamt[Red Hat Application Migration Toolkit^] - You’ll use this to
-migrate an existing application
-* https://www.redhat.com/en/products/runtimes[Red Hat Runtimes^] - a collection of cloud-native runtimes like
-Spring Boot, Node.js, and https://quarkus.io[Quarkus^]
-* https://www.redhat.com/en/technologies/jboss-middleware/amq[Red Hat AMQ Streams^] - streaming data platform
-based on *Apache Kafka*
-* https://access.redhat.com/products/red-hat-single-sign-on[Red Hat SSO^] - For authentication / authorization -
-based on *Keycloak*
-* Other open source projects like https://knative.dev[Knative^] (for serverless apps), https://jenkins.io/[Jenkins^] and
-https://cloud.google.com/tekton/[Tekton^] (CI/CD pipelines),
-https://prometheus.io[Prometheus^] and https://grafana.com[Grafana^] (monitoring apps), and
-more.
+* https://www.openshift.com/[Red Hat OpenShift^] - 1つ以上の**プロジェクト**（Kubernetesの名前空間）を自分のものにして、他のワークショップの受講者から隔離されたものを使用します。
+* https://developers.redhat.com/products/codeready-workspaces/overview[Red Hat CodeReady Workspaces^] - *Eclipse Che*をベースにしたクラウドベースのインブラウザ IDE です（IntelliJ IDEA, VSCode, Eclipse IDE に似ています）。あなたはこのワークショップで使用するために、自分だけのワークスペースを提供されています。ここからコードを書いて、テストして、デプロイします。
+* https://developers.redhat.com/products/rhamt[Red Hat Application Migration Toolkit^] - 既存のアプリケーションの移行に使用します。
+* https://www.redhat.com/en/products/runtimes[Red Hat Runtimes^] - Spring Boot, Node.js, https://quarkus.io[Quarkus^]　などのクラウドネイティブランタイムの集合体。
+* https://www.redhat.com/en/technologies/jboss-middleware/amq[Red Hat AMQ Streams^] - *Apache Kafka* ベースのストリーミングデータプラットフォーム
+* https://access.redhat.com/products/red-hat-single-sign-on[Red Hat SSO^] - 認証/認可 - *Keycloak* をベースにしています。
+* 他にも、https://knative.dev[Knative^]（サーバーレスアプリ用）、https://jenkins.io/[Jenkins^]やhttps://cloud.google.com/tekton/[Tekton^]（CI/CDパイプライン）、https://prometheus.io[Prometheus^]やhttps://grafana.com[Grafana^]（監視アプリ）などのオープンソースプロジェクトがあります。
 
-You’ll be provided clickable URLs throughout the workshop to access the services that have been installed for you.
+あなたのためにインストールされたサービスにアクセスするために、ワークショップ全体でクリック可能なURLが提供されます。
 
-== How to complete this workshop
+== このワークショップを修了するには
 
 
-Click the "Next >" button at the bottom to advance to the next topic. You can also use the menu on the left to move around the instructions at will.
+下部の「Next >」ボタンをクリックすると次のトピックに進みます。また、左のメニューを使って指示を自由に移動させることもできます。
 
-Good luck, and let’s get started!
+頑張ってください！始めましょう！
