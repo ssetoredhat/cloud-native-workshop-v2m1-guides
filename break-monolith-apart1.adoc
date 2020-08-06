@@ -7,7 +7,7 @@
 
 このラボでは、 https://quarkus.io/[Quarkus^] を使って _Supersonic（超音速）、Subatomic（粒子並みに小さい）、Java_ について学びます。これはコンテナと開発者が使いやすいように設計されています。
 
-Quarkusは、_Kubernetes ネイティブ_ Java スタックであり、最高の Java ライブラリと標準規格から作られています。驚くほど高速な起動時間、信じられないほど低いRSSメモリ（ヒープサイズだけではありません！）を提供し、Kubernetes のようなコンテナオーケストレーションプラットフォームで、ほぼ瞬時にスケールアップし、高密度のメモリ利用を実現します。Quarkus はコンパイルタイムブートと呼ばれる技術を使用しています。 
+Quarkusは、 _Kubernetes ネイティブ_ Java スタックであり、最高の Java ライブラリと標準規格から作られています。驚くほど高速な起動時間、信じられないほど低いRSSメモリ（ヒープサイズだけではありません！）を提供し、Kubernetes のようなコンテナオーケストレーションプラットフォームで、ほぼ瞬時にスケールアップし、高密度のメモリ利用を実現します。Quarkus はコンパイルタイムブートと呼ばれる技術を使用しています。 
 
 *Red Hat* では、Quarkusのサポートと保守が完全にサポートされた https://access.redhat.com/products/quarkus[Red Hat Build of Quarkus(RHBQ)^] を提供しています。このワークショップでは、Quarkus を使用して Kubernetes ネイティブのマイクロサービスを開発し、OpenShift にデプロイします。Quarkus は https://www.redhat.com/en/products/runtimes[Red Hat Runtimes^] に含まれるランタイムの 1 つです。 https://access.redhat.com/documentation/en-us/red_hat_build_of_quarkus[RHBQについてはこちらをご覧ください^]。
 
@@ -55,9 +55,11 @@ mvn quarkus:add-extension -Dextensions="hibernate-orm-panache, jdbc-h2, health" 
 
 あなたは以下を見られます。
 
-✅ 拡張機能 io.quarkus:quarkus-hibernate-orm-panache を追加  
-✅ 拡張機能 io.quarkus:quarkus-jdbc-h2 を追加  
-✅ 拡張機能 io.quarkus:quarkus-smallrye-health を追加  
+✅ 拡張機能 io.quarkus:quarkus-hibernate-orm-panache を追加
+
+✅ 拡張機能 io.quarkus:quarkus-jdbc-h2 を追加
+
+✅ 拡張機能 io.quarkus:quarkus-smallrye-health を追加
 
 そして、これは `pom.xml` に拡張機能を追加します。
 
@@ -72,7 +74,7 @@ Quarkus 用の https://vertx.io/[Vert.x^]、 http://camel.apache.org/[Apache Cam
 
 まず、在庫オブジェクトのモデル（実体）を定義する。Quarkus は Hibernate ORM Panache を使用しているので、モノリシックアプリケーションから同じモデル定義を再利用できます。書き直しや再設計の必要はありません。
 
-`inventory` ディレクトリの下で、_com.redhat.coolstore_ パッケージの中の空の *Inventory.java* ファイルを開き、そこに以下のコードを貼り付けます（モノリスのコードと同じ）。
+`inventory` ディレクトリの下で、 _com.redhat.coolstore_ パッケージの中の空の *Inventory.java* ファイルを開き、そこに以下のコードを貼り付けます（モノリスのコードと同じ）。
 
 [source,java, role="copypaste"]
 ----
@@ -178,7 +180,7 @@ public class InventoryResource {
 
 ==== 6.在庫データの追加
 
-データベースに在庫データを追加して、テストできるようにしておきましょう。`src/main/resources/import.sql` ファイルを開き、以下の SQL 文を *import.sql* にコピーします。
+データベースに在庫データを追加して、テストできるようにしておきましょう。 `src/main/resources/import.sql` ファイルを開き、以下の SQL 文を *import.sql* にコピーします。
 
 [source,sql, role="copypaste"]
 ----
@@ -208,7 +210,7 @@ INSERT INTO INVENTORY (id, itemId, link, location, quantity) values (nextval('hi
 
 ==== 7.Quarkus 在庫アプリケーションを実行する
 
-ターミナルで、_ライブ コーディング_ モードでプロジェクトを実行します。
+ターミナルで、 _ライブ コーディング_ モードでプロジェクトを実行します。
 
 [source,sh,role="copypaste"]
 ----
@@ -273,7 +275,7 @@ curl http://localhost:8080/services/inventory | jq
 
 === ヘルスチェックを実行
 
-先に_health 拡張機能_をインポートした場合、ヘルスチェックの手順を実行するために使用できる `/health` エンドポイントが自動的に直接公開されます。
+先に _health 拡張機能_ をインポートした場合、ヘルスチェックの手順を実行するために使用できる `/health` エンドポイントが自動的に直接公開されます。
 
 アプリケーションはまだ実行中なので、別のターミナルでこのコマンドを使ってデフォルトの (何もしない) ヘルスチェックを実行できます。
 
@@ -297,7 +299,7 @@ curl -s http://localhost:8080/health | jq
 }
 ----
 
-ヘルスチェックの一般的な_結果_は、宣言されたすべてのヘルスチェック手順の論理 AND として計算されます。また、Quarkus の拡張機能では、デフォルトのヘルスチェック機能も提供されています。今回、データベース拡張モジュールを使用しているので、上の `Database connections health check（データベース接続のヘルスチェック）` が表示される理由です。
+ヘルスチェックの一般的な _結果_ は、宣言されたすべてのヘルスチェック手順の論理 AND として計算されます。また、Quarkus の拡張機能では、デフォルトのヘルスチェック機能も提供されています。今回、データベース拡張モジュールを使用しているので、上の `Database connections health check（データベース接続のヘルスチェック）` が表示される理由です。
 
 ==== 9.初めてのヘルスチェックを作成
 
@@ -397,11 +399,11 @@ mvn quarkus:add-extension -Dextensions="jdbc-postgresql,openshift" -f $CHE_PROJE
 ✅ 拡張機能 io.quarkus:quarkus-openshift の追加  
 ✅ 拡張機能 io.quarkus:quarkus-jdbc-postgresql の追加
 
-Quarkus は、_設定プロファイル_ の概念をサポートしています。これらは、同じファイル内に複数の設定を持つことができ、 _プロファイル名_ を介して選択できます。
+Quarkus は、 _設定プロファイル_ の概念をサポートしています。これらは、同じファイル内に複数の設定を持つことができ、 _プロファイル名_ を介して選択できます。
 
 デフォルトでは、Quarkus には 3 つのプロファイルがありますが、好きなだけ使用できます。デフォルトのプロファイルは以下のとおりです。
 
-* `dev` - 開発モードの場合に有効 （例えば *quarkus:dev*）
+* `dev` - 開発モードの場合に有効 （例えば *quarkus:dev* ）
 * `test` - テストの時に有効
 * `prod` - 開発モードまたはテストモードで実行していないときのデフォルトプロファイル
 
@@ -435,7 +437,7 @@ _src/main/resources/application.properties_ に以下の変数を `追加` し�
 <5> OpenShift `Route` を生成するように拡張機能に指示します。
 <6> OpenShift Developer Toplogy を表示する際に、アプリに見栄えの良いアイコンを追加します。
 
-OpenShift では、_Developer_ パースペクティブにいることを確認し、`{{ USER_ID }}-inventory` プロジェクトを選択します。これはすでにあなたのために作成されています。
+OpenShift では、 _Developer_ パースペクティブにいることを確認し、 `{{ USER_ID }}-inventory` プロジェクトを選択します。これはすでにあなたのために作成されています。
 
 まだ何もありませんが、それが変わろうとしています。
 
@@ -447,7 +449,7 @@ OpenShift では、_Developer_ パースペクティブにいることを確認�
 
 image::db.png[db, 700]
 
-検索ボックスに `postgres` と入力し、*PostgreSQL（ephemeral）* をクリックします。
+検索ボックスに `postgres` と入力し、 *PostgreSQL（ephemeral）* をクリックします。
 
 image::db-postgres.png[db, 700]
 
@@ -510,7 +512,7 @@ image::inventory-web.png[web, 700]
 
 UI は 2 秒ごとに在庫リテーブルを更新します。
 
-また、ターミナルの _curl_ を使用して_在庫_のエンドポイントでヘルスチェックロジックにアクセスできるようにしておく必要があります。
+また、ターミナルの _curl_ を使用して _在庫_ のエンドポイントでヘルスチェックロジックにアクセスできるようにしておく必要があります。
 
 [source,sh,role="copypaste"]
 ----
@@ -607,6 +609,6 @@ oc set probe dc/inventory --readiness --initial-delay-seconds=5 --period-seconds
 
 Quarkus とは何か、また、最新のJava マイクロサービス指向アプリケーションを作成するためにどのように使用できるのかについて、少し詳しく学びました。
 
-モノリシック CoolStore アプリケーションの以前に実装されていた機能を表す新しい在庫マイクロサービスを作成しました。今のところ、この新しいマイクロサービスはモノリスから完全に切り離されており、それだけではあまり役に立ちません。今後のステップでは、このマイクロサービスと他のマイクロサービスをモノリスにリンクして、https://www.martinfowler.com/bliki/StranglerApplication.html[モノリスを抑制する^]プロセスを開始します。
+モノリシック CoolStore アプリケーションの以前に実装されていた機能を表す新しい在庫マイクロサービスを作成しました。今のところ、この新しいマイクロサービスはモノリスから完全に切り離されており、それだけではあまり役に立ちません。今後のステップでは、このマイクロサービスと他のマイクロサービスをモノリスにリンクして、 https://www.martinfowler.com/bliki/StranglerApplication.html[モノリスを抑制する^] プロセスを開始します。
 
 次のラボでは、もう一つの人気フレームワークである Spring Boot を使って、追加のマイクロサービスを実装します。がんばりましょう！

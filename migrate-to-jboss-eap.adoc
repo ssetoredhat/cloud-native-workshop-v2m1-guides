@@ -34,15 +34,15 @@ image::crw-icons.png[cdw, 400]
 おかしなことになったり、ブラウザに表れたりした場合、単にブラウザタブを再読み込みして表示を更新するだけです。
 ====
 
-CodeReady Workspaces の多くの機能は、 *コマンド* を介してアクセスできます。ホームページでは、リンク付きのコマンドをいくつか見られます (例: _New File.._ 、_Git Clone.._ 、その他)。
+CodeReady Workspaces の多くの機能は、 *コマンド* を介してアクセスできます。ホームページでは、リンク付きのコマンドをいくつか見られます (例: _New File.._ 、 _Git Clone.._ 、その他)。
 
 メニューに表示されていないコマンドを実行したい場合は、kbd:[F1] を押してコマンドウィンドウを開くか、従来の kbd:[Control+SHIFT+P] （Mac OS Xでは kbd:[Command+SHIFT+P] ）を押してコマンドを実行ができます。
 
-最初のプロジェクトをインポートしてみましょう。**Git Clone..** をクリックします。（または kbd:[F1] とするか、'git'と入力し自動で補完された _Git Clone.._ をクリックします）
+最初のプロジェクトをインポートしてみましょう。 **Git Clone..** をクリックします。（または kbd:[F1] とするか、'git'と入力し自動で補完された _Git Clone.._ をクリックします）
 
 image::che-workspace-gitclone.png[cdw, 900]
 
-**リポジトリの URL** に次の値を使用して、プロンプトを進めます。*FireFox* を使っていると、最後に余計なスペースを貼り付けてしまうことがあるので、貼り付けた後にバックスペースを押してください。
+**リポジトリの URL** に次の値を使用して、プロンプトを進めます。 *FireFox* を使っていると、最後に余計なスペースを貼り付けてしまうことがあるので、貼り付けた後にバックスペースを押してください。
 
 [source,none,role="copypaste"]
 ----
@@ -72,7 +72,7 @@ CodeReady Workspacesのターミナルウィンドウ。開発者ワークスペ
 image::codeready-workspace-terminal.png[codeready-workspace-terminal, 700]
 
 
-==== 2.`ApplicationLifecycleListener` の問題を修正
+==== 2. `ApplicationLifecycleListener` の問題を修正
 
 {{ RHAMT_URL }}[RHAMT Console^] で Issues レポートを開きます。
 
@@ -90,7 +90,7 @@ Jakarta EEでは、これらのイベントを傍受することに相当する�
 
 ==== 3.ApplicationLifecycleListener の問題を修正
 
-まず、Monolithアプリケーションの問題を修正します。プロジェクトツリーの `cloud-native-workshop-v2m1-labs` フォルダに移動し、`monolith/src/main/java/com/redhat/coolstore/utils/StartupListener.java` ファイルをクリックして開きます。
+まず、Monolithアプリケーションの問題を修正します。プロジェクトツリーの `cloud-native-workshop-v2m1-labs` フォルダに移動し、 `monolith/src/main/java/com/redhat/coolstore/utils/StartupListener.java` ファイルをクリックして開きます。
 
 ファイルの内容を以下の様に置き換えます。
 
@@ -148,23 +148,23 @@ image::codeready-workspace-build-result.png[rhamt_project_issues, 700]
 
 ===== 差分を見る
 
-変更した内容を見直せます。左側の _Version Control_（バージョン管理）アイコンをクリックすると、変更されたファイルの一覧が表示されます。 `StartupListener.java` をダブルクリックして、変更点を確認します。
+変更した内容を見直せます。左側の _Version Control_ （バージョン管理）アイコンをクリックすると、変更されたファイルの一覧が表示されます。 `StartupListener.java` をダブルクリックして、変更点を確認します。
 
 image::codeready-workspace-diffs.png[diffs, 700]
 
 CodeReady は、（Gitを使用して） 変更した内容を追跡し、バージョン管理を使用して、変更したファイルのチェックイン、更新、変更したファイルの比較を行えます。
 
-とりあえず、_Explorer_ ツリーに戻って、残っている問題を修正しましょう。
+とりあえず、 _Explorer_ ツリーに戻って、残っている問題を修正しましょう。
 
 ==== 5.ロガーの問題を修正
 
-私たちのアプリケーションの中には、`NonCatalogLogger` やクライアントサーバロギングのような Weblogic 固有のロギングメソッドを使用しているものがあります。NonCatalogLoggerは国際化されたコンテンツのロギングに関連した機能を提供します。
+私たちのアプリケーションの中には、 `NonCatalogLogger` やクライアントサーバロギングのような Weblogic 固有のロギングメソッドを使用しているものがあります。NonCatalogLoggerは国際化されたコンテンツのロギングに関連した機能を提供します。
 
 WebLogic  `NonCatalogLogger` は、JBoss EAP (またはその他の Java EE プラットフォーム) ではサポートされていません。これは JDK Logger や JBoss Logging などのサポートされているロギングフレームワークに移行する必要があります。
 
 移植性の高いフレームワークである標準的なJava Loggingフレームワークを使用します。フレームワークも必要に応じて https://docs.oracle.com/javase/8/docs/technotes/guides/logging/overview.html#a1.17[国際化をサポートしています^]。
 
-同じ `monolith` ディレクトリで、`src/main/java/com/redhat/coolstore/service/OrderServiceMDB.java` ファイルを開き、その内容を次のように置き換えます。
+同じ `monolith` ディレクトリで、 `src/main/java/com/redhat/coolstore/service/OrderServiceMDB.java` ファイルを開き、その内容を次のように置き換えます。
 
 [source,java, role="copypaste"]
 ----
@@ -239,13 +239,13 @@ mvn -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/monolith clean package
 
 私たちのアプリケーションは https://ja.wikipedia.org/wiki/Java_Message_Service[JMS^] を使用して通信を行っています。アプリケーションで注文が入るたびに、JMSトピックにJMSメッセージが送信されます。これは、Java EE アプリケーションがメッセージを非同期的に処理できるようにする Enterprise JavaBeans (EJB) の一形態である https://docs.oracle.com/javaee/6/tutorial/doc/gipko.html[Message-driven beans^] を使用して注文を処理するために、そのトピックへのリスナー (サブスクライバ) によって消費されます。
 
-この場合、`InventoryNotificationMDB` は、`ShoppingCartService` からのメッセージを購読し、リッスンしている。`ShoppingCartService` を経由して注文が来ると、JMS トピックにメッセージが置かれます。その時点で、`InventoryNotificationMDB` はメッセージを受信します。そして、インベントリサービスが事前に定義された閾値を下回っている場合、製品の供給者に通知する必要があることを示すメッセージをログに送信します。
+この場合、 `InventoryNotificationMDB` は、 `ShoppingCartService` からのメッセージを購読し、リッスンしている。 `ShoppingCartService` を経由して注文が来ると、JMS トピックにメッセージが置かれます。その時点で、 `InventoryNotificationMDB` はメッセージを受信します。そして、インベントリサービスが事前に定義された閾値を下回っている場合、製品の供給者に通知する必要があることを示すメッセージをログに送信します。
 
 残念ながら、このMDBは少し前に書かれたものです。これは、MDBを構成して操作するために、WebLogic 固有のインターフェースを利用しています。RHAMT はこれにフラグを立て、いくつかの課題を使用して報告しました。
 
 JBoss EAP は、MDB のライフサイクルを設定して管理するための、より効率的で宣言的な方法を提供します。この場合、アノテーションを利用して、必要な初期化や設定のロジックや設定を行えます。Weblogicと同じ機能を提供するため `MessageListener` インターフェースに加えて、私たちは `@MessageDriven` と `@ActivationConfigProperty` アノテーションを使用するでしょう。
 
-MDB のような EJB コンポーネントのための Weblogic のインターフェースの多くは、Weblogic の XML ディスクリプタファイルにあります。`src/main/webapp/WEB-INF/weblogic-ejb-jar.xml` を開いて、これらのディスクリプタのいずれかを確認してください。このファイルには、EJB と MDB のための多くの異なる設定の可能性があります。しかし、幸いにも私たちのアプリケーションはそれらのうちの 1 つしか使用していません、すなわち、`<trans-timeout-seconds>` を 30 に設定しています。これは、MDB 操作内のあるトランザクションが完了するのに時間がかかりすぎる（ 30 秒以上）場合に、それを意味します。この時、トランザクションはロールバックされ、例外がスローされます。このインターフェイスは Weblogic 固有のものなので、JBossで同等のものを見つける必要があります。
+MDB のような EJB コンポーネントのための Weblogic のインターフェースの多くは、Weblogic の XML ディスクリプタファイルにあります。 `src/main/webapp/WEB-INF/weblogic-ejb-jar.xml` を開いて、これらのディスクリプタのいずれかを確認してください。このファイルには、EJB と MDB のための多くの異なる設定の可能性があります。しかし、幸いにも私たちのアプリケーションはそれらのうちの 1 つしか使用していません、すなわち、 `<trans-timeout-seconds>` を 30 に設定しています。これは、MDB 操作内のあるトランザクションが完了するのに時間がかかりすぎる（ 30 秒以上）場合に、それを意味します。この時、トランザクションはロールバックされ、例外がスローされます。このインターフェイスは Weblogic 固有のものなので、JBossで同等のものを見つける必要があります。
 
 [NOTE]
 ====
@@ -265,13 +265,13 @@ RHAMTの課題レポートから、残っている課題を修正していきま
 
 ==== 8.weblogic EJB ディスクリプタを削除
 
-最初のステップは、不要な `weblogic-ejb-jar.xml` ファイルを削除することです。このファイルは Weblogic 固有であり、JBoss EAP によって認識または処理されることはありません。 `src/main/webapp/WEB-INF/weblogic-ejb-jar.xml` ファイルを右クリックして削除し、**Delete** を選択して **OK** をクリックします。
+最初のステップは、不要な `weblogic-ejb-jar.xml` ファイルを削除することです。このファイルは Weblogic 固有であり、JBoss EAP によって認識または処理されることはありません。 `src/main/webapp/WEB-INF/weblogic-ejb-jar.xml` ファイルを右クリックして削除し、 **Delete** を選択して **OK** をクリックします。
 
 image::codeready-workspace-delete-jar.png[codeready-workspace-convert, 500]
 
 今のうちに、シナリオの一部として追加されたスタブの weblogic 実装クラスを削除しておきましょう。
 
-`src/main/java/weblogic` フォルダを右クリックし、*Delete* を選択してフォルダを削除します。
+`src/main/java/weblogic` フォルダを右クリックし、 *Delete* を選択してフォルダを削除します。
 
 image::codeready-workspace-delete-weblogic.png[codeready-workspace-convert, 500]
 
@@ -357,15 +357,15 @@ image::codeready-workspace-build.png[rhamt_project_issues, 700]
 
 このステップでは、移行が成功したことを確認するためにRHAMTレポートを再実行します。
 
-{{ RHAMT_URL }}[RHAMT Console^] で、左メニューの `Applications` に移動し、*Add* をクリックします。*Server Path* タブを開き、固定プロジェクトのパスを `/opt/solution` と入力し、*Upload* をクリックしてプロジェクトを追加します。
+{{ RHAMT_URL }}[RHAMT Console^] で、左メニューの `Applications` に移動し、 *Add* をクリックします。 *Server Path* タブを開き、固定プロジェクトのパスを `/opt/solution` と入力し、 *Upload* をクリックしてプロジェクトを追加します。
 
 image::rhamt_rerun_analysis_report_solution.png[rhamt_rerun_analysis_report, 700]
 
-古い `monolith.war` を削除して、再度分析しないようにしてから、*Save and Run* をクリックしてプロジェクトを分析してください。
+古い `monolith.war` を削除して、再度分析しないようにしてから、 *Save and Run* をクリックしてプロジェクトを分析してください。
 
 image::rhamt_rerun_analysis_report_solution_del.png[rhamt_rerun_analysis_report, 700]
 
-レポートを実行している他の受講者の数にもよりますが、あなたの分析は数分_待ち_になるかもしれません。時間がかかりすぎる場合は、次のセクションをスキップして、ステップ *13* に進み、後で分析に戻って、すべての問題を排除したことを確認してください。
+レポートを実行している他の受講者の数にもよりますが、あなたの分析は数分 _待ち_ になるかもしれません。時間がかかりすぎる場合は、次のセクションをスキップして、ステップ *13* に進み、後で分析に戻って、すべての問題を排除したことを確認してください。
 
 ==== 12.結果を確認
 
@@ -431,7 +431,7 @@ image::openshift_landing.png[openshift_landing, 700]
 最初に表示されるページに表示されるプロジェクトは、あなたが実行するラボによって異なります。
 ====
 
-**Create Project** をクリックし、フィールドを入力して、*Create* をクリックします。
+**Create Project** をクリックし、フィールドを入力して、 *Create* をクリックします。
 
 * Name: `{{USER_ID }}-coolstore-dev`
 * Display Name: `{{ USER_ID }} Coolstore Monolith - Dev`
@@ -439,7 +439,7 @@ image::openshift_landing.png[openshift_landing, 700]
 
 [NOTE]
 ====
-プロジェクト名として `{{ USER_ID }}-coolstore-dev` を使用しなければ *なりません* 。この名前は後に参照されるので、`{{ USER_ID }}-coolstore-dev` と名前を付けないと失敗することになります！
+プロジェクト名として `{{ USER_ID }}-coolstore-dev` を使用しなければ *なりません* 。この名前は後に参照されるので、 `{{ USER_ID }}-coolstore-dev` と名前を付けないと失敗することになります！
 ====
 
 image::create_dialog.png[create_dialog, 700]
@@ -450,7 +450,7 @@ image::project_overview.png[create_new, 700]
 
 ==== 開発者視点への切り替え
 
-OpenShift 4では、コンソールに _Administrator_ ビューと _Developer_ ビューの両方を提供しています。左側のドロップダウンを使用して、_Developer_ 視点に切り替えます。
+OpenShift 4では、コンソールに _Administrator_ ビューと _Developer_ ビューの両方を提供しています。左側のドロップダウンを使用して、 _Developer_ 視点に切り替えます。
 
 image::dev_perspective.png[create_new, 700]
 
@@ -458,22 +458,22 @@ image::dev_perspective.png[create_new, 700]
 
 ==== 15.モノリスの展開
 
-使用するアプリケーション _テンプレート_ をあらかじめインストールしておきました。*From Catalog* をクリックします。
+使用するアプリケーション _テンプレート_ をあらかじめインストールしておきました。 *From Catalog* をクリックします。
 
 image::from_catalog.png[create_new, 700]
 
-検索ボックスに `coolstore` と入力し、_Coolstore Monolith using binary build_ を選択し、*Instantiate Template* をクリックします。_coolstore_ のテンプレートが表示されない場合は、_Type_ にある *Operator Backed* チェックを外してください。
+検索ボックスに `coolstore` と入力し、 _Coolstore Monolith using binary build_ を選択し、 *Instantiate Template* をクリックします。 _coolstore_ のテンプレートが表示されない場合は、 _Type_ にある *Operator Backed* チェックを外してください。
 
 image::from_catalog_bin.png[create_new, 700]
 
 以下の項目を記入してください。
 
-* *Namespace*: `{{USER_ID}}-coolstore-dev` (これは既に選択されているはずです)
-* *User ID*: `{{ USER_ID }}`
+* *Namespace* : `{{USER_ID}}-coolstore-dev` (これは既に選択されているはずです)
+* *User ID* : `{{ USER_ID }}`
 
 image::from_catalog_bin_details.png[create_new, 700]
 
-他の値はそのままにして、**Create** をクリックします。
+他の値はそのままにして、 **Create** をクリックします。
 
 _Topology_ ビューに移動して、デプロイされた要素を確認します。
 
@@ -485,7 +485,7 @@ image::coolstore_topology.png[create_new, 700]
 
 ==== モノリスを CLI を使ってデプロイ
 
-Eclipse Che ワークスペースは Kubernetes クラスタ上で実行されています。これはデフォルトの制限付き _サービス アカウント_ で実行されているため、ほとんどのリソース タイプを作成することができません。他のモジュールを完了している場合は、すでにログインしていると思いますが、もう一度ログインしてみましょう：*Login to OpenShift* をクリックして、与えられた資格情報を入力します。
+Eclipse Che ワークスペースは Kubernetes クラスタ上で実行されています。これはデフォルトの制限付き _サービス アカウント_ で実行されているため、ほとんどのリソース タイプを作成することができません。他のモジュールを完了している場合は、すでにログインしていると思いますが、もう一度ログインしてみましょう： *Login to OpenShift* をクリックして、与えられた資格情報を入力します。
 
 * Username: `{{ USER_ID }}`
 * Password: `{{ OPENSHIFT_USER_PASSWORD }}`
@@ -544,7 +544,7 @@ image::coolstore-labels.png[create_new, 600]
 
 この開発プロジェクトでは、 _バイナリビルド_ と呼ばれるプロセスを使用することを選択しました。つまり、公開されている Git リポジトリを指す代わりに、S2I  (Source-to-Image) のビルドプロセスをダウンロードしてビルドします。そして、コンテナイメージを作成して、ローカルに構築し、成果物 （例えば `.war` ファイル）をアップロードするだけです。バイナリでのデプロイは、ビルドプロセスを大幅にスピードアップします。
 
-まず、`openshift` の Maven プロファイルを使用してプロジェクトをもう一度構築します。これはOpenShiftで使用するのに適したバイナリを作成します（これはまだコンテナイメージではなく、`.war` ファイルだけです）。`oc` コマンドラインでこれを行います。
+まず、 `openshift` の Maven プロファイルを使用してプロジェクトをもう一度構築します。これはOpenShiftで使用するのに適したバイナリを作成します（これはまだコンテナイメージではなく、 `.war` ファイルだけです）。 `oc` コマンドラインでこれを行います。
 
 CodeReady Workspaces ターミナルウィンドウからプロジェクトをビルドします。
 
@@ -555,7 +555,7 @@ mvn clean package -Popenshift -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-l
 
 ビルドが終了し、 `BUILD SUCCESS` のメッセージが表示されるのを待ちましょう
 
-そして最後に、`.war` ファイルを取得し、JBoss EAP と組み合わせて Linux コンテナイメージを生成するビルドプロセスを開始します。これは自動的にプロジェクトにデプロイされます。これはテンプレートから作成された_DeploymentConfig_オブジェクトのおかげです。
+そして最後に、 `.war` ファイルを取得し、JBoss EAP と組み合わせて Linux コンテナイメージを生成するビルドプロセスを開始します。これは自動的にプロジェクトにデプロイされます。これはテンプレートから作成された _DeploymentConfig_ オブジェクトのおかげです。
 
 [source,sh,role="copypaste"]
 ----

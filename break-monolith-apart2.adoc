@@ -205,7 +205,10 @@ Spring Frameworkには多くのまともなデフォルトがありますが、�
 
 [source, properties, role="copypaste"]
 ----
-spring.datasource.url=jdbc:h2:mem:catalog;DB_CLOSE_ON_EXIT=FALSE spring.datasource.username=sa spring.datasource.password=sa spring.datasource.driver-class-name=org.h2.Driver
+spring.datasource.url=jdbc:h2:mem:catalog;DB_CLOSE_ON_EXIT=FALSE
+spring.datasource.username=sa
+spring.datasource.password=sa
+spring.datasource.driver-class-name=org.h2.Driver
 ----
 
 Spring Data フレームワークは、クラスパスに `schema.sql` があるかどうかを自動的に確認し、初期化時にそれを実行します。
@@ -343,7 +346,7 @@ curl http://localhost:8081/services/products | jq
 
 次のステップでは、別のサービスを呼び出して、エンドポイントの応答を在庫の状態を使って強化します。
 
-[警告]
+[NOTE]
 ====
 アプリが起動しているターミナルで kbd:[CTRL-C] をクリックしてサービスを停止してください！
 ====
@@ -358,9 +361,9 @@ curl http://localhost:8081/services/products | jq
 
 *1.クライアントサイドの統合* - UI を拡張して、最初に `/services/products` を最初に呼び出すように UI を拡張することができます。 そして、各製品アイテムについて `/services/inventory/{prodId}` を呼び出して在庫状況を取得します。その後、Webブラウザで結果を結合します。これが一番邪魔にならない方法だと思います。ところが、100 個の商品があればクライアントは 101 個のリクエストをサーバに行うということにもなります。インターネット接続が遅い場合、問題が発生する可能性があります。
 
-*2.マイクロサービス・ゲートウェイ* - カタログ _サービス_ の前にゲートウェイを作成して、最初にカタログ サービスを呼び出し、そのレスポンスに基づいて在庫を呼び出します。というのも一つの選択肢です。このようにして、クライアントからサーバへの呼び出しをたくさん避けることができます。http://camel.apache.org[Apache Camel^] はこれを行うための素晴らしい機能を提供しています。これについてもっと知りたい方は、Coolstore Microservices の例をチェックしてみてください: http://github.com/jbossdemocentral/coolstore-microservice[こちら^]
+*2.マイクロサービス・ゲートウェイ* - カタログ _サービス_ の前にゲートウェイを作成して、最初にカタログ サービスを呼び出し、そのレスポンスに基づいて在庫を呼び出します。というのも一つの選択肢です。このようにして、クライアントからサーバへの呼び出しをたくさん避けることができます。 http://camel.apache.org[Apache Camel^] はこれを行うための素晴らしい機能を提供しています。これについてもっと知りたい方は、Coolstore Microservices の例をチェックしてみてください: http://github.com/jbossdemocentral/coolstore-microservice[こちら^]
 
-*3.サービス・ツー・サービス* - 用途や好みに応じて、サービス間の呼び出しもできます。私たちの場合は、カタログサービスが REST を使用して在庫サービスを呼び出して在庫の状態を取得し、それをレスポンスに含めることを意味します。
+*3.サービス間* - 用途や好みに応じて、サービス間の呼び出しもできます。私たちの場合は、カタログサービスが REST を使用して在庫サービスを呼び出して在庫の状態を取得し、それをレスポンスに含めることを意味します。
 
 ここに正解も不正解もありません。しかし、これは Red Hat Runtimes を使ったアプリケーションの近代化に関するワークショップなので、ここではオプション 1 か 2 を選択することはありません。代わりにオプション 3 を使用して、カタログを拡張して在庫サービスを呼び出すようにします。
 
@@ -474,7 +477,7 @@ import com.redhat.coolstore.client.InventoryClient;
     }
 ----
 
-フォールバックファクトリーを作成した後は、問題が発生した場合にそのフォールバックを使用するようにFeignに指示し、 `@FeignClient` アノテーションにfallbackFactoryプロパティを追加します。
+フォールバックファクトリーを作成した後は、問題が発生した場合にそのフォールバックを使用するようにFeignに指示し、 `@FeignClient` アノテーションにfallbackFactoryプロパティを追加します。既存の `@FeignClient(name="inventory")` の行を以下の様に置き換えます。
 
 [source, java, role="copypaste"]
 ----
@@ -528,7 +531,7 @@ curl http://localhost:8081/services/products | jq
 
 ==== 10.OpenShift にデータベースを追加
 
-我々の本番のカタログマイクロサービスは、在庫データを格納するために外部データベース （PostgreSQL） を使用します。あなたのために `{{ USER_ID}}-catalog` プロジェクトを作成しました。{{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-catalog[Topology View for {{ USER_ID }}-catalog project^] にアクセスしてみてください。
+我々の本番のカタログマイクロサービスは、在庫データを格納するために外部データベース （PostgreSQL） を使用します。あなたのために `{{ USER_ID}}-catalog` プロジェクトを作成しました。 {{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-catalog[Topology View for {{ USER_ID }}-catalog project^] にアクセスしてみてください。
 
 プロジェクト概要の _Database_ ボックスの左側にある **+Add** をクリックします。
 
@@ -548,13 +551,13 @@ image::db-catalog-postgres.png[db, 700]
 
 image::db-catalog-postgres-fields.png[db, 700]
 
-これにより、データベースがカタログプロジェクトにデプロイされます。{{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-catalog[Topology View^] をクリックすると表示されます。
+これにより、データベースがカタログプロジェクトにデプロイされます。 {{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-catalog[Topology View^] をクリックすると表示されます。
 
 ==== 11.本番設定の追加
 
 CodeReady Workspaces の `src/main/resources` に `application-openshift.properties` という名前の新しいファイルを作成します。
 
-[警告]
+[NOTE]
 ====
 新しいファイルは、既存の `application-default.properties` と同じディレクトリにあることを確認してください！
 ====
@@ -625,7 +628,7 @@ oc expose service catalog-springboot && oc set probe dc/catalog-springboot  --re
 
 最後に、実際に入れ替わりが完了したことを確認してください。カタログは {{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-catalog[Topology View^] にアクセスして、青丸を確実に確認しましょう！
 
-そして、http://catalog-springboot-{{ USER_ID }}-catalog.{{ ROUTE_SUBDOMAIN}}[Catalog Web frontend^] にアクセスして、期待された在庫量（そして `-1` ではない）を取得していることを確認します。
+そして、 http://catalog-springboot-{{ USER_ID }}-catalog.{{ ROUTE_SUBDOMAIN}}[Catalog Web frontend^] にアクセスして、期待された在庫量（そして `-1` ではない）を取得していることを確認します。
 
 image::catalog.png[catalog, 700]
 
@@ -633,7 +636,7 @@ image::catalog.png[catalog, 700]
 
 ==== 13.モノリスを抑制
 
-今のところ、https://www.martinfowler.com/bliki/StranglerApplication.html[モノリスを抑制^] を始めていません。OpenShift に入ってくる各外部リクエストは（今のように ingress を使用していない限り）Route を通過します。私たちのモノリスでは、ウェブページはクライアント側の REST 呼び出しを使用してページの異なる部分をロードします。
+今のところ、 https://www.martinfowler.com/bliki/StranglerApplication.html[モノリスを抑制^] を始めていません。OpenShift に入ってくる各外部リクエストは（今のように ingress を使用していない限り）Route を通過します。私たちのモノリスでは、ウェブページはクライアント側の REST 呼び出しを使用してページの異なる部分をロードします。
 
 ホームページでは、製品リストが `/services/products` への REST 呼び出しで読み込まれます。現時点では、その URL への呼び出しは、モノリス内の製品カタログにまだアクセスします。ここで、これらの呼び出しを、代わりに新しく作成したカタログサービスにルーティングして、次のような結果にします。
 
@@ -641,7 +644,7 @@ image::catalog-goal.png[Greeting, 700]
 
 以下の手順に従って、 *オリジン間リソース共有 （CORS）* ベースのルートを作成します。CORS は、Web ページ上の制限されたリソースを、最初のリソースが提供されたドメイン以外の別のドメインから要求できるようにするメカニズムです。
 
-Quarkus には、 _javax.servlet.Filter_ インターフェイスを実装した _CORS フィルター_ が付属しており、すべての受信 HTTP リクエストを遮断します。これは Quarkus の設定ファイルで有効にできます。 `src/main/resources/application.properties` ファイル内の `在庫プロジェクト` （先に作成した Quarkus アプリ）に以下の行を追加します。
+Quarkus には、 _javax.servlet.Filter_ インターフェイスを実装した _CORS フィルター_ が付属しており、すべての受信 HTTP リクエストを遮断します。これは Quarkus の設定ファイルで有効にできます。 `src/main/resources/application.properties` ファイル内の `在庫` プロジェクト先に作成した Quarkus アプリ）に以下の行を追加します。
 
 [source, properties, role="copypaste"]
 ----
@@ -658,7 +661,7 @@ mvn clean package -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/inventor
 
 1 分ほどで完了します。ビルドが完了すると、在庫ポッドは OpenShift の DeploymentConfig トリガーを介して自動的にデプロイされます。
 
-モノリス・アプリケーションの _製品_ ページで制限されたリソースを許可するために、 `カタログ` プロジェクトの `src/main/java/com/redhat/coolstore/service` で `CatalogEndpoint` クラスを開きます。クラスレベルのアノテーションを以下の様に置き換えます。
+モノリス・アプリケーションの _製品_ ページで制限されたリソースを許可するために、 `catalog` プロジェクトの `src/main/java/com/redhat/coolstore/service` で `CatalogEndpoint` クラスを開きます。クラスレベルのアノテーションを以下の様に置き換えます。
 
 [source, java, role="copypaste"]
 ----
@@ -679,7 +682,7 @@ oc start-build -n {{ USER_ID }}-catalog catalog-springboot --from-file $CHE_PROJ
 
 1 分ほどで完了します。ビルドが完了すると、カタログポッドは OpenShift の DeploymentConfig トリガーを経由して自動的にデプロイされます。
 
-モノリスアプリケーションのカタログエンドポイントを更新してみましょう。 *monolith* プロジェクトで `src/main/webapp/app/services` の `catalog.jsを` 開きます。画像のように `factory.getProducts = function()` 行の直前に `baseUrl` の値を定義する行を追加します。
+モノリスアプリケーションのカタログエンドポイントを更新してみましょう。 *monolith* プロジェクトで `src/main/webapp/app/services` の `catalog.js` を開きます。画像のように `factory.getProducts = function()` 行の直前に `baseUrl` の値を定義する行を追加します。
 
 [source,javascript,role="copypaste"]
 ----

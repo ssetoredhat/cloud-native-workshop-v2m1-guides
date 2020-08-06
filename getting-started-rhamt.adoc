@@ -28,7 +28,7 @@ Red Hat Application Migration Toolkit (RHAMT) は、拡張可能でカスタマ�
 
 === 1. OpenShift クラスタの RHAMT Web コンソールにログイン
 
-開始するには、 {{ RHAMT_URL }}[Red Hat Application Migration Toolkitにアクセス^] し、割り当てられたユーザー名とパスワード（例：`{{ USER_ID }}/{{ CHE_USER_PASSWORD }}`）を使用してログインします。
+開始するには、 {{ RHAMT_URL }}[Red Hat Application Migration Toolkitにアクセス^] し、割り当てられたユーザー名とパスワード（例： `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}` ）を使用してログインします。
 
 image::rhamt_login.png[RHAMT Login, 900]
 
@@ -50,7 +50,7 @@ image::rhamt_add_monolith_app1.png[RHAMT Add App, 900]
 
 === 4. Transformation Path で _Migration to JBoss EAP 7_ を選択
 
-分析中に `com` と `weblogic` のパッケージを含めるため、これらのパッケージのチェックボックスを選択し、*Save & Run* ボタンをクリックします。分析結果のダッシュボードページに移動しますので、分析が完了するまで待ちます（1～2分程度かかります）。
+分析中に `com` と `weblogic` のパッケージを含めるため、これらのパッケージのチェックボックスを選択し、 *Save & Run* ボタンをクリックします。分析結果のダッシュボードページに移動しますので、分析が完了するまで待ちます（1～2分程度かかります）。
 
 image::rhamt_check_monolith_app.png[RHAMT Add App, 900]
 
@@ -74,7 +74,7 @@ image::rhamt_result_landing_page.png[RHAMT Langing Page, 900]
 
 レポートの一番最初のページには、処理されたアプリケーションが掲載されています。各行には、そのアプリケーションでストーリーポイント、インシデントの数、遭遇した技術が概要で記載されています。
 
-**`monolith.war` のリンクをクリックすると**、プロジェクトの詳細にアクセスできます。
+**`monolith.war` のリンクをクリックすると** 、プロジェクトの詳細にアクセスできます。
 
 image::rhamt_project_overview.png[RHAMT Project Overview, 900]
 

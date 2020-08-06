@@ -7,7 +7,7 @@
 
 image::alreadyset.png[Set User ID above, 700]
 
-ユーザー名がきちんと設定されていれば、次に進めます。**割り当てられていない場合は、上記のボックスに、このように割り当てられたユーザーIDを入力します**。
+ユーザー名がきちんと設定されていれば、次に進めます。 **割り当てられていない場合は、上記のボックスに、このように割り当てられたユーザーIDを入力します**。
 
 image::setuser.png[Set User ID above, 700]
 
@@ -42,7 +42,7 @@ echo "これはクリックしてコピー/ペーストできる bash シェル�
 
 ワークショップの環境は、いくつかのコンポーネントで構成されています。それはプリインストールされており、使用する準備ができています。ワークショップのどの部分をやっているかにもよりますが、以下のうち 1 つまたは複数のものを使うことになります。
 
-* https://www.openshift.com/[Red Hat OpenShift^] - 1つ以上の**プロジェクト**（Kubernetesの名前空間）を自分のものにして、他のワークショップの受講者から隔離されたものを使用します。
+* https://www.openshift.com/[Red Hat OpenShift^] - 1つ以上の **プロジェクト** （Kubernetesの名前空間）を自分のものにして、他のワークショップの受講者から隔離されたものを使用します。
 * https://developers.redhat.com/products/codeready-workspaces/overview[Red Hat CodeReady Workspaces^] - *Eclipse Che* をベースにしたクラウドベースのインブラウザ IDE です（IntelliJ IDEA, VSCode, Eclipse IDE に似ています）。あなたはこのワークショップで使用するために、自分だけのワークスペースを提供されています。ここからコードを書いて、テストして、デプロイします。
 * https://developers.redhat.com/products/rhamt[Red Hat Application Migration Toolkit^] - 既存のアプリケーションの移行に使用します。
 * https://www.redhat.com/en/products/runtimes[Red Hat Runtimes^] - Spring Boot、Node.js、 https://quarkus.io[Quarkus^] などのクラウドネイティブランタイムの集合体。
