@@ -29,7 +29,7 @@ image::che-workspace.png[cdw, 900]
 
 image::crw-icons.png[cdw, 400]
 
-[注意]
+[NOTE]
 ====
 おかしなことになったり、ブラウザに表れたりした場合、単にブラウザタブを再読み込みして表示を更新するだけです。
 ====
@@ -64,7 +64,7 @@ image::crw-clone-explorer.png[crw,900]
 cd $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs && git checkout ocp-4.5
 ----
 
-[注意]
+[NOTE]
 ====
 CodeReady Workspacesのターミナルウィンドウ。開発者ワークスペースで実行されているコンテナのターミナル ウィンドウを開けます。これらのラボの残りの部分については、ターミナルでコマンドを実行する必要がある場合はいつでも、右側の **>_ New Terminal** コマンドを使用できます。
 ====
@@ -125,7 +125,7 @@ public class StartupListener {
 }
 ----
 
-[注意]
+[NOTE]
 ====
 保存ボタンはどこにありますか？CodeReadyワークスペースは変更内容を自動的に保存します。それがSAVEボタンが見つからない理由です。保存を忘れたためにコードを失うことはもうありません。元に戻すには kbd:[CTRL-Z] （Mac の場合は kbd:[CMD-Z] ）を使用するか、`Edit （編集） -> Undo（元に戻す）`メニューオプションを使用します。
 ====
@@ -247,7 +247,7 @@ JBoss EAP は、MDB のライフサイクルを設定して管理するための
 
 MDB のような EJB コンポーネントのための Weblogic のインターフェースの多くは、Weblogic の XML ディスクリプタファイルにあります。`src/main/webapp/WEB-INF/weblogic-ejb-jar.xml` を開いて、これらのディスクリプタのいずれかを確認してください。このファイルには、EJB と MDB のための多くの異なる設定の可能性があります。しかし、幸いにも私たちのアプリケーションはそれらのうちの 1 つしか使用していません、すなわち、`<trans-timeout-seconds>` を 30 に設定しています。これは、MDB 操作内のあるトランザクションが完了するのに時間がかかりすぎる（ 30 秒以上）場合に、それを意味します。この時、トランザクションはロールバックされ、例外がスローされます。このインターフェイスは Weblogic 固有のものなので、JBossで同等のものを見つける必要があります。
 
-[注意]
+[NOTE]
 ====
 このタイプの移行は、以前のステップよりも複雑であることを認識しておく必要があります。そして、実際のアプリケーションでは、移行のために一度に 1 行ずつ変更するような単純なことはほとんどありません。Red Hat のアプリケーション移行戦略の詳細については https://access.redhat.com/documentation/en/red-hat-application-migration-toolkit[RHAMT ドキュメント^] を参照するか、Red Hat がお客様の移行パスでどのように支援できるかについて、お近くの Red Hat の担当者にお問い合わせください。
 ====
@@ -427,7 +427,7 @@ image::openshift_login.png[openshift_login, 700]
 
 image::openshift_landing.png[openshift_landing, 700]
 
-[注意]
+[NOTE]
 ====
 最初に表示されるページに表示されるプロジェクトは、あなたが実行するラボによって異なります。
 ====
@@ -438,7 +438,7 @@ image::openshift_landing.png[openshift_landing, 700]
 * Display Name: `{{ USER_ID }} Coolstore Monolith - Dev`
 * Description: _このフィールドは空にしてください_
 
-[注意]
+[NOTE]
 ====
 プロジェクト名として `{{ USER_ID }}-coolstore-dev` を使用しなければ*なりません*。この名前は後に参照されるので、`{{ USER_ID }}-coolstore-dev` と名前を付けないと失敗することになります！
 ====
@@ -511,7 +511,7 @@ Login successful.
 Using project "{{ USER_ID }}-bookinfo".Welcome!始めるには 'oc help' を参照してください。
 ----
 
-[注意]
+[NOTE]
 ====
 *Login to OpenShift* してログインすると、そのターミナルは通常の端末としては使えなくなります。ターミナルウィンドウを閉じることができます。後からさらに端末を開いてもログインしたままになってしまいます
 ====

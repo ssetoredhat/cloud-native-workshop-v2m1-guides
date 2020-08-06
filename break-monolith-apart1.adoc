@@ -61,7 +61,7 @@ mvn quarkus:add-extension -Dextensions="hibernate-orm-panache, jdbc-h2, health" 
 
 そして、これは `pom.xml` に拡張機能を追加します。
 
-[注意]
+[NOTE]
 ====
 Quarkus 用の https://vertx.io/[Vert.x^]、http://camel.apache.org/[Apache Camel^]、http://infinispan.org/[Infinispan^]、Spring （`@Autowired`など）に加えて人気フレームワーク用の https://quarkus.io/extensions/[さらなる拡張機能^] がたくさんあります。
 ====
@@ -336,7 +336,7 @@ public class InventoryHealthCheck implements HealthCheck {
 
 `call() ` メソッドは HTTP GET エンドポイントを公開します。これはサービスの状態を返します。このチェックのロジックは、基盤となるデータベースへの接続が安定しており、利用可能であることを確認するために、簡単なクエリを実行します。また、このメソッドには MicroProfile の `@Readiness` アノテーションが付けられています。これは、Quarkus がこのエンドポイントを `/health/ready` のヘルスチェックとして公開するように指示します。
 
-[注意]
+[NOTE]
 ====
 在庫アプリケーションを停止して再実行する必要はありません。なぜなら、Quarkus は_ライブコーディング_機能を介して*自動的に変更をリロードする*からです。
 ====
@@ -369,7 +369,7 @@ curl -s http://localhost:8080/health | jq
 
 これでデフォルトのヘルスチェックと新しい在庫のヘルスチェックが表示されます。
 
-[注意]
+[NOTE]
 ====
 `@Liveness` アノテーションと `@Readiness` アノテーションを使用して、個別のライブネスプローブとレディネスプローブを定義できます。そして、これは `/health/live` と `/health/ready` で別々にそれらにアクセスします。
 ====
@@ -429,7 +429,12 @@ _src/main/resources/application.properties_ に以下の変数を`追加して`�
 %prod.quarkus.openshift.labels.app.openshift.io/runtime=quarkus<6>
 ----
 
-<1> この単純な例では自己署名証明書を使用しているので、これは単に拡張機能に信頼するように言っているだけです。<2> コンテナイメージを構築するように拡張機能に指示します。<3> コンテナイメージが構築された後、拡張機能をOpenShiftにデプロイするように指示します。 <4> コンテナを構築した後に OpenShift リソース（ `DeploymentConfig` や `Service` のような）を生成して作成するように拡張機能に指示する <5> OpenShift `Route` を生成するように拡張機能に指示します。<6> OpenShift Developer Toplogy を表示する際に、アプリに見栄えの良いアイコンを追加します。
+<1> この単純な例では自己署名証明書を使用しているので、これは単に拡張機能に信頼するように言っているだけです。
+<2> コンテナイメージを構築するように拡張機能に指示します。
+<3> コンテナイメージが構築された後、拡張機能をOpenShiftにデプロイするように指示します。 
+<4> コンテナを構築した後に OpenShift リソース（ `DeploymentConfig` や `Service` のような）を生成して作成するように拡張機能に指示する 
+<5> OpenShift `Route` を生成するように拡張機能に指示します。
+<6> OpenShift Developer Toplogy を表示する際に、アプリに見栄えの良いアイコンを追加します。
 
 OpenShift では、_Developer_ パースペクティブにいることを確認し、`{{ USER_ID }}-inventory` プロジェクトを選択します。これはすでにあなたのために作成されています。
 
