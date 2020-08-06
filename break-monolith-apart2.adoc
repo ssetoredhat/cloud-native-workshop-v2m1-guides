@@ -1,62 +1,43 @@
-= Lab4 - Breaking the monolith apart - II
+= Lab4 - モノリスをバラバラにする - II
 :experimental:
 
-In the previous lab, you learned how to take an existing monolithic app and refactor a single _inventory_ service using Quarkus.
-The previous lab resulted in you creating an inventory service, but so far we haven’t started _strangling_ the monolith. That is
-because the inventory service is never called directly by the UI. It’s a backend service that is only used only by other backend
-services. In this lab, you will create the catalog service and the catalog service will call the inventory service. When you are
-ready, you will change the route to tie the UI calls to new service.
+前のラボでは、既存のモノリシックアプリを使用して、Quarkus を使用して単一の_在庫サービス_をリファクタリングする方法を学びました。前のラボでは在庫サービスを作っていましたが、今のところモノリスを_抑圧し_始めたわけではありません。それは、在庫サービスが UI から直接呼び出されることがないからです。他のバックエンドサービスでしか使われていないものです。このラボでは、カタログサービスを作成し、カタログサービスが在庫サービスを呼び出します。準備ができたら、UI コールを新サービスに紐付けるルートを変更します。
 
-To implement this, we are going to use https://access.redhat.com/products/spring-boot[Red Hat support for Spring Boot^]. The reason for using Spring for this service is to introduce you to
-Spring Boot development, and how https://www.redhat.com/en/products/runtimes[Red Hat Runtimes^] helps to make Spring
-development on Kubernetes easy. In real life, the reason for choosing Spring Boot vs. others mostly depends on personal preferences,
-like existing knowledge, etc. At the core Spring and Java EE are very similar.
+これを実装するために、https://access.redhat.com/products/spring-boot[Red Hat support for Spring Boot^] を利用します。このサービスに Spring を使う理由は、Spring Boot 開発の紹介と、https://www.redhat.com/en/products/runtimes[Red Hat Runtimes^] がどのように Kubernetes 上での Spring 開発を簡単にするのに役立っているのかを紹介するためです。実際の生活の中で、Spring Boot を選ぶ理由は、ほとんどが既存の知識などの個人的な好みによるものです。核心部分では、Spring とJava EE は非常に似ています。
 
-The goal is to produce something like:
+今回のゴールは以下のようなものを作ることです。
 
 image::catalog-goal.png[Greeting, 700]
 
-=== What is Spring Framework?
+=== Spring Framework とは何ですか？
 
-Spring is one of the most popular Java Frameworks and offers an alternative to the Java EE programming model. Spring is also very
-popular for building applications based on microservices architectures. Spring Boot is a popular tool in the Spring ecosystem that
-helps with organizing and using 3rd-party libraries together with Spring and also provides a mechanism for boot strapping
-embeddable runtimes, like Apache Tomcat. Bootable applications (sometimes also called _fat jars_) fits the container model very
-well since in a container platform like OpenShift responsibilities like starting, stopping and monitoring applications are then
-handled by the container platform instead of an Application Server.
+Spring は最も人気のあるJavaフレームワークの1つであり、Java EEプログラミングモデルに代わるものを提供しています。また、Spring はマイクロサービスアーキテクチャをベースにしたアプリケーションの構築にも人気があります。Spring Boot は Spring エコシステムで人気のあるツールで、Spring と一緒にサードパーティのライブラリを整理して利用するのに役立ちます。また、Apache Tomcat のような埋め込み可能なランタイムをブートストラップするメカニズムも提供しています。起動可能なアプリケーション（_fat jar_と呼ばれることもあります）はコンテナモデルに非常によく適合します。OpenShiftのようなコンテナプラットフォームでは、アプリケーションの起動、停止、監視などの責任はアプリケーションサーバーの代わりにコンテナプラットフォームで処理されるからです。
 
-*Red Hat& offers support and maintenance over stated time periods for the major versions of _Spring Boot_. https://access.redhat.com/documentation/en-us/red_hat_support_for_spring_boot[Learn more^].
+*Red Hat& は、_Spring Boot_ の主要バージョンのサポートとメンテナンスを、定められた期間にわたって提供しています。 https://access.redhat.com/documentation/en-us/red_hat_support_for_spring_boot[さらに学ぶ^]。
 
-=== Aggregate microservices calls
+=== マイクロサービスの呼び出しを集約します。
 
-Another thing you will learn in this lab is one of the techniques to aggregate services using service-to-service calls. Other
-possible solutions would be to use a microservices gateway or combine services using client-side logic.
+このラボで学ぶもう 1 つのことは、サービス間の呼び出しを利用してサービスを集約する技術の一つです。他に考えられる解決策としては、マイクロサービスゲートウェイを使用したり、クライアント側のロジックを使用してサービスを組み合わせることが考えられます。
 
-==== 1. Setup a Catalog project
+==== 1.カタログプロジェクトのセットアップ
 
-Run the following commands to set up your environment for this lab and start in the right directory:
+以下のコマンドを実行して、このラボの環境をセットアップし、正しいディレクトリで起動します。
 
-In the project explorer, expand the _catalog_ project (ignore the red error icons on some files - we'll get to those shortly)
+プロジェクトエクスプローラで、_catalog_ プロジェクトを展開します（いくつかのファイルの赤いエラーアイコンは無視してください。それは後ほど）
 
 image::catalog-project.png[catalog-setup, 700]
 
-==== 2. Examine the Maven project structure
+==== 2.Mavenプロジェクトの構造を調べる
 
-The sample project shows the components of a basic Spring Boot project laid out in different subdirectories according to Maven
-best practices.
+サンプルプロジェクトは、基本的な Spring Boot プロジェクトのコンポーネントを Maven のベストプラクティスに従って異なるサブディレクトリにレイアウトしています。
 
-As you can see, there are some files that we have prepared for you in the project. Under _src/main/resources/static/index.html_ we
-have for example prepared a simple html-based UI file for you. This matches very well what you would get if you generated an empty
-project from the https://start.spring.io[Spring Initializr^] web page.
+ご覧の通り、今回のプロジェクトでご用意したファイルがあります。_src/main/resources/static/index.html_の下に、例えば、html ベースのシンプルな UI ファイルを用意しました。これは https://start.spring.io[Spring Initializr^] ウェブページから空のプロジェクトを生成した場合と非常によく一致します。
 
-One file that differs slightly is the `pom.xml`. Please open the and examine it a bit closer (but do not change anything at this
-time)
+若干異なるファイルとしては、`pom.xml` があります。開いて、もう少し近くで吟味してみてください（ただし、このときは何も変えないでください）
 
-As you review the content, you will notice that there are a lot of _TODO_ comments. *Do not remove them!* These comments are used
-as a marker and without them, you will not be able to finish this lab.
+内容を見直していくと、_TODO_ コメントが多いことに気づきます。*絶対にコメントアウトしてはいけません！*これらのコメントはマーカーとして使用され、これがないとこのラボを終えることができません。
 
-Notice that we are not using the default BOM (Bill of material) that Spring Boot projects typically use. Instead, we are using a
-BOM provided by Red Hat as part of the http://snowdrop.me/[Snowdrop^] project.
+Spring Boot プロジェクトが通常使用するデフォルトのBOM（部品表）を使用していないことに注意してください。代わりに、http://snowdrop.me/[Snowdrop^] プロジェクトの一部として Red Hat が提供している BOM を使用しています。
 
 [source,xml]
 ----
@@ -69,22 +50,18 @@ BOM provided by Red Hat as part of the http://snowdrop.me/[Snowdrop^] project.
 </dependency>
 ----
 
-We use this bill of material to make sure that we are using the version of for example Apache Tomcat that Red Hat supports.
+Red Hat がサポートする Apache Tomcat などのバージョンを使用していることを確認するために、この BOM を使用しています。
 
-==== 3. Add web (Apache Tomcat) to the application
+==== 3.アプリケーションに Web （Apache Tomcat） を追加
 
-Our application will be a web application, so we need to use a servlet container like Apache Tomcat or Undertow. Since Red Hat
-offers support for Apache Tomcat (e.g., security patches, bug fixes, etc.), we will use it.
+私たちのアプリケーションはウェブアプリケーションになるので、Apache Tomcat や Undertow のようなサーブレットコンテナを使う必要があります。Red HatがApache Tomcatのサポート（セキュリティパッチやバグフィックスなど）を提供しているので、それを利用します。
 
-[NOTE]
+[注意]
 ====
-Undertow is another an open source project that is maintained by Red Hat and therefore Red Hat plans to add support for
-Undertow shortly.
+Undertow は Red Hat によってメンテナンスされているもう 1 つのオープンソースプロジェクトであり、Red Hat は近日中に Undertow のサポートを追加する予定です。
 ====
 
-Because of the Red Hat BOM and access to the Red Hat maven repositories all we need to do to enable the supported Apache Tomcat as
-servlet container is to add the following dependency to your _pom.xml_. Add these lines at the
-`<!-- TODO: Add web (tomcat) dependency here -->` marker:
+Red Hat の BOM と Red Hat の maven リポジトリへのアクセスのため、サポートされているサーブレットコンテナとしての Apache Tomcat を有効にする必要があります。それは、次の依存関係を _pom.xml_ に追加することです。`<!-- TODO: Add web (tomcat) dependency here -->` のマーカーがある位置に以下を追加します。
 
 [source,xml, role="copypaste"]
 ----
@@ -94,8 +71,7 @@ servlet container is to add the following dependency to your _pom.xml_. Add thes
         </dependency>
 ----
 
-We will also make use of Java Persistence API (JPA) so we need to add the following to _pom.xml_ at the
-`<!-- TODO: Add jdbc dependency here -->` marker:
+また、Java Persistence API（JPA）も利用します。そのため _pom.xml_ に以下を追加する必要があります。`<!-- TODO: Add jdbc dependency here -->` marker:
 
 [source,xml, role="copypaste"]
 ----
@@ -105,8 +81,7 @@ We will also make use of Java Persistence API (JPA) so we need to add the follow
         </dependency>
 ----
 
-We will go ahead and add a bunch of other dependencies while we have the pom.xml open. These will be explained later. Add these at
-the `<!-- TODO: Add actuator, feign and hystrix dependency here -->` marker:
+先に行きましょう。pom.xmlを開いている間に他の依存関係の束を追加します。これらについては後ほど説明します。`<!-- TODO: Add actuator, feign and hystrix dependency here -->`の場所へ以下を追加します。
 
 [source,xml, role="copypaste"]
 ----
@@ -131,30 +106,30 @@ the `<!-- TODO: Add actuator, feign and hystrix dependency here -->` marker:
         </dependency>
 ----
 
-This should also make the red error icons disappear! Now, build the project to make sure everything compiles so far:
+これで、赤いエラーアイコンも消えるはずです！さて、プロジェクトをビルドして、これまでのところすべてがコンパイルされていることを確認してください。
 
 [source,sh,role="copypaste"]
 ----
 mvn -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/catalog clean package
 ----
 
-If it builds successfully (you will see *BUILD SUCCESS*), you have now successfully executed the first step in this lab.
+ビルドが成功すれば（*BUILD SUCCESS*と表示されます）、このラボの最初のステップが正常に実行されたことになります。
 
-Now you’ve seen how to get started with Spring Boot development on Red Hat Runtimes.
+これでRed Hat Runtimes 上で Spring Boot 開発を始める方法がわかりました。
 
-In next step of this lab, we will add the logic to be able to read data from the database.
+このラボの次のステップでは、データベースからデータを読み込めるようにするためのロジックを追加します。
 
-==== 4. Create Domain Objects
+==== 4.ドメインオブジェクトの作成
 
-We are now ready to implement the database repository.
+私たちは今、データベースリポジトリを実装する準備が整いました。
 
-In the catalog project, right-click on the `src/main/java/com/redhat/coolstore/service` directory and select **New File**. Name the file `ProductRepository.java`:
+カタログプロジェクトで、`src/main/java/com/redhat/coolstore/service` ディレクトリを右クリックし、**New File** を選択します。ファイル名は`ProductRepository.java`
 
 image::newfile.png[catalog-setup, 700]
 
 image::newfile-name.png[catalog-setup, 600]
 
-In the file, add this code:
+ファイルに、このコードを追加します。
 
 [source,java, role="copypaste"]
 ----
@@ -182,16 +157,12 @@ public class ProductRepository {
 }
 ----
 
-[NOTE]
+[注意]
 ====
-This class is annotated with `@Repository`. This is a feature of Spring that makes it possible to avoid a lot of boiler
-plate code and only write the implementation details for this data repository. It also makes it very easy to switch to another
-data storage, like a NoSQL database.
+このクラスには `@Repository` がアノテーションされています。これはスプリングの特徴であり、ボイラープレートのコードを多く回避できます。これはこのデータリポジトリの実装の詳細を書き込むだけです。また、NoSQL　データベースのような別のデータストレージへの切り替えも非常に簡単です。
 ====
 
-Spring Data provides a convenient way for us to access data without having to write a lot of boiler plate code. One way to do that
-is to use a _JdbcTemplate_. First we need to autowire that as a member to _ProductRepository_. Add these at the
-`TODO: Autowire the jdbcTemplate here` marker:
+Spring Data　は、ボイラープレートのコードをたくさん書かなくてもデータにアクセスできる便利な方法を提供してくれます。1 つの方法としては、_JdbcTemplate_ を使用することです。まず、_ProductRepository_ のメンバーとして自動で結びつける（autowire）必要があります。`TODO: Autowire the jdbcTemplate here`の場所に以下を追加します。
 
 [source, java, role="copypaste"]
 ----
@@ -199,8 +170,7 @@ is to use a _JdbcTemplate_. First we need to autowire that as a member to _Produ
     private JdbcTemplate jdbcTemplate;
 ----
 
-The _JdbcTemplate_ require that we provide a _RowMapper_ so that it can map between rows in the query to Java Objects. We are
-going to define the _RowMapper_ like this. Add these at the `<!-- TODO: Add row mapper here -->` marker:
+_JdbcTemplate_ は _RowMapper_ を提供する必要があります。 これは、クエリの行間をJavaオブジェクトにマッピングできるようにするためです。_RowMapper_ をこのように定義します。`<!-- TODO: Add row mapper here -->`の位置に以下を追加します。
 
 [source, java, role="copypaste"]
 ----
@@ -211,9 +181,7 @@ going to define the _RowMapper_ like this. Add these at the `<!-- TODO: Add row 
             rs.getDouble("price"));
 ----
 
-Now we are ready to create the business methods. Let’s start with the `readAll()`. It should return a
-`List<Product>` and then we can write the query as `SELECT * FROM catalog` and use the rowMapper to map that into `Product`
-objects. Add these at the `<!-- TODO: Create a method for returning all products -->` marker:
+これで、ビジネスメソッドを作る準備が整いました。まずは`readAll()`を始めてみましょう。それは`List<Product>` を返す必要があります。 そして、クエリを `SELECT * FROM catalog` のように書けます。 そして、これはrowMapperを使用して `Product` オブジェクトにマッピングします。`<!-- TODO:Create a method for returning all products -->`の位置に以下を追加します。
 
 [source, java, role="copypaste"]
 ----
@@ -222,8 +190,7 @@ objects. Add these at the `<!-- TODO: Create a method for returning all products
     }
 ----
 
-We also need a way to find a single product element. Add these at the
-`<!-- TODO: Create a method for returning one product -->` marker:
+一つの製品要素を見つける方法も必要です。`<!-- TODO: Create a method for returning one product -->`の位置に以下を追加します。
 
 [source, java, role="copypaste"]
 ----
@@ -232,37 +199,28 @@ We also need a way to find a single product element. Add these at the
     }
 ----
 
-The _ProductRepository_ should now have all the components, but we still need to tell spring how to connect to the database. For
-local development we will use the H2 in-memory database. Later, when deploying this to OpenShift we will use the
-PostgreSQL database, which matches what we are using in production.
+これで _ProductRepository_ にはすべてのコンポーネントが含まれているはずです。しかし、データベースに接続する方法を Spring に伝える必要があります。ローカル開発では、H2 のインメモリデータベースを使用します。後で、これを OpenShift にデプロイする際には、本番で使用しているものと一致する PostgreSQL データベースを使用します。
 
-The Spring Framework has a lot of sane defaults that can always seem magical sometimes, but basically all we have to do to setup
-the database driver is to provide some configuration values. Open `src/main/resources/application-default.properties` and add the
-following properties where the comment says `#TODO: Add database properties`.
+Spring Frameworkには多くのまともなデフォルトがありますが、それは常に時々魔法のように見えることがあります。しかし、基本的にはデータベースドライバをセットアップするためにしなければならないことは、いくつかの設定値を提供することだけです。`src/main/resources/application-default.properties` を開き、コメントの `#TODO: Add database properties`の位置に以下を追加します。
 
 [source, properties, role="copypaste"]
 ----
-spring.datasource.url=jdbc:h2:mem:catalog;DB_CLOSE_ON_EXIT=FALSE
-spring.datasource.username=sa
-spring.datasource.password=sa
-spring.datasource.driver-class-name=org.h2.Driver
+spring.datasource.url=jdbc:h2:mem:catalog;DB_CLOSE_ON_EXIT=FALSE spring.datasource.username=sa spring.datasource.password=sa spring.datasource.driver-class-name=org.h2.Driver
 ----
 
-The Spring Data framework will automatically see if there is a `schema.sql` in the class path and run that when initializing.
+Spring Data フレームワークは、クラスパスに `schema.sql` があるかどうかを自動的に確認し、初期化時にそれを実行します。
 
-Now you’ve seen how to use Spring Data to collect data from the database and how to use a local H2 database for development and
-testing.
+これで、Spring Data を使ってデータベースからデータを収集する方法と、開発やテストにローカルの H2 データベースを使う方法を見てきました。
 
-In next step of this lab, we will add the logic to expose the database content from REST endpoints using JSON format.
+このラボの次のステップでは、REST エンドポイントから JSON 形式でデータベースの内容を公開するロジックを追加します。
 
-==== 5. Create Catalog Service
+==== 5.カタログサービスの作成
 
-Now you are going to create a service class. Later on the service class will be the one that controls the interaction with the
-inventory service, but for now it’s basically just a wrapper of the repository class.
+今度はサービスクラスを作成します。後にサービスクラスは在庫サービスとのインタラクションを制御するものになりますが、今のところは基本的にリポジトリクラスのラッパーに過ぎません。
 
-Again, create a new class `CatalogService.java` in the `src/main/java/com/redhat/coolstore/service` package.
+もう一度、`src/main/java/com/redhat/coolstore/service` パッケージ内に新しいクラス `CatalogService.java` を作成します。
 
-Replace the empty class with this code:
+空のクラスをこのコードで置き換えます。
 
 [source, java, role="copypaste"]
 ----
@@ -303,14 +261,13 @@ public class CatalogService {
 }
 ----
 
-As you can see there are a number of `TODO` in the code, and later we will use these placeholders to add logic for calling the
-Inventory Client to get the quantity.
+ご覧のように、コードの中にはいくつかの `TODO` があります。後でこれらのプレースホルダを使用して在庫クライアントを呼び出して数量を取得するロジックを追加します。
 
-Now we are ready to create the endpoints that will expose REST service.
+これで、REST サービスを公開するエンドポイントを作成する準備が整いました。
 
-Start by creating a new class called `CatalogEndpoint.java` in the `src/main/java/com/redhat/coolstore/service` package.
+まず、`src/main/java/com/redhat/coolstore/service` パッケージに `CatalogEndpoint.java` という新しいクラスを作成します。
 
-Replace the contents with this code:
+内容をこのコードに置き換えてください。
 
 [source, java, role="copypaste"]
 ----
@@ -343,34 +300,30 @@ public class CatalogEndpoint {
 }
 ----
 
-The Spring MVC Framework by default uses _Jackson_ to serialize or map Java objects to JSON and vice-versa.  Jackson extends
-upon JAX-B and can automatically parse simple Java structures and parse them into JSON and vice versa. Our
-`Product.java` pre-created class is very simple and only contains basic attributes we do not need to tell Jackson how to parse between Product and
-JSON.
+Spring MVC フレームワークのデフォルトでは、Java オブジェクトを JSON にシリアライズしたりマッピングしたりするために _Jackson_ が使われています。Jackson は JAX-B を拡張し、単純な Java 構造体を自動的に解析して JSON に、またその逆も可能です。私たちの `Product.java` の事前に作成されたクラスは非常にシンプルです。これには基本的な属性しか含まれていません。Product と JSON の間のパース方法を Jackson に伝える必要はありません。
 
-Since we now have endpoints that return the catalog we can also start the service and load the default page again, which should
-now return the products.
+これでカタログを返すエンドポイントができました。また、サービスを開始してデフォルトのページを再度読み込むこともできます。これで製品が戻ってくるはずです。
 
-Start the application via the CodeReady Workspaces Terminal using the following command:
+CodeReady Workspaces ターミナルから以下のコマンドでアプリケーションを起動します。
 
 [source,sh,role="copypaste"]
 ----
 mvn clean spring-boot:run -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/catalog
 ----
 
-[NOTE]
+[注意]
 ====
-If you get a popup about port `8081` being available, simply dismiss it with the `X` button.
+あなたが利用可能であるポート `8081` についてのポップアップが表示された場合は、単に`X`ボタンでそれを却下します。
 ====
 
-Wait for the application to start and get the `Started RestApplication in 4.025 seconds (JVM running for 4.361)` log message. Then, verify the endpoint by running the following command in a separate Terminal:
+アプリケーションが起動するのを待ち、`Started RestApplication in 4.025 seconds (JVM running for 4.361)` のようなログメッセージを取得します。そして、別のターミナルで以下のコマンドを実行してエンドポイントを確認します。
 
 [source,sh,role="copypaste"]
 ----
 curl http://localhost:8081/services/products | jq
 ----
 
-You should get a full JSON array consisting of all the products:
+すべての製品からなる完全な JSON 配列を取得する必要があります。
 
 [source,json]
 ----
@@ -384,62 +337,42 @@ You should get a full JSON array consisting of all the products:
   { ... }
 ----
 
-You have now successfully executed the third step in this lab.
+これで、このラボの 3 番目のステップを正常に実行できました。
 
-Now you’ve seen how to create a REST application in Spring MVC and create a simple application that returns product.
+これで、Spring MVC で REST アプリケーションを作成し、プロダクトを返すシンプルなアプリケーションを作成する方法を見てきました。
 
-In the next step, we will also call another service to enrich the endpoint response with inventory status.
+次のステップでは、別のサービスを呼び出して、エンドポイントの応答を在庫の状態を使って強化します。
 
-[WARNING]
+[警告]
 ====
-Make sure to stop the service by clicking kbd:[CTRL-C] in the terminal that the app is running in!
+アプリが起動しているターミナルで kbd:[CTRL-C] をクリックしてサービスを停止してください！
 ====
 
-==== 6. Get inventory data
+==== 6.在庫データの取得
 
-When redesigning our application to Microservices using domain driven design we have identified that Inventory and Product Catalog
-are two separate domains. However our current UI expects to retrieve data from both the Catalog Service and Inventory service in a
-singe request.
+ドメイン駆動設計を使用してアプリケーションをマイクロサービスに再設計する際に、在庫と製品カタログは 2 つの別々のドメインであることがわかりました。しかし、現在の UI では、カタログサービスと在庫サービスの両方からデータを取得することを想定しています。
 
-===== Service interaction
+===== サービスの相互作用
 
-Our problem is that the user interface requires data from two services when calling the REST service on `/services/products`.
-There are multiple ways to solve this like:
+私たちの問題は、`/services/products` で REST サービスを呼び出す際に、ユーザーインターフェイスが 2 つのサービスからのデータを必要とすることです。以下のように解決する方法が複数あります。
 
-*1. Client Side integration* - We could extend our UI to first call `/services/products` and then for each product item call
-`/services/inventory/{prodId}` to get the inventory status and then combine the result in the web browser. This would be the
-least intrusive method, but it also means that if we have 100 of products the client will make 101 requests to the server. If we
-have a slow internet connection this may cause issues.
+*1.クライアントサイドの統合* - UI を拡張して、最初に `/services/products` を最初に呼び出すように UI を拡張することができます。 そして、各製品アイテムについて `/services/inventory/{prodId}` を呼び出して在庫状況を取得します。その後、Webブラウザで結果を結合します。これが一番邪魔にならない方法だと思います。ところが、100 個の商品があればクライアントは 101 個のリクエストをサーバに行うということにもなります。インターネット接続が遅い場合、問題が発生する可能性があります。
 
-*2. Microservices Gateway* - Creating a gateway in front of the _Catalog Service_ that first calls the Catalog Service and then
-based on the response calls the inventory is another option. This way we can avoid lots of calls from the client to the server.
-http://camel.apache.org[Apache Camel^] provides nice capabilities to do this and if you are interested to learn
-more about this, please checkout the Coolstore Microservices example:
-http://github.com/jbossdemocentral/coolstore-microservice[Here^]
+*2.マイクロサービス・ゲートウェイ* - カタログ_サービス_の前にゲートウェイを作成して、最初にカタログ サービスを呼び出し、そのレスポンスに基づいて在庫を呼び出します。というのも一つの選択肢です。このようにして、クライアントからサーバへの呼び出しをたくさん避けることができます。http://camel.apache.org[Apache Camel^] はこれを行うための素晴らしい機能を提供しています。これについてもっと知りたい方は、Coolstore Microservices の例をチェックしてみてください: http://github.com/jbossdemocentral/coolstore-microservice[こちら^]
 
-*3. Service-to-Service* - Depending on use-case and preferences another solution would be to do service-to-service calls
-instead. In our case means that the Catalog Service would call the Inventory service using REST to retrieve the inventory status
-and include that in the response.
+*3.サービス・ツー・サービス* - 用途や好みに応じて、サービス間の呼び出しもできます。私たちの場合は、カタログサービスが REST を使用して在庫サービスを呼び出して在庫の状態を取得し、それをレスポンスに含めることを意味します。
 
-There are no right or wrong answers here, but since this is a workshop on application modernization using Red Hat Runtimes we will
-not choose option 1 or 2 here. Instead we are going to use option 3 and extend our Catalog to call the Inventory service.
+ここに正解も不正解もありません。しかし、これは Red Hat Runtimes を使ったアプリケーションの近代化に関するワークショップなので、ここではオプション 1 か 2 を選択することはありません。代わりにオプション 3 を使用して、カタログを拡張して在庫サービスを呼び出すようにします。
 
-==== 7. Implementing the Inventory Client
+==== 7.在庫クライアントの実装
 
-We can now create the client that calls the Inventory.
-Netflix has provided some nice extensions to the Spring Framework that are mostly captured in the Spring Cloud project, however
-Spring Cloud is mainly focused on Pivotal Cloud Foundry and because of that Red Hat and others have contributed Spring Cloud
-Kubernetes to the Spring Cloud project, which enables the same functionallity for Kubernetes based platforms like OpenShift.
+私たちは今、在庫を呼び出すクライアントを作成できるようになりました。Netflix は Spring フレームワークにいくつかの素晴らしい拡張機能を提供しており、そのほとんどは Spring Cloud プロジェクトで獲得されています。しかし、Spring Cloud は主に Pivotal Cloud Foundry にフォーカスしています。そして、そのおかげで Red Hat などは Spring Cloud Kubernetes を Spring Cloud プロジェクトに貢献してきました。これにより、OpenShift のような Kubernetes ベースのプラットフォームでも同様の機能性が得られます。
 
-The inventory client will use a Netflix project called _Feign_, which provides a nice way to avoid having to write boilerplate
-code. Feign also integrates with Hystrix which gives us the capability to Circuit Break calls that don’t work. We will discuss this
-more later, but let’s start with the implementation of the Inventory Client. Using Feign all we have to do is create a interface
-that details which parameters and return type we expect, annotate it with `@RequestMapping` and provide some details and then
-annotate the interface with `@Feign` and provide it with a name.
+在庫クライアントは _Feign_ と呼ばれる Netflix プロジェクトを使用します。これは、標準的なコードを書かなくても済むようにするための良い方法を提供してくれます。Feign はまた、Hystrix と統合されているため、機能しない呼び出しをサーキットブレイクすることができます。これについては後ほど詳しく説明しますが、まずは在庫クライアントの実装から始めましょう。Feignを使って、どのようなパラメータと戻り値の型を想定しているのかを詳細に記述したインターフェースを作成するだけです。そして、`@RequestMapping` でアノテーションして詳細を提供し、`@Feign` でインターフェースをアノテーションして名前を提供します。
 
-Create the `InventoryClient.java` class in the `src/main/java/com/redhat/coolstore/client/` package in the project explorer.
+プロジェクトエクスプローラの `src/main/java/com/redhat/coolstore/client/` パッケージに `InventoryClient.java` クラスを作成します。
 
-Add the following code to the file:
+ファイルに以下のコードを追加します。
 
 [source, java, role="copypaste"]
 ----
@@ -464,7 +397,7 @@ public interface InventoryClient {
 }
 ----
 
-Open the `src/main/resources/application-default.properties` file. Add these properties to it at the `#TODO: Configure netflix libraries` marker:
+`src/main/resources/application-default.properties` ファイルを開きます。これらのプロパティを`#TODO: Configure netflix libraries`の位置に追加します。
 
 [source, java, role="copypaste"]
 ----
@@ -472,16 +405,13 @@ inventory.ribbon.listOfServers=inventory.{{ USER_ID }}-inventory.svc.cluster.loc
 feign.hystrix.enabled=true
 ----
 
-By setting `inventory.ribbon.listOfServers` we are hard coding the actual URL of the service to `{{ USER_ID }}-inventory.svc.cluster.local:8080` (which will point to our inventory microservice we created in the last lab). If we had
-multiple servers we could also add those using a comma. However using Kubernetes there is no need to have multiple endpoints
-listed here since Kubernetes has a concept of _Services_ that will internally route between multiple instances of the same
-service.
+`inventory.ribbon.listOfServers` を設定することで、サービスの実際の URL を `{{ USER_ID }}-inventory.svc.cluster.local:8080` (前回のラボで作成した在庫のマイクロサービスを指します) にハードコーディングしています。複数のサーバがある場合は、カンマを使って追加できます。しかし、Kubernetesを使用して、ここに複数のエンドポイントをリストアップする必要はありません。Kubernetesには、同じサービスの複数のインスタンス間を内部的にルーティングする _Services_ の概念があります。
 
-Now that we have a client we can make use of it in our _CatalogService_.
+今、我々は我々の _CatalogService_ でそれを使用できるクライアントを持っています。
 
-Open _src/main/java/com/redhat/coolstore/service/CatalogService.java_
+_src/main/java/com/redhat/coolstore/service/CatalogService.java_ を開きます。
 
-And autowire (e.g. inject) the client into it by inserting this at the `//TODO: Autowire Inventory Client` marker:
+そして、 `//TODO: Autowire Inventory Client` の位置に以下を追加することで、その中にクライアントを自動で結びつけ（注入など）ます。
 
 [source, java, role="copypaste"]
 ----
@@ -489,8 +419,7 @@ And autowire (e.g. inject) the client into it by inserting this at the `//TODO:
     private InventoryClient inventoryClient;
 ----
 
-Next, update the `read(String id)` method at the comment
-`//TODO: Update the quantity for the product by calling the Inventory service` add the following:
+次に、`read(String id) `メソッドを更新します。 `//TODO: Update the quantity for the product by calling the Inventory service`の位置に以下を追加します。
 
 [source, java, role="copypaste"]
 ----
@@ -501,15 +430,14 @@ Next, update the `read(String id)` method at the comment
         product.setQuantity(Integer.parseInt(quantity.get(0)));
 ----
 
-Also, don’t forget to add the import statement by un-commenting the import statement for InventoryClient near the top
+また、InventoryClient の上部近くのインポート文のコメントを外して、インポート文を追加することを忘れないでください。
 
 [source, java]
 ----
 import com.redhat.coolstore.client.InventoryClient;
 ----
 
-Also in the _readAll()_ method replace the comment
-`//TODO: Update the quantity for the products by calling the Inventory service` with the following:
+また、_readAll()_ メソッドでは、`//TODO: Update the quantity for the products by calling the Inventory service`の位置に以下を追加します。
 
 [source, java, role="copypaste"]
 ----
@@ -522,25 +450,18 @@ Also in the _readAll()_ method replace the comment
         });
 ----
 
-[NOTE]
+[注意]
 ====
-Class `JSONArray` is an ordered sequence of values. Its external text form is a string wrapped in square brackets with
-commas separating the values. The internal form is an object having get and opt methods for accessing the values by index, and
-element methods for adding or replacing values.
+クラス `JSONArray` は、値の順序付けされたシーケンスです。その外部テキスト形式は、値をコンマで区切って角括弧で括った文字列です。その内部形式は、インデックスで値をアクセスするための get メソッドと opt メソッド、値の追加や置換を行うための element メソッドを持つオブジェクトです。
 ====
 
-==== 8. Create a fallback for inventory
+==== 8.在庫のフォールバック（頼みの綱）を作成
 
-In the previous step we added a client to call the Inventory service. Services calling services is a common practice in
-Microservices Architecture, but as we add more and more services the likelihood of a problem increases dramatically. Even if each
-service has 99.9% update, if we have 100 of services our estimated up time will only be ~90%. We therefore need to plan for
-failures to happen and our application logic has to consider that dependent services are not responding.
+前のステップでは、在庫サービスを呼び出すクライアントを追加しました。サービスを呼ぶサービスは、マイクロサービスアーキテクチャではよくあることです。ですが、サービスを増やしていくと、問題が発生する可能性が飛躍的に高まります。各サービスが99.9%更新されていたとしても、100のサービスがあったら、推定の起動している時間は 90% 程度にしかなりません。そのため、失敗したときのための計画を立てる必要があります。そして、アプリケーションロジックは依存するサービスが応答しないことを考慮しなければなりません。
 
-In the previous step we used the Feign client from the Netflix cloud native libraries to avoid having to write boilerplate code
-for doing a REST call. However Feign also have another good property which is that we easily create fallback logic. In this case
-we will use static inner class since we want the logic for the fallback to be part of the Client and not in a separate class.
+前のステップでは、NetflixのクラウドネイティブライブラリのFeignクライアントを使用して、REST呼び出しを行うためのボイラプレートコードを書かなくても済むようにしました。しかし、Feign にはフォールバックロジックが簡単に作れるというもう一つの良い特性があります。この場合、フォールバックのロジックを別のクラスではなくクライアントの一部にしたいので、static inner class を使用します。
 
-In the `InventoryClient`, add the following code at the `//TODO: Add Fallback factory here` marker:
+`InventoryClient` では、`//TODO: Add Fallback factory here`の位置に以下を追加します。
 
 [source, java, role="copypaste"]
 ----
@@ -553,47 +474,42 @@ In the `InventoryClient`, add the following code at the `//TODO: Add Fallback fa
     }
 ----
 
-After creating the fallback factory all we have todo is to tell Feign to use that fallback in case of an issue, by adding the
-fallbackFactory property to the `@FeignClient` annotation. and replace the existing `@FeignClient(name="inventory")` line with
-this line:
+フォールバックファクトリーを作成した後は、問題が発生した場合にそのフォールバックを使用するようにFeignに指示し、`@``FeignClient`アノテーションにfallbackFactoryプロパティを追加します。
 
 [source, java, role="copypaste"]
 ----
 @FeignClient(name="inventory",fallbackFactory = InventoryClient.InventoryClientFallbackFactory.class)
 ----
 
-=== 9. Slow running services
+=== 9.サービスの動作が遅い
 
 
-Having fallbacks is good but that also requires that we can correctly detect when a dependent services isn’t responding correctly.
-Besides from not responding a service can also respond slowly causing our services to also respond slow. This can lead to
-cascading issues that are hard to debug and pinpoint issues with. We should therefore also have sane defaults for our services. You
-can add defaults by adding them to the configuration.
+フォールバックを持つことは良いことですが、そのためには、依存するサービスが正しく応答していないことを正しく検出する必要があります。サービスが応答しないことに加えて、サービスの応答が遅くなることもあり、当社のサービスも応答が遅くなります。これにより、デバッグやピンポイントでの問題の特定が困難なカスケード問題が発生する可能性があります。したがって、我々のサービスにもまともなデフォルトを持つべきである。デフォルトを設定に追加することで、デフォルトを追加することができます。
 
-Open `src/main/resources/application-default.properties`
+`src/main/resources/application-default.properties` を開きます。
 
-And add this line to it at the `#TODO: Set timeout to for inventory` marker:
+そして、`#TODO: Set timeout to for inventory`の位置に以下を追加します。
 
 [source, java, role="copypaste"]
 ----
 hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds=20000
 ----
 
-Let's re-test our app locally. Re-build and re-run the app:
+ローカルでアプリを再テストしてみましょう。アプリを再ビルドして再実行します。
 
 [source,sh,role="copypaste"]
 ----
 mvn clean spring-boot:run -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/catalog
 ----
 
-Then, access the product catalog again in a separate terminal:
+その後、別のターミナルで再度製品カタログにアクセスします。
 
 [source,sh,role="copypaste"]
 ----
 curl http://localhost:8081/services/products | jq
 ----
 
-You will see:
+以下が直ぐに見られるでしょう。
 
 [source,json]
 ----
@@ -606,27 +522,25 @@ You will see:
   }
 ----
 
-Notice the `"quantity": 230` - because CodeReady Workspaces runs in our OpenShift cluster, our value for `inventory.ribbon.listOfServers` we set earlier is completely valid!
+`"quantity":230` に注目して下さい - CodeReady Workspaces は OpenShift クラスタで動作しているため、先に設定した `inventory.ribbon.listOfServers` の値は完全に有効です。
 
-Congratulations! You now have the framework for retrieving products from the product catalog and enriching the data with
-inventory data from an external service. In next step of this lab we will deploy our application to OpenShift Container Platform
-and then start adding additional features to take care of various aspects of cloud native microservice development.
+おめでとう！これで、製品カタログから製品を取得し、外部サービスの在庫データでデータを充足させるためのフレームワークが完成しました。このラボの次のステップでは、アプリケーションを OpenShift Container Platform にデプロイします。そして、クラウドネイティブマイクロサービス開発の様々な側面をケアするための追加機能の追加を開始します。
 
-==== 10. Add Database OpenShift
+==== 10.OpenShift にデータベースを追加
 
-Our production catalog microservice will use an external database (PostgreSQL) to house inventory data. We've created an `{{ USER_ID}}-catalog` project for you. Visit the {{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-catalog[Topology View for {{ USER_ID }}-catalog project^].
+我々の本番のカタログマイクロサービスは、在庫データを格納するために外部データベース （PostgreSQL） を使用します。あなたのために `{{ USER_ID}}-catalog` プロジェクトを作成しました。{{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-catalog[Topology View for {{ USER_ID }}-catalog project^] にアクセスしてみてください。
 
-Click **+Add** on the left, on the _Database_ box on the project overview:
+プロジェクト概要の _Database_ ボックスの左側にある **+Add** をクリックします。
 
 image::db-catalog.png[db, 700]
 
-Type in `postgres` in the search box, and click on the *PostgreSQL (ephemeral)*:
+検索ボックスに `postgres` と入力し、*PostgreSQL (ephemeral)* をクリックします。
 
 image::db-catalog-postgres.png[db, 700]
 
-Click on *Instantiate Template* and fill in the following fields, leaving the others as their default values:
+*Instantiate Template* をクリックして、以下のフィールドを入力します。他のものはデフォルト値のままにします。
 
-* **Namespace**: _choose `{{ USER_ID }}-catalog` for the first Namespace. Leave the second one as `openshift`_
+* **Namespace**: _最初の名前空間は `{{ USER_ID }}-catalog` を選択します。 2 つ目は`openshift`のままにしておきます。_
 * **Database Service Name**: `catalog-database`
 * **PostgreSQL Connection Username**: `catalog`
 * **PostgreSQL Connection Password**: `mysecretpassword`
@@ -634,18 +548,18 @@ Click on *Instantiate Template* and fill in the following fields, leaving the ot
 
 image::db-catalog-postgres-fields.png[db, 700]
 
-This will deploy the database to our catalog project. Click on the {{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-catalog[Topology View^] to see it:
+これにより、データベースがカタログプロジェクトにデプロイされます。{{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-catalog[Topology View^] をクリックすると表示されます。
 
-==== 11. Add production configuration
+==== 11.本番設定の追加
 
-Create a new file in the `src/main/resources` called `application-openshift.properties` in CodeReady Workspaces.
+CodeReady Workspaces の `src/main/resources` に `application-openshift.properties` という名前の新しいファイルを作成します。
 
-[WARNING]
+[警告]
 ====
-Be sure your new file is in the same directory alongside the existing `application-default.properties`!
+新しいファイルは、既存の `application-default.properties` と同じディレクトリにあることを確認してください！
 ====
 
-Add the following content to this file:
+このファイルに以下の内容を追加します。
 
 [source, properties, role="copypaste"]
 ----
@@ -664,23 +578,22 @@ hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds=20000
 inventory.ribbon.listOfServers=inventory.{{ USER_ID }}-inventory.svc.cluster.local:8080
 ----
 
-We'll use this file by specifying a Spring _profile_ when we deploy to OpenShift.
+このファイルは OpenShift にデプロイする際に Spring _プロファイル_を指定して使用します。
 
-==== 12. Build and Deploy
+==== 12.ビルドとデプロイ
 
-If you still have the local app running, stop it by typing kbd:[CTRL-C] in its Terminal.
+ローカルアプリを起動している場合は、ターミナルで kbd:[CTRL-C] と入力して停止してください。
 
-Build and deploy the project using the following command in a Terminal:
+ターミナルで以下のコマンドを使用してプロジェクトをビルドし、デプロイします。
 
 [source,sh,role="copypaste"]
 ----
 mvn clean install spring-boot:repackage -DskipTests -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/catalog
 ----
 
-You should see a *BUILD SUCCESS* at the end of the build
-output.
+ビルド出力の最後に*BUILD SUCCESS*が表示されるはずです。
 
-Then deploy the project using the following command in the CodeReady Workspaces Terminal:
+次に、CodeReady Workspaces ターミナルで以下のコマンドを使用してプロジェクトをデプロイします。
 
 [source,sh,role="copypaste"]
 ----
@@ -688,21 +601,21 @@ oc project {{ USER_ID }}-catalog && \
 oc new-build registry.access.redhat.com/ubi8/openjdk-11 --binary --name=catalog-springboot -l app=catalog-springboot
 ----
 
-And then start and watch the build, which will take about a minute to complete:
+そして、ビルドを開始して、1分ほどで完成するビルドを見てみましょう。
 
 [source,sh,role="copypaste"]
 ----
 oc start-build catalog-springboot --from-file $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/catalog/target/catalog-1.0.0-SNAPSHOT.jar --follow
 ----
 
-Once the build is done, we’ll deploy it as an OpenShift application and override the spring profile to use our _production_ values.
+ビルドが完了したら、OpenShift アプリケーションとしてデプロイし、スプリングプロファイルをオーバーライドして_本番_の値を使用します。
 
 [source,sh,role="copypaste"]
 ----
 oc new-app catalog-springboot -e JAVA_OPTS_APPEND='-Dspring.profiles.active=openshift'
 ----
 
-and run this to expose your service to the world and add a health check:
+を実行してサービスを世界に公開し、ヘルスチェックを追加します。
 
 [source,sh,role="copypaste"]
 ----
@@ -710,38 +623,32 @@ oc expose service catalog-springboot && oc set probe dc/catalog-springboot  --re
 
 ----
 
-Finally, make sure it’s actually done rolling out. Visit the {{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-catalog[Topology View^] for the catalog, and ensure you get the blue circles!
+最後に、実際に入れ替わりが完了したことを確認してください。カタログは {{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-catalog[Topology View^] にアクセスして、青丸を確実に確認しましょう！
 
-And then access the http://catalog-springboot-{{ USER_ID }}-catalog.{{ ROUTE_SUBDOMAIN}}[Catalog Web frontend^] and ensure you get the expected inventory quantity (and not `-1`):
+そして、http://catalog-springboot-{{ USER_ID }}-catalog.{{ ROUTE_SUBDOMAIN}}[Catalog Web frontend^] にアクセスして、期待された在庫量（そして`-1`ではない）を取得していることを確認します。
 
 image::catalog.png[catalog, 700]
 
-*Congratulations!* You have deployed the Catalog service as a microservice which in turn calls into the Inventory service to
-retrieve inventory data.
+*おめでとう！*在庫データを取得するために在庫サービスを呼び出すカタログサービスをマイクロサービスとしてデプロイしました。
 
-==== 13. Strangling the monolith
+==== 13.モノリスを抑制
 
-So far we haven’t started https://www.martinfowler.com/bliki/StranglerApplication.html[strangling the monolith^]. Each external request
-coming into OpenShift (unless using ingress, which we are not) will pass through a route. In our monolith the web page uses client
-side REST calls to load different parts of pages.
+今のところ、https://www.martinfowler.com/bliki/StranglerApplication.html[モノリスを抑制^] を始めていません。OpenShift に入ってくる各外部リクエストは（今のように ingress を使用していない限り）Route を通過します。私たちのモノリスでは、ウェブページはクライアント側の REST 呼び出しを使用してページの異なる部分をロードします。
 
-For the home page the product list is loaded via a REST call to `/services/products`. At the moment calls to that URL will
-still hit product catalog in the monolith. Now we will route these calls to our newly created catalog services instead and end up
-with something like:
+ホームページでは、製品リストが `/services/products` への REST 呼び出しで読み込まれます。現時点では、その URL への呼び出しは、モノリス内の製品カタログにまだアクセスします。ここで、これらの呼び出しを、代わりに新しく作成したカタログサービスにルーティングして、次のような結果にします。
 
 image::catalog-goal.png[Greeting, 700]
 
-Follow the steps below to create a *Cross-origin resource sharing (CORS)* based route. CORS is a mechanism that allows restricted
-resources on a web page to be requested from another domain outside the domain from which the first resource was served.
+以下の手順に従って、*オリジン間リソース共有 （CORS）* ベースのルートを作成します。CORS は、Web ページ上の制限されたリソースを、最初のリソースが提供されたドメイン以外の別のドメインから要求できるようにするメカニズムです。
 
-Quarkus comes with a _CORS filter_ which implements the _javax.servlet.Filter_ interface and intercepts all incoming HTTP requests. It can be enabled in the Quarkus configuration file. Add the following line in the `inventory` project (our Quarkus app created earlier) in the `src/main/resources/application.properties` file:
+Quarkus には、_javax.servlet.Filter_ インターフェイスを実装した _CORS フィルター_が付属しており、すべての受信 HTTP リクエストを遮断します。これは Quarkus の設定ファイルで有効にできます。`src/main/resources/application.properties` ファイル内の`在庫プロジェクト`（先に作成した Quarkus アプリ）に以下の行を追加します。
 
 [source, properties, role="copypaste"]
 ----
 %prod.quarkus.http.cors=true
 ----
 
-Rebuild and redeploy the *inventory* application using this command (which will again use the OpenShift Quarkus extension to deploy):
+このコマンドを使用して*在庫*アプリケーションを再ビルドして再デプロイします（このコマンドは OpenShift Quarkus 拡張機能を再び使用してデプロイします）。
 
 [source,sh,role="copypaste"]
 ----
@@ -749,10 +656,9 @@ oc project {{USER_ID}}-inventory && \
 mvn clean package -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/inventory -DskipTests
 ----
 
-This will take about a minute to complete. Once the build is done, the inventory pod will be deployed automatically via DeploymentConfig Trigger in OpenShift.
+1 分ほどで完了します。ビルドが完了すると、在庫ポッドは OpenShift の DeploymentConfig トリガーを介して自動的にデプロイされます。
 
-Open `CatalogEndpoint` class in `src/main/java/com/redhat/coolstore/service` of `catalog` project to allow restricted resources on
-a _product_ page of the monolith application. Replace the class-level annotations with:
+モノリス・アプリケーションの_製品_ページで制限されたリソースを許可するために、`カタログ・`プロジェクトの `src/main/java/com/redhat/coolstore/service` で `CatalogEndpoint` クラスを開きます。クラスレベルのアノテーションを以下の様に置き換えます。
 
 [source, java, role="copypaste"]
 ----
@@ -761,9 +667,9 @@ a _product_ page of the monolith application. Replace the class-level annotation
 @RequestMapping("/services")
 ----
 
-We simply added the `@CrossOrigin` annotation.
+単純に `@CrossOrigin` アノテーションを追加しただけです。
 
-Rebuild and re-deploy the *catalog* service using the following commands:
+以下のコマンドを使用して*カタログ*サービスを再ビルドし、再デプロイします。
 
 [source,sh,role="copypaste"]
 ----
@@ -771,9 +677,9 @@ mvn clean install spring-boot:repackage -DskipTests -f $CHE_PROJECTS_ROOT/cloud-
 oc start-build -n {{ USER_ID }}-catalog catalog-springboot --from-file $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/catalog/target/catalog-1.0.0-SNAPSHOT.jar --follow
 ----
 
-This will take about a minute to complete. Once the build is done, the catalog pod will be deployed automatically via DeploymentConfig Trigger in OpenShift.
+1 分ほどで完了します。ビルドが完了すると、カタログポッドは OpenShift の DeploymentConfig トリガーを経由して自動的にデプロイされます。
 
-Let’s update the catalog endpoint in monolith application. In the *monolith* project, open `catalog.js` in `src/main/webapp/app/services` and add a line as shown in the image to define the value of `baseUrl`, just before the `factory.getProducts = function()` line:
+モノリスアプリケーションのカタログエンドポイントを更新してみましょう。*monolith*プロジェクトで `src/main/webapp/app/services` の `catalog.jsを` 開きます。画像のように `factory.getProducts = function()` 行の直前に `baseUrl` の値を定義する行を追加します。
 
 [source,javascript,role="copypaste"]
 ----
@@ -782,7 +688,7 @@ baseUrl='http://catalog-springboot-{{ USER_ID }}-catalog.{{ ROUTE_SUBDOMAIN }}/s
 
 image::catalog_js_strangler.png[strangler, 700]
 
-Rebuild and re-deploy the *monolith* project in CodeReady Workspaces Terminal:
+CodeReady Workspaces Terminal で*モノリス*プロジェクトを再ビルドし、再デプロイします。
 
 [source,sh,role="copypaste"]
 ----
@@ -790,33 +696,29 @@ mvn clean package -DskipTests -Popenshift -f $CHE_PROJECTS_ROOT/cloud-native-wor
 oc start-build -n {{ USER_ID }}-coolstore-dev coolstore --from-file $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/monolith/deployments/ROOT.war --follow
 ----
 
-Once the build is done, the coolstore pod will be deployed automatically via DeploymentConfig Trigger in OpenShift. Ensure it’s
-rolled out by visiting the {{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-coolstore-dev[Monolith Topology^] and wait for the blue circles!
+ビルドが完了すると、CoolStore ポッドは OpenShift の DeploymentConfig トリガーを経由して自動的にデプロイされます。 {{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-coolstore-dev[Monolith Topology^] にアクセスしてロールアウトされていることを確認し、青い丸を待ちましょう！
 
-==== 14. Test the UI
+==== 14.UI をテスト
 
-Open the monolith UI by clicking the route URL icon (the arrow to the upper right of the blue circle for the coolstore monolith)
+ルート URL アイコン（CoolStore モノリスの青丸の右上にある矢印）をクリックしてモノリスの UI を開きます。
 
-Observe that the new catalog is being used along with the monolith:
+新しいカタログがモノリスと一緒に使われていることを確認してください。
 
 image::coolstore-web.png[Greeting, 700]
 
-The screen will look the same, with proper inventory, but notice that the earlier product _Atari 2600 Joystick_ is now gone, as it has been removed in
-our new catalog microservice.
+適正な在庫があれば、画面は同じようになります。しかし、以前の製品である _Atari 2600 Joystick_ は、私たちの新しいカタログマイクロサービスで削除されたため、今ではなくなっていることに注意してください。
 
-[NOTE]
+[注意]
 ====
-If the web page is still same then you should clean cookies and caches in your web browser.
+Web ページが変わらない場合は、Web ブラウザのクッキーとキャッシュをクリーンアップしてください。
 ====
 
-==== Congratulations!
+==== おめでとうございます！
 
-You have now successfully begun to _strangle_ the monolith. Part of the monolith’s functionality (Inventory
-and Catalog) are now implemented as microservices.
+モノリスを_抑制する_ことに成功しました。モノリスの機能の一部（在庫とカタログ）がマイクロサービスとして実装されるようになりました。
 
-==== Summary
+==== まとめ
 
-In this lab you learned a bit more about developing with Spring Boot and how it can be used together with OpenShift.
+このラボでは、Spring Boot を使った開発と OpenShift との併用について少し詳しく学びました。
 
-You created a new product catalog microservice representing functionality previously implemented in the monolithic CoolStore
-application. This new service also communicates with the inventory service to retrieve the inventory status for each product.
+モノリシック CoolStore アプリケーションに実装されていた機能を表す新しい製品カタログマイクロサービスを作成しました。また、この新サービスは在庫サービスと通信して、各製品の在庫状況を取得します。

@@ -1,80 +1,78 @@
-= Lab3 - Breaking the monolith apart - I
+= Lab3 - モノリスをバラバラにする - I
 :experimental:
 
-In the previous labs you learned how to take an existing monolithic Java EE application to the cloud with JBoss EAP and OpenShift, and you got a glimpse into the power of OpenShift for existing applications.
+以前のラボでは、既存のモノリシックな Java EE アプリケーションを JBoss EAP と OpenShift を使用してクラウドに移行する方法を学びました。そして、既存のアプリケーションに対するOpenShiftの威力を垣間見ることができました。
 
-You will now begin the process of modernizing the application by breaking the application into multiple microservices using different technologies, with the eventual goal of re-architecting the entire application as a set of distributed microservices. Later on we’ll explore how you can better manage and monitor the application after it is re-architected.
+これで、アプリケーションを異なる技術を使って複数のマイクロサービスに分解し、アプリケーションを近代化するプロセスを開始できます。これは、分散マイクロサービスのセットとしてアプリケーション全体を再設計することを最終的な目標としています。後ほど、アプリケーションが再アーキテクトされた後に、どのようにしてより良い管理と監視ができるかを探っていきます。
 
-In this lab you will learn more about _Supersonic, Subatomic Java_ with https://quarkus.io/[Quarkus^], which is designed to be container and developer friendly.
+このラボでは、https://quarkus.io/[Quarkus^] を使って_Supersonic（超音速）、Subatomic（粒子並みに小さい）、Java_について学びます。これはコンテナと開発者が使いやすいように設計されています。
 
-Quarkus is a _Kubernetes Native_ Java stack, crafted from the best of breed Java libraries and standards. Amazingly fast boot time, incredibly low RSS memory (not just heap size!) offering near instant scale up and high density memory utilization in container orchestration platforms like Kubernetes. Quarkus uses a technique called compile time boot. 
+Quarkusは、_Kubernetes ネイティブ_ Java スタックであり、最高の Java ライブラリと標準規格から作られています。驚くほど高速な起動時間、信じられないほど低いRSSメモリ（ヒープサイズだけではありません！）を提供し、Kubernetes のようなコンテナオーケストレーションプラットフォームで、ほぼ瞬時にスケールアップし、高密度のメモリ利用を実現します。Quarkus はコンパイルタイムブートと呼ばれる技術を使用しています。 
 
-*Red Hat* offers the fully supported https://access.redhat.com/products/quarkus[Red Hat Build of Quarkus(RHBQ)^] with support and maintenance of Quarkus. In this workhop, you will use Quarkus to develop Kubernetes-native microservices and deploy them to OpenShift. Quarkus is one of the runtimes included in https://www.redhat.com/en/products/runtimes[Red Hat Runtimes^]. https://access.redhat.com/documentation/en-us/red_hat_build_of_quarkus[Learn more about RHBQ^].
+*Red Hat*では、Quarkusのサポートと保守が完全にサポートされた https://access.redhat.com/products/quarkus[Red Hat Build of Quarkus(RHBQ)^] を提供しています。このワークショップでは、Quarkus を使用して Kubernetes ネイティブのマイクロサービスを開発し、OpenShift にデプロイします。Quarkus は https://www.redhat.com/en/products/runtimes[Red Hat Runtimes^] に含まれるランタイムの 1 つです。https://access.redhat.com/documentation/en-us/red_hat_build_of_quarkus[RHBQについてはこちらをご覧ください^]。
 
-=== Goals of this lab
+=== このラボの目標
 
-You will implement one component of the monolith as a Quarkus microservice and modify it to address microservice concerns, understand its structure, deploy it to OpenShift and exercise the interfaces between Quarkus apps, microservices, and OpenShift/Kubernetes.
+モノリスの 1 つのコンポーネントを Quarkus マイクロサービスとして実装します。この修正は、マイクロサービスの懸念に対処するためにそれを修正し、その構造を理解し、OpenShiftにデプロイし、Quarkusアプリ、マイクロサービス、OpenShift/Kubernetesの間のインターフェイスを行使します。
 
-The goal is to deploy this new microservice alongside the existing monolith, and then later on we’ll tie them together. But after this lab, you should end up with something like:
+目標は、この新しいマイクロサービスを既存のモノリスと一緒にデプロイし、後でそれらを結びつけることです。でも、このラボの後には、次のようなものが完成するはずです。
 
 image::goal.png[lab3_goal, 700]
 
-==== 1. Setup an Inventory proejct
+==== 1.インベントリプロジェクトの設定
 
-Run the following commands to set up your environment for this lab and start in the right directory:
+以下のコマンドを実行して、このラボの環境を設定し、正しいディレクトリで起動します。
 
-In the project explorer, expand the *inventory* project.
+プロジェクト・エクスプローラで、*inventory* プロジェクトを展開します。
 
 image::codeready-workspace-inventory-project.png[inventory_setup, 700]
 
-==== 2. Examine the Maven project structure
+==== 2.Maven プロジェクトの構造を調査
 
-The sample Quarkus project shows a minimal CRUD service exposing a couple of endpoints over REST, with a front-end based on Angular so you can play with it from your browser.
+サンプルの Quarkus プロジェクトでは、いくつかのエンドポイントを REST で公開している最小限の CRUD サービスを示しています。Angularをベースにしたフロントエンドが付いているのでブラウザから遊べます。
 
-While the code is surprisingly simple, under the hood this is using:
+コードは驚くほどシンプルですが、内部ではこれらを使用しています。
 
-* RESTEasy to expose the REST endpoints
-* Hibernate ORM with Panache to perform CRUD operations on the database
-* A PostgreSQL database; see below to run one via Linux Container
-* Some example `Dockerfile`s to generate new images for JVM and Native mode compilation
+* REST エンドポイントを公開するための RESTEasy
+* Hibernate ORM with Panache でデータベースの CRUD 操作を実行する
+* PostgreSQL データベース; Linux コンテナを介して実行するには下部を参照してください。
+* JVMとネイティブモードのコンパイル用に新しいイメージを生成するための `Dockerfiles` の例をいくつか紹介します。
 
-`Hibernate ORM` is the de facto JPA implementation and offers you the full breadth of an Object Relational Mapper. It makes complex mappings possible, but it does not make simple and common mappings trivial. Hibernate ORM with Panache focuses on making your entities trivial and fun to write in Quarkus.
+Hibernate ORM` は事実上の JPA 実装であり、オブジェクトリレーショナルマッパーの全幅を提供する。複雑なマッピングを可能にしますが、単純で一般的なマッピングをつまらなくするものではありません。Hibernate ORM with Panache は、Quarkus で書くのが楽しくなるように、エンティティを些細なものにすることに焦点を当てています。
 
-Now let’s write some code and create a domain model, service interface and a RESTful endpoint to access inventory:
+それでは、いくつかのコードを書いて、ドメインモデル、サービスインターフェース、インベントリにアクセスするための RESTful エンドポイントを作成してみましょう。
 
 image::inventory-arch.png[Inventory RESTful Service, 700]
 
-==== 3. Add Quarkus Extensions
+==== 3.Quarkusの拡張機能を追加
 
-We will add Quarkus extensions to the Inventory application for using _Panache_ (a simplified way to access data via Hibernate ORM), a database with Postgres (in production) and _H2_ (in-memory database for testing). We'll also add the ability to add health probes (which we'll use later on) using the MicroProfile Health extension. Run the following commands to add the extensions using CodeReady Terminal:
+_Panache_ （Hibernate ORM 経由でデータにアクセスするための簡略化された方法）を使用するための Inventory アプリケーションに Quarkus の拡張機能を追加します。これは Postgres （本番用）と _H2_ （テスト用のインメモリデータベース）を使ったデータベースです。また、MicroProfile Health 拡張機能を使用して、ヘルスプローブを追加する機能も追加します (これは後ほど使用します)。以下のコマンドを実行して、CodeReady Terminal を使用して拡張機能を追加します。
 
 [source,sh,role="copypaste"]
 ----
 mvn quarkus:add-extension -Dextensions="hibernate-orm-panache, jdbc-h2, health" -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/inventory
 ----
 
-you will see:
+あなたは以下を見られます。
 
-✅ Adding extension io.quarkus:quarkus-hibernate-orm-panache
-✅ Adding extension io.quarkus:quarkus-jdbc-h2
-✅ Adding extension io.quarkus:quarkus-smallrye-health
+✅ 拡張機能 io.quarkus:quarkus-hibernate-orm-panache を追加する 
+✅ 拡張機能 io.quarkus:quarkus-jdbc-h2 を追加する 
+✅ 拡張機能 io.quarkus:quarkus-smallrye-health を追加する。
 
-And this adds the extensions to `pom.xml`.
+そして、これは `pom.xml` に拡張機能を追加します。
 
-[NOTE]
+[注意]
 ====
-There are many https://quarkus.io/extensions/[more extensions^] for Quarkus for popular frameworks like https://vertx.io/[Vert.x^], http://camel.apache.org/[Apache Camel^], http://infinispan.org/[Infinispan^], Spring (e.g. `@Autowired`), and more.
+Quarkus 用の https://vertx.io/[Vert.x^]、http://camel.apache.org/[Apache Camel^]、http://infinispan.org/[Infinispan^]、Spring （`@Autowired`など）に加えて人気フレームワーク用の https://quarkus.io/extensions/[さらなる拡張機能^] がたくさんあります。
 ====
 
-==== 4. Create Inventory Entity
+==== 4.在庫エンティティの作成
 
-With our skeleton project in place, let’s get to work defining the business logic.
+スケルトンプロジェクトができたので、ビジネスロジックの定義に取り掛かりましょう。
 
-The first step is to define the model (entity) of an Inventory object. Since Quarkus uses Hibernate ORM Panache, we can re-use the
-same model definition from our monolithic application - no need to re-write or re-architect!
+まず、在庫オブジェクトのモデル（実体）を定義する。Quarkus は Hibernate ORM Panache を使用しているので、モノリシックアプリケーションから同じモデル定義を再利用できます。書き直しや再設計の必要はありません。
 
-Under the `inventory` directory, open up the empty *Inventory.java* file in _com.redhat.coolstore_ package and paste the following code into it (identical to the
-monolith code):
+`inventory` ディレクトリの下で、_com.redhat.coolstore_ パッケージの中の空の *Inventory.java* ファイルを開き、そこに以下のコードを貼り付けます（モノリスのコードと同じ）。
 
 [source,java, role="copypaste"]
 ----
@@ -101,30 +99,19 @@ public class Inventory extends PanacheEntity {
 }
 ----
 
-By extending `PanacheEntity` in your entities, you will get an ID field that is auto-generated. If you require a custom ID
-strategy, you can extend `PanacheEntityBase` instead and handle the ID yourself.
+`PanacheEntity` をあなたのエンティティで拡張することで、自動生成される ID フィールドが得られます。カスタム ID 戦略が必要な場合は、代わりに `PanacheEntityBase` を拡張して自分で ID を対応できます。
 
-By using Use public fields, there is no need for functionless getters and setters (those that simply get or set the field). You
-simply refer to fields like Inventory.location without the need to write a Inventory.getLocation() implementation. Panache will
-auto-generate any getters and setters you do not write, or you can develop your own getters/setters that do more than get/set,
-which will be called when the field is accessed directly.
+パブリックフィールドを使用することで、ゲッターやセッターといったメソッド（単にフィールドを取得したり設定したりするだけのもの）は不要になります。Inventory.getLocation() の実装を書かなくても、Inventory.location のようなフィールドを参照するだけです。Panacheは、あなたが書いていないゲッターやセッターを自動生成します。また、取得/設定以上の機能を持つ独自のゲッター/セッターの開発もできます。これらは、フィールドに直接アクセスしたときに呼び出されます。
 
-The `PanacheEntity` superclass comes with lots of super useful static methods and you can add your own in your derived entity
-class. Much like traditional object-oriented programming it’s natural and recommended to place custom queries as close to the
-entity as possible, ideally within the entity definition itself. Users can just start using your entity Inventory by typing
-Inventory, and get completion for all the operations in a single place.
+`PanacheEntity` スーパークラスには多くの便利なスタティックメソッドがあります。あなたは派生エンティティクラスに独自のメソッドを追加できます。伝統的なオブジェクト指向プログラミングと同様に、それは自然なことです。これはカスタムクエリを可能な限りエンティティに近づけ、理想的にはエンティティ定義自体の中に配置することを推奨しています。ユーザーは、Inventory と入力するだけで、エンティティ Inventory の使用を開始でき、すべての操作の完了を一箇所で得ることができます。
 
-When an entity is annotated with `@Cacheable`, all its field values are cached except for collections and relations to other
-entities. This means the entity can be loaded quicker without querying the database for frequently-accessed, but rarely-changing
-data.
+エンティティが `@Cacheable` でアノテーションされている場合、コレクションと他のエンティティとの関係を除いて、すべてのフィールド値がキャッシュされます。つまり、頻繁にアクセスされるが、めったに変化しないデータをデータベースに問い合わせることなく、エンティティをより迅速にロードすることができるということです。
 
-==== 5. Define the RESTful endpoint of Inventory
+==== 5.在庫の RESTful エンドポイントの定義
 
-In this step we will mirror the abstraction of a _service_ so that we can inject the Inventory _service_ into various places (like
-a RESTful resource endpoint) in the future. This is the same approach that our monolith uses, so we can re-use this idea again.
-Open up the empty *InventoryResource.java* class in the _com.redhat.coolstore_ package.
+このステップでは、_サービス_の抽象化を正確に描画します。ということで、将来的には在庫_サービス_を様々な場所（RESTful リソースのエンドポイントのような）に注入することができるようになります。これは私たちのモノリスが使っているのと同じアプローチなので、このアイデアを再利用することができます。_com.redhat.coolstore_パッケージ内の空の*InventoryResource.java*クラスを開きます。
 
-Add this code to it:
+以下のコードを追加します。
 
 [source,java, role="copypaste"]
 ----
@@ -184,16 +171,15 @@ public class InventoryResource {
 }
 ----
 
-The above REST services defines two endpoints:
+上記の REST サービスでは、2つのエンドポイントを定義しています。
 
 * `/services/inventory` that is accessible via _HTTP GET_ which will return all known product Inventory entities as JSON
 * `/services/inventory/<itemId>` that is accessible via _HTTP GET_ at for example `services/inventory/329199` with the last path parameter
 being the ID for which we want inventory status.
 
-==== 6. Add inventory data
+==== 6.在庫データの追加
 
-Let’s add inventory data to the database so we can test things out. Open up the `src/main/resources/import.sql` file and copy
-the following SQL statements to *import.sql*:
+データベースに在庫データを追加して、テストできるようにしておきましょう。`src/main/resources/import.sql` ファイルを開き、以下の SQL 文を *import.sql* にコピーします。
 
 [source,sql, role="copypaste"]
 ----
@@ -207,8 +193,7 @@ INSERT INTO INVENTORY (id, itemId, link, location, quantity) values (nextval('hi
 INSERT INTO INVENTORY (id, itemId, link, location, quantity) values (nextval('hibernate_sequence'), '444437', 'http://maps.google.com/?q=Tokyo', 'Tokyo', 230);
 ----
 
-In Development, we will configure to use local in-memory H2 database for local testing. Add these lines to
-`src/main/resources/application.properties`:
+開発環境では、ローカル環境でテストするためローカルのインメモリ H2 データベースを使用するように設定します。これらの行を `src/main/resources/application.properties` に追加します。
 
 [source,properties,role="copypaste"]
 ----
@@ -222,16 +207,16 @@ In Development, we will configure to use local in-memory H2 database for local t
 %dev.quarkus.hibernate-orm.log.sql=false
 ----
 
-==== 7. Run Quarkus Inventory application
+==== 7.Quarkus 在庫アプリケーションを実行する
 
-In the Terminal, run the project in _Live Coding_ mode:
+ターミナルで、_ライブ コーディング_ モードでプロジェクトを実行します。
 
 [source,sh,role="copypaste"]
 ----
 mvn clean compile quarkus:dev -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/inventory
 ----
 
-You should see a bunch of log output that ends with:
+以下で終わるログ出力の束が表示されるはずです。
 
 [source,console,role="copypaste"]
 ----
@@ -241,26 +226,26 @@ You should see a bunch of log output that ends with:
 2020-03-19 14:41:17,457 INFO  [io.quarkus] (main) Installed features: [agroal, cdi, hibernate-orm, hibernate-orm-panache, jdbc-h2, narayana-jta, resteasy, resteasy-jsonb, smallrye-health]
 ----
 
-CodeReady will also detect that the Quarkus app opens port `5005` (for debugging) and `8080` (for web requests). Do not open port 5005, but when prompted, open the port `8080`, which opens a small web browser in CodeReady:
+CodeReady は、Quarkus アプリが `5005` 番ポート（デバッグ用）と `8080` 番ポート（ウェブリクエスト用）を開いていることも検出します。5005 番ポートは開かず、プロンプトが表示されたら `8080` 番ポートを開き、CodeReady で小さな Web ブラウザを開きます。
 
 image::open-port.png[Inventory RESTful Service, 700]
 
-You should see the inventory web frontend directly in CodeReady (you may need to click the _reload_ icon):
+CodeReady で在庫の Web フロントエンドを直接見ることができるはずです(_リロード_アイコンをクリックする必要があるかもしれません)。
 
 image::inventory-codeready.png[Inventory RESTful Service, 700]
 
-Open a *new* CodeReady Workspaces Terminal:
+*新しい* CodeReady Workspaces Terminal を開きます。
 
 image::codeready-workspace-terminal.png[Inventory RESTful Service, 700]
 
-and invoke the RESTful endpoint using the following CURL commands.
+以下の CURL コマンドを使用して RESTful エンドポイントを呼び出します。
 
 [source,sh,role="copypaste"]
 ----
 curl http://localhost:8080/services/inventory | jq
 ----
 
-The output looks like:
+出力はこんな感じです。
 
 [source,json]
 ----
@@ -281,27 +266,24 @@ The output looks like:
   }
 ----
 
-==== 8. Add health probe
+==== 8.ヘルスプローブの追加
 
-=== What is MicroProfile Health?
+=== MicroProfile Healthとは何ですか？
 
-*MicroProfile Health* allows applications to provide information about their state to external viewers which is typically useful
-in cloud environments like OpenShift where automated processes must be able to determine whether the application should be discarded or
-restarted.
+*MicroProfile Health* は、アプリケーションがその状態に関する情報を外部のビューアに提供することを可能にします。これは通常、アプリケーションを破棄するか再起動するかを自動プロセスが判断できるようにしなければならないOpenShiftのようなクラウド環境で有用です。
 
-=== Run the health check
+=== ヘルスチェックを実行してください。
 
-When you imported the _health extension_ earlier, the `/health` endpoint is automatically exposed directly that can be used to
-run the health check procedures.
+先に_health 拡張機能_をインポートした場合、ヘルスチェックの手順を実行するために使用できる `/health` エンドポイントが自動的に直接公開されます。
 
-Our application is still running, so you can exercise the default (no-op) health check with this command in a separate Terminal:
+アプリケーションはまだ実行中なので、別のターミナルでこのコマンドを使ってデフォルトの (何もしない) ヘルスチェックを実行できます。
 
 [source,sh,role="copypaste"]
 ----
 curl -s http://localhost:8080/health | jq
 ----
 
-The output shows:
+以下の出力が表示されます。
 
 [source,json]
 ----
@@ -316,12 +298,11 @@ The output shows:
 }
 ----
 
-The general _outcome_ of the health check is computed as a logical AND of all the declared health check procedures. Quarkus extensions can also provide default health checks out of the box, which is why you see the `Database connections health check` above, since we are using a database extension.
+ヘルスチェックの一般的な_結果_は、宣言されたすべてのヘルスチェック手順の論理 AND として計算されます。また、Quarkus の拡張機能では、デフォルトのヘルスチェック機能も提供されています。今回、データベース拡張モジュールを使用しているので、上の`データベース接続のヘルスチェック`が表示される理由です。
 
-==== 9. Create your first health check
+==== 9.初めてのヘルスチェックを作成
 
-Next, let’s fill in the class by creating a new RESTful endpoint which will be used by OpenShift to probe our services. Open empty
-Java class: `src/main/java/com/redhat/coolstore/InventoryHealthCheck.java` and add the following code:
+次に、新しい RESTful エンドポイントを作成してクラスを埋めてみましょう。これは OpenShift でサービスをプローブするために使用されます。空のJavaクラス: `src/main/java/com/redhat/coolstore/InventoryHealthCheck.java` を開き、以下のコードを追加します。
 
 [source,java,role="copypaste"]
 ----
@@ -353,23 +334,21 @@ public class InventoryHealthCheck implements HealthCheck {
 }
 ----
 
-The `call()` method exposes an HTTP GET endpoint which will return the status of the service. The logic of this check does a
-simple query to the underlying database to ensure the connection to it is stable and available. The method is also annotated with
-MicroProfile's `@Readiness` annotation, which directs Quarkus to expose this endpoint as a health check at `/health/ready`.
+`call() ` メソッドは HTTP GET エンドポイントを公開します。これはサービスの状態を返します。このチェックのロジックは、基盤となるデータベースへの接続が安定しており、利用可能であることを確認するために、簡単なクエリを実行します。また、このメソッドには MicroProfile の `@Readiness` アノテーションが付けられています。これは、Quarkus がこのエンドポイントを `/health/ready` のヘルスチェックとして公開するように指示します。
 
-[NOTE]
+[注意]
 ====
-You don’t need to stop and re-run re-run the Inventory application because Quarkus will *reload the changes automatically* via the _Live Coding_ feature.
+在庫アプリケーションを停止して再実行する必要はありません。なぜなら、Quarkus は_ライブコーディング_機能を介して*自動的に変更をリロードする*からです。
 ====
 
-Access the health endpoint again using _curl_ and the result looks like:
+_curl_ を使用して再度ヘルスエンドポイントにアクセスすると、結果は次のようになります。
 
 [source,sh,role="copypaste"]
 ----
 curl -s http://localhost:8080/health | jq
 ----
 
-The result should be:
+以下の結果が出るはずです。
 
 [source,json]
 ----
@@ -388,49 +367,46 @@ The result should be:
 }
 ----
 
-You now see the default health check, along with your new Inventory health check.
+これでデフォルトのヘルスチェックと新しい在庫のヘルスチェックが表示されます。
 
-[NOTE]
+[注意]
 ====
-You can define separate readiness and liveness probes using `@Liveness` and `@Readiness` annotations and access them separately at `/health/live` and `/health/ready`.
+`@Liveness` アノテーションと `@Readiness` アノテーションを使用して、個別のライブネスプローブとレディネスプローブを定義できます。そして、これは `/health/live` と `/health/ready` で別々にそれらにアクセスします。
 ====
 
-===== Cleanup
+===== 清掃
 
-Stop the Quarkus app by typing kbd:[CTRL-C] in the Terminal in which the app runs.
+アプリが実行されているターミナルで kbd:[CTRL-C] と入力して Quarkus アプリを停止します。
 
-==== 10. Create OpenShift Project
+==== 10.OpenShiftプロジェクトの作成
 
-In this step, we will deploy our new Inventory microservice for our CoolStore application in a separate project to house
-it and keep it separate from our monolith and our other microservices we will create later on.
+このステップでは、CoolStore アプリケーション用の新しい在庫マイクロサービスを別のプロジェクトにデプロイして、それを格納します。これにより、モノリスや後に作成する他のマイクロサービスとは切り離された状態になります。
 
-Before going to OpenShift console, we will repackage the Quarkus application for adding a PostgreSQL extension because our
-Inventory service will connect to PostgeSQL database in production on OpenShift.
+OpenShift コンソールに行く前に、PostgreSQL の拡張機能を追加するための Quarkus アプリケーションを再パッケージします。なぜなら、在庫サービスは OpenShift 上の本番環境で PostgeSQL データベースに接続するからです。
 
-Quarkus also offers the ability to automatically generate OpenShift resources based on sane default and user supplied configuration. The OpenShift extension is actually a wrapper extension that brings together the https://quarkus.io/guides/deploying-to-kubernetes[kubernetes^] and https://quarkus.io/guides/container-image#s2i[container-image-s2i^] extensions with defaults so that it’s easier for the user to get started with Quarkus on OpenShift.
+また、Quarkus では、健全なデフォルト設定とユーザーが提供する設定に基づいて OpenShift リソースを自動的に生成する機能も提供しています。OpenShift 拡張機能は、実際には https://quarkus.io/guides/deploying-to-kubernetes[kubernetes^] 拡張機能と https://quarkus.io/guides/container-image#s2i[container-image-s2i^] 拡張機能をデフォルトでまとめたラッパー拡張です。これにより、ユーザーが OpenShift 上で Quarkus を使い始めるのが簡単になります。
 
-Add _quarkus-jdbc-postgresql_ and _openshift_ extension via CodeReady Workspaces Terminal:
+CodeReady Workspaces Terminal 経由で _quarkus-jdbc-postgresql_ と _openshift_ 拡張機能を追加します。
 
 [source,sh,role="copypaste"]
 ----
 mvn quarkus:add-extension -Dextensions="jdbc-postgresql,openshift" -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/inventory
 ----
 
-you will see:
+あなたを以下を見られます。
 
-✅ Adding extension io.quarkus:quarkus-openshift
-✅ Adding extension io.quarkus:quarkus-jdbc-postgresql
+✅ 拡張機能 io.quarkus:quarkus-openshift の追加 
+✅ 拡張機能 io.quarkus:quarkus-jdbc-postgresql の追加
 
-Quarkus supports the notion of _configuration profiles_. These allows you to have multiple configurations in the same file and
-select between then via a _profile name_.
+Quarkus は、_設定プロファイル_の概念をサポートしています。これらは、同じファイル内に複数の設定を持つことができ、_プロファイル名_を介して選択できます。
 
-By default Quarkus has three profiles, although it is possible to use as many as you like. The default profiles are:
+デフォルトでは、Quarkus には 3 つのプロファイルがありますが、好きなだけ使用できます。デフォルトのプロファイルは以下のとおりです。
 
-* `dev` - Activated when in development mode (i.e. *quarkus:dev*)
-* `test` - Activated when running tests
-* `prod` - The default profile when not running in development or test mode
+* `dev` - 開発モードの場合に有効 （例えば *quarkus:dev*）
+* `test` - テストの時に有効
+* `prod` - 開発モードまたはテストモードで実行していないときのデフォルトプロファイル
 
-Let’s `add` the following variables in _src/main/resources/application.properties_:
+_src/main/resources/application.properties_ に以下の変数を`追加して`みましょう。
 
 [source,shell,role="copypaste"]
 ----
@@ -453,33 +429,27 @@ Let’s `add` the following variables in _src/main/resources/application.propert
 %prod.quarkus.openshift.labels.app.openshift.io/runtime=quarkus<6>
 ----
 
-<1> We are using self-signed certs in this simple example, so this simply says to the extension to trust them.
-<2> Instructs the extension to build a container image
-<3> Instructs the extension to deploy to OpenShift after the container image is built
-<4> Instructs the extension to generate and create the OpenShift resources (like `DeploymentConfig` and `Service`) after building the container
-<5> Instructs the extension to generate an OpenShift `Route`.
-<6> Adds a nice-looking icon to the app when viewing the OpenShift Developer Toplogy
+<1> この単純な例では自己署名証明書を使用しているので、これは単に拡張機能に信頼するように言っているだけです。<2> コンテナイメージを構築するように拡張機能に指示します。<3> コンテナイメージが構築された後、拡張機能をOpenShiftにデプロイするように指示します。 <4> コンテナを構築した後に OpenShift リソース（ `DeploymentConfig` や `Service` のような）を生成して作成するように拡張機能に指示する <5> OpenShift `Route` を生成するように拡張機能に指示します。<6> OpenShift Developer Toplogy を表示する際に、アプリに見栄えの良いアイコンを追加します。
 
-In OpenShift, ensure you're in the _Developer_ perspective and then choose the `{{ USER_ID }}-inventory` project which has already been created for you.
+OpenShift では、_Developer_ パースペクティブにいることを確認し、`{{ USER_ID }}-inventory` プロジェクトを選択します。これはすでにあなたのために作成されています。
 
-There’s nothing there yet, but that’s about to change.
+まだ何もありませんが、それが変わろうとしています。
 
-==== 11. Deploy to OpenShift
+==== 11.OpenShiftへのデプロイ
 
-Let’s deploy our new inventory microservice to OpenShift!
+新しい在庫のマイクロサービスを OpenShift にデプロイしよう！
 
-Our production inventory microservice will use an external database (PostgreSQL) to house inventory data. First, deploy a new
-instance of PostgreSQL. Click **+Add** on the left, on the _Database_ box on the project overview:
+当社の本番の在庫マイクロサービスは、在庫データを格納するために外部データベース（PostgreSQL）を使用します。まず、PostgreSQL の新しいインスタンスをデプロイします。プロジェクト概要の _Database_ ボックスの左側にある **+Add** をクリックします。
 
 image::db.png[db, 700]
 
-Type in `postgres` in the search box, and click on the *PostgreSQL (ephemeral)*:
+検索ボックスに `postgres` と入力し、*PostgreSQL（ephemeral）* をクリックします。
 
 image::db-postgres.png[db, 700]
 
-Click on *Instantiate Template* and fill in the following fields, leaving the others as their default values:
+*Instantiate Template* をクリックして、以下のフィールドを入力します。他の値をデフォルトのままにしておきます。
 
-* **Namespace**: _choose `{{ USER_ID }}-inventory` for the first Namespace. Leave the second one as `openshift`_
+* **Namespace**: _最初の名前空間は `{{ USER_ID }}-inventory` を選択し 2 番目の名前空間は `openshift` のままにしておきます_
 * **Database Service Name**: `inventory-database`
 * **PostgreSQL Connection Username**: `inventory`
 * **PostgreSQL Connection Password**: `mysecretpassword`
@@ -487,15 +457,15 @@ Click on *Instantiate Template* and fill in the following fields, leaving the ot
 
 image::db-postgres-inventory-values.png[db, 700]
 
-Click *Create*.
+*Create* をクリックします。
 
-This will deploy the database to our new project. Click on the {{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-inventory[Topology View^] to see it:
+これにより、データベースが新しいプロジェクトにデプロイされます。{{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-inventory[Topology View^] をクリックすると表示されます。
 
 image::inventory-database-deployment.png[inventory_db_deployments, 700]
 
-==== 12. Deploy to OpenShift
+==== 12.OpenShift へのデプロイ
 
-Now let's deploy the application itself. Run the following command which will build and deploy using the OpenShift extension:
+では、アプリケーション自体をデプロイしてみましょう。以下のコマンドを実行すると、OpenShift 拡張機能を使用してビルドとデプロイを行います。
 
 [source,sh,role="copypaste"]
 ----
@@ -503,18 +473,18 @@ oc project {{ USER_ID }}-inventory && \
 mvn clean package -DskipTests -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/inventory
 ----
 
-The output should end with `BUILD SUCCESS`.
+出力は`BUILD SUCCESS`で終わるはずです。
 
-Finally, make sure it's actually done rolling out:
+最後に、実際に起動が完了したことを確認してください。
 
 [source,sh,role="copypaste"]
 ----
 oc rollout status -w dc/inventory
 ----
 
-Wait for that command to report *replication controller _inventory-1_ successfully rolled out* before continuing.
+*レプリケーションコントローラの_inventory-1_が正常に起動されたこと*を報告するコマンドを待ってから続行します。
 
-And label the items with proper icons:
+そして、アイテムには適切なアイコンでラベルを貼ります。
 
 [source,sh,role="copypaste"]
 ----
@@ -526,24 +496,24 @@ oc annotate dc/inventory app.openshift.io/vcs-uri=https://github.com/RedHat-Midd
 oc annotate dc/inventory app.openshift.io/vcs-ref=ocp-4.5 --overwrite
 ----
 
-Back on the {{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-inventory[Topology View^], make sure it's done deploying (dark blue circle):
+{{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-inventory[Topology View^] に戻って、デプロイが完了していることを確認します（紺色の丸）。
 
 image::inventory-rollout.png[inventory_db_deployments, 700]
 
-Click on the Route icon above (the arrow) to access our inventory running on OpenShift:
+上の Route アイコン（矢印）をクリックすると、OpenShift 上で稼働している在庫にアクセスできます。
 
 image::inventory-web.png[web, 700]
 
-The UI will refresh the inventory table every 2 seconds.
+UI は 2 秒ごとに在庫リテーブルを更新します。
 
-You should also be able to access the health check logic at the _inventory_ endpoint using _curl_ in the Terminal:
+また、ターミナルの _curl_ を使用して_在庫_のエンドポイントでヘルスチェックロジックにアクセスできるようにしておく必要があります。
 
 [source,sh,role="copypaste"]
 ----
 curl $(oc get route inventory -o jsonpath={% raw %}"{.spec.host}"{% endraw %})/health/ready | jq
 ----
 
-You should the same JSON response:
+同じJSONレスポンスを使用する必要があります。
 
 [source,json]
 ----
@@ -562,86 +532,77 @@ You should the same JSON response:
 }
 ----
 
-==== 13. Adjust probe timeout
+==== 13.プローブのタイムアウトを調整
 
-The various timeout values for the probes can be configured in many ways. Let’s tune the _readiness probe_ initial delay so that
-we have to wait 30 seconds for it to be activated. Use the _oc_ command to tune the probe to wait 30 seconds before starting to
-poll the probe:
+プローブの様々なタイムアウト値は、いくつかの方法で設定できます。_レディネスプローブ_の初期遅延を調整して、30 秒待ってから起動するようにしましょう。_oc_ コマンドを使用して、プローブのポーリングを開始する前に 30 秒間待つようにプローブを調整します。
 
 [source,sh,role="copypaste"]
 ----
 oc set probe dc/inventory --readiness --initial-delay-seconds=30
 ----
 
-And verify it’s been changed (look at the _delay=_ value for the Readiness probe) via CodeReady Workspaces Terminal:
+そして、CodeReady Workspaces Terminal で変更されたことを確認します（レディネスプローブの_delay=_の値を見てください）。
 
 [source,sh,role="copypaste"]
 ----
 oc describe dc/inventory | egrep 'Readiness|Liveness'
 ----
 
-The result:
+結果が出ました。
 
 [source,console]
 ----
     Readiness:          http-get http://:8080/health/ready delay=30s timeout=1s period=10s #success=1 #failure=3
 ----
 
-In the next step, we’ll exercise the probe and watch as it fails and OpenShift recovers the application.
+次のステップでは、プローブを行使して失敗し、OpenShift がアプリケーションを回復するのを見守ります。
 
-==== 14. Exercise Health Check
+==== 14.ヘルスチェックの練習
 
-Open the http://inventory-{{ USER_ID }}-inventory.{{ ROUTE_SUBDOMAIN}}[Inventory UI^].
+http://inventory-{{ USER_ID }}-inventory.{{ ROUTE_SUBDOMAIN}}[在庫 UI^] を開きます。
 
-This will open up the sample application UI in a new browser tab:
+これにより、新しいブラウザタブでサンプルアプリケーションの UI が開きます。
 
 image::app.png[App UI, 700]
 
-The app will begin polling the inventory as before and report success:
+アプリは以前と同様にインベントリのポーリングを開始し、成功を報告します。
 
 image::inventory.png[Greeting, 700]
 
-Now you will corrupt the service and cause its health check to start failing. To simulate the app crashing, let’s kill the
-underlying service so it stops responding. Execute via CodeReady Workspaces Terminal:
+これでサービスが破損し、ヘルスチェックが失敗し始める原因になるでしょう。アプリのクラッシュをシミュレートするために、基礎となるサービスを kill して反応しなくなるようにしてみましょう。CodeReady Workspaces Terminal 経由で実行します。
 
 [source,sh,role="copypaste"]
 ----
 oc rsh dc/inventory kill 1
 ----
 
-This will execute the Linux *pkill* command to stop the running Java process in the container.
+これは、コンテナ内で実行中のJavaプロセスを停止するために Linux の *pkill* コマンドを実行します。
 
-Check out the application sample UI page and notice it is now failing to access the inventory data, and the _Last Successful
-Fetch_ counter starts increasing, indicating that the UI cannot access inventory. This could have been caused by an overloaded
-server, a bug in the code, or any other reason that could make the application unhealthy.
+アプリケーションのサンプル UI ページをチェックして、在庫データへのアクセスに失敗していることに気付きます。_最後に成功したフェッチ_カウンタが増加し始め、UI がインベントリにアクセスできないことを示しています。これは、サーバの過負荷、コードのバグ、またはアプリケーションを不健全な状態にする他の理由によって引き起こされた可能性があります。
 
 image::inventory-fail.png[Greeting, 700]
 
-Back in the {{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-inventory[Topology View^], you will see the pod is failing (light blue or yellow warning circle):
+{{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-inventory[Topology View^] に戻ると、ポッドが失敗していることがわかります（水色または黄色の警告している丸）。
 
 image::notready.png[Not Ready, 700]
 
-After too many healthcheck probe failures, OpenShift will forcibly kill the pod and container running the service, and spin up a
-new one to take its place. Once this occurs, the light blue or yellow warning circle should return to dark blue. This should take about 30 seconds.
+ヘルスチェックのプローブに失敗しすぎた後、OpenShift はサービスを実行しているポッドとコンテナを強制的に殺し、新しいものに置き換えて、その場所に移動します。これが発生すると、水色または黄色の警告円が濃紺色に戻るはずです。これには 30 秒ほどかかります。
 
-Return to the same sample app UI (without reloading the page) and notice that the UI has automatically re-connected to the new
-service and successfully accessed the inventory once again:
+同じサンプルアプリの UI （ページをリロードせずに）に戻り、UI が自動的に新しいサービスに再接続し、再び在庫にアクセスすることに成功したことに気づきます。
 
 image::inventory.png[Greeting, 700]
 
-Let's set the probe back to more appropriate values:
+プローブをより適切な値に戻しましょう。
 
 [source,sh,role="copypaste"]
 ----
 oc set probe dc/inventory --readiness --initial-delay-seconds=5 --period-seconds=5 --failure-threshold=15
 ----
 
-=== Summary
+=== まとめ
 
-You learned a bit more about what Quarkus is, and how it can be used to create modern Java microservice-oriented applications.
+Quarkus とは何か、また、最新のJava マイクロサービス指向アプリケーションを作成するためにどのように使用できるのかについて、少し詳しく学びました。
 
-You created a new Inventory microservice representing functionality previously implmented in the monolithic CoolStore application.
-For now this new microservice is completely disconnected from our monolith and is not very useful on its own. In future steps you will link this and other microservices into the monolith to begin the process of
-https://www.martinfowler.com/bliki/StranglerApplication.html[strangling the monolith^].
+モノリシック CoolStore アプリケーションの以前に実装されていた機能を表す新しい在庫マイクロサービスを作成しました。今のところ、この新しいマイクロサービスはモノリスから完全に切り離されており、それだけではあまり役に立ちません。今後のステップでは、このマイクロサービスと他のマイクロサービスをモノリスにリンクして、https://www.martinfowler.com/bliki/StranglerApplication.html[モノリスを抑制する^]プロセスを開始します。
 
-In the next lab, you’ll use Spring Boot, another popular framework, to implement additional microservices. Let’s go!
+次のラボでは、もう一つの人気フレームワークである Spring Boot を使って、追加のマイクロサービスを実装します。がんばりましょう！
