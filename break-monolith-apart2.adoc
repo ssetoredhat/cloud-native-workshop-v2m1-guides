@@ -422,7 +422,7 @@ _src/main/java/com/redhat/coolstore/service/CatalogService.java_ を開きます
     private InventoryClient inventoryClient;
 ----
 
-次に、 `read(String id) `メソッドを更新します。 `//TODO: Update the quantity for the product by calling the Inventory service` の位置に以下を追加します。
+次に、 `read(String id)` メソッドを更新します。 `//TODO: Update the quantity for the product by calling the Inventory service` の位置に以下を追加します。
 
 [source, java, role="copypaste"]
 ----

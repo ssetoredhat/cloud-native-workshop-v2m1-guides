@@ -396,7 +396,8 @@ mvn quarkus:add-extension -Dextensions="jdbc-postgresql,openshift" -f $CHE_PROJE
 
 あなたを以下を見られます。
 
-✅ 拡張機能 io.quarkus:quarkus-openshift の追加  
+✅ 拡張機能 io.quarkus:quarkus-openshift の追加
+
 ✅ 拡張機能 io.quarkus:quarkus-jdbc-postgresql の追加
 
 Quarkus は、 _設定プロファイル_ の概念をサポートしています。これらは、同じファイル内に複数の設定を持つことができ、 _プロファイル名_ を介して選択できます。

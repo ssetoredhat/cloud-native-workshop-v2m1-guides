@@ -277,7 +277,7 @@ image::codeready-workspace-delete-weblogic.png[codeready-workspace-convert, 500]
 
 ==== 9.コードの修正
 
- `monolith/src/main/java/com/redhat/coolstore/service/InventoryNotificationMDB.java` ファイルを開き、その内容を置き換えます。
+`monolith/src/main/java/com/redhat/coolstore/service/InventoryNotificationMDB.java` ファイルを開き、その内容を置き換えます。
 
 [source,java, role="copypaste"]
 ----
