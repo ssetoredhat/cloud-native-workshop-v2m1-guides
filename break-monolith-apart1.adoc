@@ -5,11 +5,11 @@
 
 これで、アプリケーションを異なる技術を使って複数のマイクロサービスに分解し、アプリケーションを近代化するプロセスを開始できます。これは、分散マイクロサービスのセットとしてアプリケーション全体を再設計することを最終的な目標としています。後ほど、アプリケーションが再アーキテクトされた後に、どのようにしてより良い管理と監視ができるかを探っていきます。
 
-このラボでは、https://quarkus.io/[Quarkus^] を使って_Supersonic（超音速）、Subatomic（粒子並みに小さい）、Java_について学びます。これはコンテナと開発者が使いやすいように設計されています。
+このラボでは、 https://quarkus.io/[Quarkus^] を使って _Supersonic（超音速）、Subatomic（粒子並みに小さい）、Java_ について学びます。これはコンテナと開発者が使いやすいように設計されています。
 
 Quarkusは、_Kubernetes ネイティブ_ Java スタックであり、最高の Java ライブラリと標準規格から作られています。驚くほど高速な起動時間、信じられないほど低いRSSメモリ（ヒープサイズだけではありません！）を提供し、Kubernetes のようなコンテナオーケストレーションプラットフォームで、ほぼ瞬時にスケールアップし、高密度のメモリ利用を実現します。Quarkus はコンパイルタイムブートと呼ばれる技術を使用しています。 
 
-*Red Hat*では、Quarkusのサポートと保守が完全にサポートされた https://access.redhat.com/products/quarkus[Red Hat Build of Quarkus(RHBQ)^] を提供しています。このワークショップでは、Quarkus を使用して Kubernetes ネイティブのマイクロサービスを開発し、OpenShift にデプロイします。Quarkus は https://www.redhat.com/en/products/runtimes[Red Hat Runtimes^] に含まれるランタイムの 1 つです。https://access.redhat.com/documentation/en-us/red_hat_build_of_quarkus[RHBQについてはこちらをご覧ください^]。
+*Red Hat* では、Quarkusのサポートと保守が完全にサポートされた https://access.redhat.com/products/quarkus[Red Hat Build of Quarkus(RHBQ)^] を提供しています。このワークショップでは、Quarkus を使用して Kubernetes ネイティブのマイクロサービスを開発し、OpenShift にデプロイします。Quarkus は https://www.redhat.com/en/products/runtimes[Red Hat Runtimes^] に含まれるランタイムの 1 つです。 https://access.redhat.com/documentation/en-us/red_hat_build_of_quarkus[RHBQについてはこちらをご覧ください^]。
 
 === このラボの目標
 
@@ -19,7 +19,7 @@ Quarkusは、_Kubernetes ネイティブ_ Java スタックであり、最高の
 
 image::goal.png[lab3_goal, 700]
 
-==== 1.インベントリプロジェクトの設定
+==== 1.在庫プロジェクトの設定
 
 以下のコマンドを実行して、このラボの環境を設定し、正しいディレクトリで起動します。
 
@@ -38,7 +38,7 @@ image::codeready-workspace-inventory-project.png[inventory_setup, 700]
 * PostgreSQL データベース; Linux コンテナを介して実行するには下部を参照してください。
 * JVMとネイティブモードのコンパイル用に新しいイメージを生成するための `Dockerfiles` の例をいくつか紹介します。
 
-Hibernate ORM` は事実上の JPA 実装であり、オブジェクトリレーショナルマッパーの全幅を提供する。複雑なマッピングを可能にしますが、単純で一般的なマッピングをつまらなくするものではありません。Hibernate ORM with Panache は、Quarkus で書くのが楽しくなるように、エンティティを些細なものにすることに焦点を当てています。
+`Hibernate ORM` は事実上の JPA 実装であり、オブジェクトリレーショナルマッパーの全幅を提供する。複雑なマッピングを可能にしますが、単純で一般的なマッピングをつまらなくするものではありません。Hibernate ORM with Panache は、Quarkus で書くのが楽しくなるように、エンティティを些細なものにすることに焦点を当てています。
 
 それでは、いくつかのコードを書いて、ドメインモデル、サービスインターフェース、インベントリにアクセスするための RESTful エンドポイントを作成してみましょう。
 
@@ -55,15 +55,15 @@ mvn quarkus:add-extension -Dextensions="hibernate-orm-panache, jdbc-h2, health" 
 
 あなたは以下を見られます。
 
-✅ 拡張機能 io.quarkus:quarkus-hibernate-orm-panache を追加する 
-✅ 拡張機能 io.quarkus:quarkus-jdbc-h2 を追加する 
-✅ 拡張機能 io.quarkus:quarkus-smallrye-health を追加する。
+✅ 拡張機能 io.quarkus:quarkus-hibernate-orm-panache を追加  
+✅ 拡張機能 io.quarkus:quarkus-jdbc-h2 を追加  
+✅ 拡張機能 io.quarkus:quarkus-smallrye-health を追加  
 
 そして、これは `pom.xml` に拡張機能を追加します。
 
 [NOTE]
 ====
-Quarkus 用の https://vertx.io/[Vert.x^]、http://camel.apache.org/[Apache Camel^]、http://infinispan.org/[Infinispan^]、Spring （`@Autowired`など）に加えて人気フレームワーク用の https://quarkus.io/extensions/[さらなる拡張機能^] がたくさんあります。
+Quarkus 用の https://vertx.io/[Vert.x^]、 http://camel.apache.org/[Apache Camel^]、 http://infinispan.org/[Infinispan^]、Spring （`@Autowired`など）に加えて人気フレームワーク用の https://quarkus.io/extensions/[さらなる拡張機能^] がたくさんあります。
 ====
 
 ==== 4.在庫エンティティの作成
@@ -109,7 +109,7 @@ public class Inventory extends PanacheEntity {
 
 ==== 5.在庫の RESTful エンドポイントの定義
 
-このステップでは、_サービス_の抽象化を正確に描画します。ということで、将来的には在庫_サービス_を様々な場所（RESTful リソースのエンドポイントのような）に注入することができるようになります。これは私たちのモノリスが使っているのと同じアプローチなので、このアイデアを再利用することができます。_com.redhat.coolstore_パッケージ内の空の*InventoryResource.java*クラスを開きます。
+このステップでは、_サービス_の抽象化を正確に描画します。ということで、将来的には在庫 _サービス_ を様々な場所（RESTful リソースのエンドポイントのような）に注入することができるようになります。これは私たちのモノリスが使っているのと同じアプローチなので、このアイデアを再利用することができます。 _com.redhat.coolstore_ パッケージ内の空の *InventoryResource.java* クラスを開きます。
 
 以下のコードを追加します。
 
@@ -173,9 +173,8 @@ public class InventoryResource {
 
 上記の REST サービスでは、2つのエンドポイントを定義しています。
 
-* `/services/inventory` that is accessible via _HTTP GET_ which will return all known product Inventory entities as JSON
-* `/services/inventory/<itemId>` that is accessible via _HTTP GET_ at for example `services/inventory/329199` with the last path parameter
-being the ID for which we want inventory status.
+* `/services/inventory` これは、すべての既知の製品在庫の実体をJSONとして返す。 _HTTP GET_ 経由でアクセス可能です。
+* `/services/inventory/<itemId>` これは _HTTP GET_ 経由でアクセスできます。例えば `services/inventory/329199` で、最後のパスのパラメータには在庫の状態を知りたいIDを指定します。
 
 ==== 6.在庫データの追加
 
@@ -230,7 +229,7 @@ CodeReady は、Quarkus アプリが `5005` 番ポート（デバッグ用）と
 
 image::open-port.png[Inventory RESTful Service, 700]
 
-CodeReady で在庫の Web フロントエンドを直接見ることができるはずです(_リロード_アイコンをクリックする必要があるかもしれません)。
+CodeReady で在庫の Web フロントエンドを直接見ることができるはずです( _リロード_ アイコンをクリックする必要があるかもしれません)。
 
 image::inventory-codeready.png[Inventory RESTful Service, 700]
 
@@ -272,7 +271,7 @@ curl http://localhost:8080/services/inventory | jq
 
 *MicroProfile Health* は、アプリケーションがその状態に関する情報を外部のビューアに提供することを可能にします。これは通常、アプリケーションを破棄するか再起動するかを自動プロセスが判断できるようにしなければならないOpenShiftのようなクラウド環境で有用です。
 
-=== ヘルスチェックを実行してください。
+=== ヘルスチェックを実行
 
 先に_health 拡張機能_をインポートした場合、ヘルスチェックの手順を実行するために使用できる `/health` エンドポイントが自動的に直接公開されます。
 
@@ -298,7 +297,7 @@ curl -s http://localhost:8080/health | jq
 }
 ----
 
-ヘルスチェックの一般的な_結果_は、宣言されたすべてのヘルスチェック手順の論理 AND として計算されます。また、Quarkus の拡張機能では、デフォルトのヘルスチェック機能も提供されています。今回、データベース拡張モジュールを使用しているので、上の`データベース接続のヘルスチェック`が表示される理由です。
+ヘルスチェックの一般的な_結果_は、宣言されたすべてのヘルスチェック手順の論理 AND として計算されます。また、Quarkus の拡張機能では、デフォルトのヘルスチェック機能も提供されています。今回、データベース拡張モジュールを使用しているので、上の `Database connections health check（データベース接続のヘルスチェック）` が表示される理由です。
 
 ==== 9.初めてのヘルスチェックを作成
 
@@ -334,11 +333,11 @@ public class InventoryHealthCheck implements HealthCheck {
 }
 ----
 
-`call() ` メソッドは HTTP GET エンドポイントを公開します。これはサービスの状態を返します。このチェックのロジックは、基盤となるデータベースへの接続が安定しており、利用可能であることを確認するために、簡単なクエリを実行します。また、このメソッドには MicroProfile の `@Readiness` アノテーションが付けられています。これは、Quarkus がこのエンドポイントを `/health/ready` のヘルスチェックとして公開するように指示します。
+`call()` メソッドは HTTP GET エンドポイントを公開します。これはサービスの状態を返します。このチェックのロジックは、基盤となるデータベースへの接続が安定しており、利用可能であることを確認するために、簡単なクエリを実行します。また、このメソッドには MicroProfile の `@Readiness` アノテーションが付けられています。これは、Quarkus がこのエンドポイントを `/health/ready` のヘルスチェックとして公開するように指示します。
 
 [NOTE]
 ====
-在庫アプリケーションを停止して再実行する必要はありません。なぜなら、Quarkus は_ライブコーディング_機能を介して*自動的に変更をリロードする*からです。
+在庫アプリケーションを停止して再実行する必要はありません。なぜなら、Quarkus は _ライブコーディング_ 機能を介して *自動的に変更をリロードする* からです。
 ====
 
 _curl_ を使用して再度ヘルスエンドポイントにアクセスすると、結果は次のようになります。
@@ -395,10 +394,10 @@ mvn quarkus:add-extension -Dextensions="jdbc-postgresql,openshift" -f $CHE_PROJE
 
 あなたを以下を見られます。
 
-✅ 拡張機能 io.quarkus:quarkus-openshift の追加 
+✅ 拡張機能 io.quarkus:quarkus-openshift の追加  
 ✅ 拡張機能 io.quarkus:quarkus-jdbc-postgresql の追加
 
-Quarkus は、_設定プロファイル_の概念をサポートしています。これらは、同じファイル内に複数の設定を持つことができ、_プロファイル名_を介して選択できます。
+Quarkus は、_設定プロファイル_ の概念をサポートしています。これらは、同じファイル内に複数の設定を持つことができ、 _プロファイル名_ を介して選択できます。
 
 デフォルトでは、Quarkus には 3 つのプロファイルがありますが、好きなだけ使用できます。デフォルトのプロファイルは以下のとおりです。
 
@@ -406,7 +405,7 @@ Quarkus は、_設定プロファイル_の概念をサポートしています�
 * `test` - テストの時に有効
 * `prod` - 開発モードまたはテストモードで実行していないときのデフォルトプロファイル
 
-_src/main/resources/application.properties_ に以下の変数を`追加して`みましょう。
+_src/main/resources/application.properties_ に以下の変数を `追加` してみましょう。
 
 [source,shell,role="copypaste"]
 ----
@@ -464,7 +463,7 @@ image::db-postgres-inventory-values.png[db, 700]
 
 *Create* をクリックします。
 
-これにより、データベースが新しいプロジェクトにデプロイされます。{{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-inventory[Topology View^] をクリックすると表示されます。
+これにより、データベースが新しいプロジェクトにデプロイされます。 {{ CONSOLE_URL }}/topology/ns/{{ USER_ID }}-inventory[Topology View^] をクリックすると表示されます。
 
 image::inventory-database-deployment.png[inventory_db_deployments, 700]
 
@@ -478,7 +477,7 @@ oc project {{ USER_ID }}-inventory && \
 mvn clean package -DskipTests -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/inventory
 ----
 
-出力は`BUILD SUCCESS`で終わるはずです。
+出力は `BUILD SUCCESS` で終わるはずです。
 
 最後に、実際に起動が完了したことを確認してください。
 
@@ -487,7 +486,7 @@ mvn clean package -DskipTests -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-l
 oc rollout status -w dc/inventory
 ----
 
-*レプリケーションコントローラの_inventory-1_が正常に起動されたこと*を報告するコマンドを待ってから続行します。
+*レプリケーションコントローラの _inventory-1_ が正常に起動されたこと* を報告するコマンドを待ってから続行します。
 
 そして、アイテムには適切なアイコンでラベルを貼ります。
 
@@ -539,14 +538,14 @@ curl $(oc get route inventory -o jsonpath={% raw %}"{.spec.host}"{% endraw %})/h
 
 ==== 13.プローブのタイムアウトを調整
 
-プローブの様々なタイムアウト値は、いくつかの方法で設定できます。_レディネスプローブ_の初期遅延を調整して、30 秒待ってから起動するようにしましょう。_oc_ コマンドを使用して、プローブのポーリングを開始する前に 30 秒間待つようにプローブを調整します。
+プローブの様々なタイムアウト値は、いくつかの方法で設定できます。 _レディネスプローブ_ の初期遅延を調整して、30 秒待ってから起動するようにしましょう。 _oc_ コマンドを使用して、プローブのポーリングを開始する前に 30 秒間待つようにプローブを調整します。
 
 [source,sh,role="copypaste"]
 ----
 oc set probe dc/inventory --readiness --initial-delay-seconds=30
 ----
 
-そして、CodeReady Workspaces Terminal で変更されたことを確認します（レディネスプローブの_delay=_の値を見てください）。
+そして、CodeReady Workspaces Terminal で変更されたことを確認します（レディネスプローブの _delay=_ の値を見てください）。
 
 [source,sh,role="copypaste"]
 ----
@@ -583,7 +582,7 @@ oc rsh dc/inventory kill 1
 
 これは、コンテナ内で実行中のJavaプロセスを停止するために Linux の *pkill* コマンドを実行します。
 
-アプリケーションのサンプル UI ページをチェックして、在庫データへのアクセスに失敗していることに気付きます。_最後に成功したフェッチ_カウンタが増加し始め、UI がインベントリにアクセスできないことを示しています。これは、サーバの過負荷、コードのバグ、またはアプリケーションを不健全な状態にする他の理由によって引き起こされた可能性があります。
+アプリケーションのサンプル UI ページをチェックして、在庫データへのアクセスに失敗していることに気付きます。 _最後に成功したフェッチ_ カウンタが増加し始め、UI がインベントリにアクセスできないことを示しています。これは、サーバの過負荷、コードのバグ、またはアプリケーションを不健全な状態にする他の理由によって引き起こされた可能性があります。
 
 image::inventory-fail.png[Greeting, 700]
 

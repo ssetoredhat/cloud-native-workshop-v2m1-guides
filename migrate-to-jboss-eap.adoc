@@ -5,9 +5,9 @@
 
 === 1.開発環境へのアクセス
 
-https://www.eclipse.org/che/[Eclipse Che^] をベースにしたオンライン IDE であるRed Hat CodeReady Workspaces を使用していただきます。*ファイルへの変更は数秒ごとに自動保存*されるので、明示的に変更を保存する必要はありません。
+https://www.eclipse.org/che/[Eclipse Che^] をベースにしたオンライン IDE であるRed Hat CodeReady Workspaces を使用していただきます。 *ファイルへの変更は数秒ごとに自動保存* されるので、明示的に変更を保存する必要はありません。
 
-開始するには、{{ ECLIPSE_CHE_URL }}[CodeReady Workspaces インスタンスにアクセス^]し、割り当てられたユーザー名とパスワード（例： `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}`）を使用してログインします。
+開始するには、{{ ECLIPSE_CHE_URL }}[CodeReady Workspaces インスタンスにアクセス^] し、割り当てられたユーザー名とパスワード（例： `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}`）を使用してログインします。
 
 image::che-login.png[cdw, 700]
 
@@ -15,7 +15,7 @@ image::che-login.png[cdw, 700]
 
 image::crw-landing.png[cdw, 700]
 
-また、中央のワークスペースの名前をクリックして、画面右上の_Open_と書かれた緑色の{{ USER_ID}}-namespaceをクリックします。
+また、中央のワークスペースの名前をクリックして、画面右上の _Open_ と書かれた緑色の {{ USER_ID}}-namespace をクリックします。
 
 image::crw-landing-start.png[cdw, 700]
 
@@ -34,7 +34,7 @@ image::crw-icons.png[cdw, 400]
 おかしなことになったり、ブラウザに表れたりした場合、単にブラウザタブを再読み込みして表示を更新するだけです。
 ====
 
-CodeReady Workspaces の多くの機能は、*コマンド*を介してアクセスできます。ホームページでは、リンク付きのコマンドをいくつか見られます (例: _New File.._ 、_Git Clone.._ 、その他)。
+CodeReady Workspaces の多くの機能は、 *コマンド* を介してアクセスできます。ホームページでは、リンク付きのコマンドをいくつか見られます (例: _New File.._ 、_Git Clone.._ 、その他)。
 
 メニューに表示されていないコマンドを実行したい場合は、kbd:[F1] を押してコマンドウィンドウを開くか、従来の kbd:[Control+SHIFT+P] （Mac OS Xでは kbd:[Command+SHIFT+P] ）を押してコマンドを実行ができます。
 
@@ -80,11 +80,11 @@ image::rhamt_project_issues.png[rhamt_project_issues, 700]
 
 RHAMTは、課題をより深く理解し、移行のためのガイダンスを提供するための有用なリンクを提供しています。
 
-WebLogic `ApplicationLifecycleListener` 抽象クラスは、機能を実行したり、サーバーの起動や停止など Oracle WebLogic でジョブをスケジュールしたりするために使用されます。今回の場合、`postStart`メソッドと`preStop`メソッドがコードにあります。これらはWeblogic が起動した後とシャットダウンする前にそれぞれ実行されます。
+WebLogic `ApplicationLifecycleListener` 抽象クラスは、機能を実行したり、サーバーの起動や停止など Oracle WebLogic でジョブをスケジュールしたりするために使用されます。今回の場合、 `postStart` メソッドと `preStop` メソッドがコードにあります。これらはWeblogic が起動した後とシャットダウンする前にそれぞれ実行されます。
 
 Jakarta EEでは、これらのイベントを傍受することに相当するものはありません。しかし、RHAMTレポートの問題で提案されているように、標準的なアノテーションを持つ _Singleton EJB_ を使用して同等の機能を得られます。
 
-`@Startup`アノテーションを使用して、アプリケーションの開始時にシングルトンセッション Bean を初期化するようにコンテナに指示します。同様に `@PostConstruct` と `@PreDestroy` アノテーションを使用して、アプリケーションのライフサイクルの開始時と終了時に呼び出すメソッドを指定しますが、独自のインターフェイスを使用せずに同じ結果を得られます。
+`@Startup` アノテーションを使用して、アプリケーションの開始時にシングルトンセッション Bean を初期化するようにコンテナに指示します。同様に `@PostConstruct` と `@PreDestroy` アノテーションを使用して、アプリケーションのライフサイクルの開始時と終了時に呼び出すメソッドを指定しますが、独自のインターフェイスを使用せずに同じ結果を得られます。
 
 このメソッドを使用することで、コードの移植性が格段に向上します。
 
@@ -127,7 +127,7 @@ public class StartupListener {
 
 [NOTE]
 ====
-保存ボタンはどこにありますか？CodeReadyワークスペースは変更内容を自動的に保存します。それがSAVEボタンが見つからない理由です。保存を忘れたためにコードを失うことはもうありません。元に戻すには kbd:[CTRL-Z] （Mac の場合は kbd:[CMD-Z] ）を使用するか、`Edit （編集） -> Undo（元に戻す）`メニューオプションを使用します。
+保存ボタンはどこにありますか？CodeReadyワークスペースは変更内容を自動的に保存します。それがSAVEボタンが見つからない理由です。保存を忘れたためにコードを失うことはもうありません。元に戻すには kbd:[CTRL-Z] （Mac の場合は kbd:[CMD-Z] ）を使用するか、 `Edit （編集） -> Undo（元に戻す）` メニューオプションを使用します。
 ====
 
 
@@ -142,13 +142,13 @@ mvn -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/monolith clean package
 
 image::codeready-workspace-build.png[rhamt_project_issues, 700]
 
-ビルドが成功したら（`BUILD SUCCESS`と表示されます）、次の課題に進みましょう！コンパイルできない場合は、すべての変更が正しく行われていることを確認し、再度ビルドを試してください。
+ビルドが成功したら（ `BUILD SUCCESS` と表示されます）、次の課題に進みましょう！コンパイルできない場合は、すべての変更が正しく行われていることを確認し、再度ビルドを試してください。
 
 image::codeready-workspace-build-result.png[rhamt_project_issues, 700]
 
 ===== 差分を見る
 
-変更した内容を見直せます。左側の _Version Control_（バージョン管理）アイコンをクリックすると、変更されたファイルの一覧が表示されます。`StartupListener.java`をダブルクリックして、変更点を確認します。
+変更した内容を見直せます。左側の _Version Control_（バージョン管理）アイコンをクリックすると、変更されたファイルの一覧が表示されます。 `StartupListener.java` をダブルクリックして、変更点を確認します。
 
 image::codeready-workspace-diffs.png[diffs, 700]
 
@@ -231,7 +231,7 @@ public class OrderServiceMDB implements MessageListener {
 mvn -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/monolith clean package
 ----
 
-ビルドが成功したら（`BUILD SUCCESS`と表示されます）、次の課題に移りましょう！コンパイルできない場合は、すべての変更が正しく行われていることを確認し、再度ビルドを試してください。
+ビルドが成功したら（ `BUILD SUCCESS` と表示されます）、次の課題に移りましょう！コンパイルできない場合は、すべての変更が正しく行われていることを確認し、再度ビルドを試してください。
 
 ==== MDB の問題を修正
 
@@ -243,7 +243,7 @@ mvn -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/monolith clean package
 
 残念ながら、このMDBは少し前に書かれたものです。これは、MDBを構成して操作するために、WebLogic 固有のインターフェースを利用しています。RHAMT はこれにフラグを立て、いくつかの課題を使用して報告しました。
 
-JBoss EAP は、MDB のライフサイクルを設定して管理するための、より効率的で宣言的な方法を提供します。この場合、アノテーションを利用して、必要な初期化や設定のロジックや設定を行えます。Weblogicと同じ機能を提供するため`MessageListener`インターフェースに加えて、私たちは`@MessageDriven`と`@ActivationConfigProperty`アノテーションを使用するでしょう。
+JBoss EAP は、MDB のライフサイクルを設定して管理するための、より効率的で宣言的な方法を提供します。この場合、アノテーションを利用して、必要な初期化や設定のロジックや設定を行えます。Weblogicと同じ機能を提供するため `MessageListener` インターフェースに加えて、私たちは `@MessageDriven` と `@ActivationConfigProperty` アノテーションを使用するでしょう。
 
 MDB のような EJB コンポーネントのための Weblogic のインターフェースの多くは、Weblogic の XML ディスクリプタファイルにあります。`src/main/webapp/WEB-INF/weblogic-ejb-jar.xml` を開いて、これらのディスクリプタのいずれかを確認してください。このファイルには、EJB と MDB のための多くの異なる設定の可能性があります。しかし、幸いにも私たちのアプリケーションはそれらのうちの 1 つしか使用していません、すなわち、`<trans-timeout-seconds>` を 30 に設定しています。これは、MDB 操作内のあるトランザクションが完了するのに時間がかかりすぎる（ 30 秒以上）場合に、それを意味します。この時、トランザクションはロールバックされ、例外がスローされます。このインターフェイスは Weblogic 固有のものなので、JBossで同等のものを見つける必要があります。
 
@@ -256,17 +256,16 @@ MDB のような EJB コンポーネントのための Weblogic のインター�
 
 RHAMTの課題レポートから、残っている課題を修正していきます。
 
-* `Call of JNDI lookup` - Our apps use a weblogic-specific
-https://en.wikipedia.org/wiki/Java_Naming_and_Directory_Interface[JNDI^] lookup scheme.
-* `Proprietary InitialContext initialization` - Weblogic has a very different lookup mechanism for InitialContext objects
-* `WebLogic InitialContextFactory` - This is related to the above, essentially a Weblogic proprietary mechanism
-* `WebLogic T3 JNDI binding` - The way EJBs communicate in Weblogic is over T2, a proprietary implementation of Weblogic.
+* `JNDI lookupの呼び出し` - 私たちのアプリは Weblogic 固有の https://ja.wikipedia.org/wiki/Java_Naming_and_Directory_Interface[JNDI^] ルックアップスキームを使用
+* `固有の InitialContext の初期化` - Weblogic は InitialContext オブジェクトのルックアップメカニズムが大きく異なる
+* `WebLogic InitialContextFactory` - これは上記に関連しており、基本的には Weblogic 固有のメカニズム
+* `WebLogic T3 JNDI バインディング` - EJB が Weblogic で通信する方法は、Weblogic 固有な実装であるT2を介する
 
 上記のすべてのインターフェイスは、JBoss で同等のものを持っています。しかし、これらは非常に単純化されていて、私たちのアプリケーションには過剰なものです。これは https://activemq.apache.org/artemis/[Apache ActiveMQ Artemis^] によって提供される JBoss EAP の内部メッセージキュー実装を使用します。
 
 ==== 8.weblogic EJB ディスクリプタを削除
 
-最初のステップは、不要な`weblogic-ejb-jar.xml`ファイルを削除することです。このファイルは Weblogic 固有であり、JBoss EAP によって認識または処理されることはありません。`src/main/webapp/WEB-INF/weblogic-ejb-jar.xml`ファイルを右クリックして削除し、**Delete** を選択して **OK** をクリックします。
+最初のステップは、不要な `weblogic-ejb-jar.xml` ファイルを削除することです。このファイルは Weblogic 固有であり、JBoss EAP によって認識または処理されることはありません。 `src/main/webapp/WEB-INF/weblogic-ejb-jar.xml` ファイルを右クリックして削除し、**Delete** を選択して **OK** をクリックします。
 
 image::codeready-workspace-delete-jar.png[codeready-workspace-convert, 500]
 
@@ -278,7 +277,7 @@ image::codeready-workspace-delete-weblogic.png[codeready-workspace-convert, 500]
 
 ==== 9.コードの修正
 
-`monolith/src/main/java/com/redhat/coolstore/service/InventoryNotificationMDB.java`ファイルを開き、その内容を置き換えます。
+ `monolith/src/main/java/com/redhat/coolstore/service/InventoryNotificationMDB.java` ファイルを開き、その内容を置き換えます。
 
 [source,java, role="copypaste"]
 ----
@@ -352,13 +351,13 @@ mvn -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/monolith clean package
 
 image::codeready-workspace-build.png[rhamt_project_issues, 700]
 
-ビルドが成功した場合（`BUILD SUCCESS` と表示されます）。コンパイルできない場合は、すべての変更が正しく行われていることを確認し、再度ビルドを試してください。
+ビルドが成功した場合（ `BUILD SUCCESS` と表示されます）。コンパイルできない場合は、すべての変更が正しく行われていることを確認し、再度ビルドを試してください。
 
 ==== 11.RHAMTレポートの再実行
 
 このステップでは、移行が成功したことを確認するためにRHAMTレポートを再実行します。
 
-RHAMT_URL }}[RHAMT Console^] で、左メニューの `Applications` に移動し、*Add* をクリックします。*Server Path* タブを開き、固定プロジェクトのパスを `/opt/solution` と入力し、*Upload* をクリックしてプロジェクトを追加します。
+{{ RHAMT_URL }}[RHAMT Console^] で、左メニューの `Applications` に移動し、*Add* をクリックします。*Server Path* タブを開き、固定プロジェクトのパスを `/opt/solution` と入力し、*Upload* をクリックしてプロジェクトを追加します。
 
 image::rhamt_rerun_analysis_report_solution.png[rhamt_rerun_analysis_report, 700]
 
@@ -382,9 +381,9 @@ image::rhamt_project_issues_story.png[rhamt_project_issues_story, 700]
 
 '''''
 
-`monolith/pom.xml`ファイルを開きます。
+ `monolith/pom.xml` ファイルを開きます。
 
-この`<!-- TODO: Add OpenShift profile here -->` pom.xml に以下の設定を追加します。
+この `<!-- TODO: Add OpenShift profile here -->` pom.xml に以下の設定を追加します。
 
 [source,xml,role="copypaste"]
 ----
@@ -440,7 +439,7 @@ image::openshift_landing.png[openshift_landing, 700]
 
 [NOTE]
 ====
-プロジェクト名として `{{ USER_ID }}-coolstore-dev` を使用しなければ*なりません*。この名前は後に参照されるので、`{{ USER_ID }}-coolstore-dev` と名前を付けないと失敗することになります！
+プロジェクト名として `{{ USER_ID }}-coolstore-dev` を使用しなければ *なりません* 。この名前は後に参照されるので、`{{ USER_ID }}-coolstore-dev` と名前を付けないと失敗することになります！
 ====
 
 image::create_dialog.png[create_dialog, 700]
@@ -451,7 +450,7 @@ image::project_overview.png[create_new, 700]
 
 ==== 開発者視点への切り替え
 
-OpenShift 4では、コンソールに_Administrator_ビューと_Developer_ビューの両方を提供しています。左側のドロップダウンを使用して、_Developer_ 視点に切り替えます。
+OpenShift 4では、コンソールに _Administrator_ ビューと _Developer_ ビューの両方を提供しています。左側のドロップダウンを使用して、_Developer_ 視点に切り替えます。
 
 image::dev_perspective.png[create_new, 700]
 
@@ -459,7 +458,7 @@ image::dev_perspective.png[create_new, 700]
 
 ==== 15.モノリスの展開
 
-使用するアプリケーション_テンプレート_をあらかじめインストールしておきました。*From Catalog* をクリックします。
+使用するアプリケーション _テンプレート_ をあらかじめインストールしておきました。*From Catalog* をクリックします。
 
 image::from_catalog.png[create_new, 700]
 
@@ -482,11 +481,11 @@ Web コンソールの _Developer_ 視点の *Topology* ビューでは、プロ
 
 image::coolstore_topology.png[create_new, 700]
 
-実行中の_postgres_データベース（紺色の丸で囲んでいます）と、まだデプロイも起動もされていないcoolstoreモノリスを見ることができます。
+実行中の _postgres_ データベース（紺色の丸で囲んでいます）と、まだデプロイも起動もされていないcoolstoreモノリスを見ることができます。
 
 ==== モノリスを CLI を使ってデプロイ
 
-Eclipse Che ワークスペースは Kubernetes クラスタ上で実行されています。これはデフォルトの制限付き_サービス アカウント_で実行されているため、ほとんどのリソース タイプを作成することができません。他のモジュールを完了している場合は、すでにログインしていると思いますが、もう一度ログインしてみましょう：*Login to OpenShift* をクリックして、与えられた資格情報を入力します。
+Eclipse Che ワークスペースは Kubernetes クラスタ上で実行されています。これはデフォルトの制限付き _サービス アカウント_ で実行されているため、ほとんどのリソース タイプを作成することができません。他のモジュールを完了している場合は、すでにログインしていると思いますが、もう一度ログインしてみましょう：*Login to OpenShift* をクリックして、与えられた資格情報を入力します。
 
 * Username: `{{ USER_ID }}`
 * Password: `{{ OPENSHIFT_USER_PASSWORD }}`
@@ -499,7 +498,7 @@ image::cmd-login.png[login,700]
 ----
 Login successful.
 
-以下のプロジェクトにアクセスでき、'oc project <projectname>' で切り替えることができます。
+You have access to the following projects and can switch between them with 'oc project <projectname>':
 
   * {{ USER_ID }}-bookinfo
     {{ USER_ID }}-catalog
@@ -508,7 +507,8 @@ Login successful.
     {{ USER_ID }}-inventory
     {{ USER_ID }}-istio-system
 
-Using project "{{ USER_ID }}-bookinfo".Welcome!始めるには 'oc help' を参照してください。
+Using project "{{ USER_ID }}-bookinfo".
+Welcome! See 'oc help' to get started.
 ----
 
 [NOTE]
@@ -542,7 +542,7 @@ image::coolstore-labels.png[create_new, 600]
 
 ==== 16.バイナリビルドを利用したアプリケーションのデプロイ
 
-この開発プロジェクトでは、_バイナリビルド_と呼ばれるプロセスを使用することを選択しました。つまり、公開されている Git リポジトリを指す代わりに、S2I  (Source-to-Image) のビルドプロセスをダウンロードしてビルドします。そして、コンテナイメージを作成して、ローカルに構築し、成果物 （例えば `.war` ファイル）をアップロードするだけです。バイナリでのデプロイは、ビルドプロセスを大幅にスピードアップします。
+この開発プロジェクトでは、 _バイナリビルド_ と呼ばれるプロセスを使用することを選択しました。つまり、公開されている Git リポジトリを指す代わりに、S2I  (Source-to-Image) のビルドプロセスをダウンロードしてビルドします。そして、コンテナイメージを作成して、ローカルに構築し、成果物 （例えば `.war` ファイル）をアップロードするだけです。バイナリでのデプロイは、ビルドプロセスを大幅にスピードアップします。
 
 まず、`openshift` の Maven プロファイルを使用してプロジェクトをもう一度構築します。これはOpenShiftで使用するのに適したバイナリを作成します（これはまだコンテナイメージではなく、`.war` ファイルだけです）。`oc` コマンドラインでこれを行います。
 
@@ -553,7 +553,7 @@ CodeReady Workspaces ターミナルウィンドウからプロジェクトを�
 mvn clean package -Popenshift -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/monolith
 ----
 
-ビルドが終了し、`BUILD SUCCESS`のメッセージが表示されるのを待ちましょう
+ビルドが終了し、 `BUILD SUCCESS` のメッセージが表示されるのを待ちましょう
 
 そして最後に、`.war` ファイルを取得し、JBoss EAP と組み合わせて Linux コンテナイメージを生成するビルドプロセスを開始します。これは自動的にプロジェクトにデプロイされます。これはテンプレートから作成された_DeploymentConfig_オブジェクトのおかげです。
 
