@@ -45,8 +45,8 @@ echo "これはクリックしてコピー/ペーストできる bash シェル�
 * https://www.openshift.com/[Red Hat OpenShift^] - 1つ以上の **プロジェクト** （Kubernetesの名前空間）を自分のものにして、他のワークショップの受講者から隔離されたものを使用します。
 * https://developers.redhat.com/products/codeready-workspaces/overview[Red Hat CodeReady Workspaces^] - *Eclipse Che* をベースにしたクラウドベースのインブラウザ IDE です（IntelliJ IDEA, VSCode, Eclipse IDE に似ています）。あなたはこのワークショップで使用するために、自分だけのワークスペースを提供されています。ここからコードを書いて、テストして、デプロイします。
 * https://developers.redhat.com/products/rhamt[Red Hat Application Migration Toolkit^] - 既存のアプリケーションの移行に使用します。
-* https://www.redhat.com/en/products/runtimes[Red Hat Runtimes^] - Spring Boot、Node.js、 https://quarkus.io[Quarkus^] などのクラウドネイティブランタイムの集合体。
-* https://www.redhat.com/en/technologies/jboss-middleware/amq[Red Hat AMQ Streams^] - *Apache Kafka* ベースのストリーミングデータプラットフォーム
+* https://www.redhat.com/en/products/runtimes[Red Hat Runtimes^] - Spring Boot、Node.js、 https://quarkus.io[Quarkus^] などのクラウドネイティブランタイムの集合体です。
+* https://www.redhat.com/en/technologies/jboss-middleware/amq[Red Hat AMQ Streams^] - *Apache Kafka* ベースのストリーミングデータプラットフォームです。
 * https://access.redhat.com/products/red-hat-single-sign-on[Red Hat SSO^] - 認証/認可 - *Keycloak* をベースにしています。
 * 他にも、 https://knative.dev[Knative^] （サーバーレスアプリ用）、 https://jenkins.io/[Jenkins^] や https://cloud.google.com/tekton/[Tekton^] （CI/CDパイプライン）、 https://prometheus.io[Prometheus^] や https://grafana.com[Grafana^] （監視アプリ）などのオープンソースプロジェクトがあります。
 
@@ -55,6 +55,6 @@ echo "これはクリックしてコピー/ペーストできる bash シェル�
 == このワークショップを修了するには
 
 
-下部の「Next >」ボタンをクリックすると次のトピックに進みます。また、左のメニューを使って指示を自由に移動させることもできます。
+下部の「次へ進む=>」ボタンをクリックすると次のトピックに進みます。また、左のメニューを使って指示を自由に移動させることもできます。
 
 頑張ってください！始めましょう！

@@ -1,7 +1,7 @@
 = アプリケーションの移行入門 
 :experimental:
 
-このモジュールでは、小売店の Web ショップ用に設計された既存のJava EEアプリケーションを使用します。現在の Web ショップのバージョンは、Oracle Weblogic Application Server用に構築されたJava EEアプリケーションです。近代化戦略の一環として、このアプリケーションを JBoss EAP に移動し、コンテナ化し、OpenShift を使用して Kubernetes プラットフォーム上で実行することにしました。
+このモジュールでは、小売店の Web ショップ用に設計された既存の Java EE アプリケーションを使用します。現在の Web ショップのバージョンは、Oracle Weblogic Application Server 用に構築された Java EE アプリケーションです。近代化戦略の一環として、このアプリケーションを JBoss EAP に移動し、コンテナ化し、OpenShift を使用して Kubernetes プラットフォーム上で実行することにしました。
 
 === Red Hat Application Migration Toolkit とは？
 
@@ -20,7 +20,7 @@ Red Hat Application Migration Toolkit (RHAMT) は、拡張可能でカスタマ�
 
 詳しくは https://access.redhat.com/documentation/en/red-hat-application-migration-toolkit[RHAMT ドキュメント^] をご覧ください。
 
-== Lab 1 - RHAMT にログインしてアプリを分析する
+== Lab 1 - RHAMT にログインしてアプリを分析
 
 このステップでは、Oracle® WebLogic Server（WLS）で使用するために構築されたモノリシック・アプリケーションを分析します。このアプリケーションは、標準の Java EE API だけでなく、独自の Weblogic API やベストプラクティスなど、さまざまな技術を使用した Java EE アプリケーションです。
 
@@ -55,7 +55,7 @@ image::rhamt_add_monolith_app1.png[RHAMT Add App, 900]
 image::rhamt_check_monolith_app.png[RHAMT Add App, 900]
 
 
-=== 5. Active Analysis のページに移動し、完了したら最新のものをクリックします。
+=== 5. Active Analysis のページに移動し、完了したら最新の結果をクリック
 
 [NOTE]
 ====
@@ -88,9 +88,9 @@ image::rhamt_project_overview.png[RHAMT Project Overview, 900]
 
 [NOTE]
 ====
-ストーリーポイントは、機能や変更を実装するために必要な労力の相対的なレベルを見積もるために、アジャイルソフトウェア開発で一般的に使用される抽象的なメトリックです。Red Hat Application Migration Toolkit は、ストーリーポイントを使用して、特定のアプリケーション構成やアプリケーション全体の移行に必要な労力のレベルを表現します。移行するアプリケーションの規模や複雑さによって、労力のレベルは大きく変わります。
+ストーリーポイントは、アジャイルソフトウェア開発で一般的に使用される抽象的なメトリックです。これは、機能や変更を実装するために必要な労力の相対的なレベルを見積もるために使われます。Red Hat Application Migration Toolkit は、ストーリーポイントを使用して、特定のアプリケーション構成やアプリケーション全体の移行に必要な労力のレベルを表現します。移行するアプリケーションの規模や複雑さによって、労力のレベルは大きく変わります。
 ====
 
-このレポートを使って、各アプリがどれくらい簡単か、どれくらい難しいかを見積もれます。そして、どのアプリを移行するか、リファクタリングを行うか、そして放置するかを決定します。今回はJBoss EAPへのストレートな移行を行います。
+このレポートを使って、各アプリがどれくらい簡単か、どれくらい難しいかを見積もれます。そして、どのアプリを移行するか、リファクタリングを行うか、そして放置するかを決定します。今回は JBoss EAP へのストレートな移行を行います。
 
 次のステップでコードを変更します!

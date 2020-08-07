@@ -5,9 +5,9 @@
 
 === 1.開発環境へのアクセス
 
-https://www.eclipse.org/che/[Eclipse Che^] をベースにしたオンライン IDE であるRed Hat CodeReady Workspaces を使用していただきます。 *ファイルへの変更は数秒ごとに自動保存* されるので、明示的に変更を保存する必要はありません。
+https://www.eclipse.org/che/[Eclipse Che^] をベースにしたオンライン IDE である Red Hat CodeReady Workspaces を使用していただきます。 *ファイルへの変更は数秒ごとに自動保存* されるので、明示的に変更を保存する必要はありません。
 
-開始するには、{{ ECLIPSE_CHE_URL }}[CodeReady Workspaces インスタンスにアクセス^] し、割り当てられたユーザー名とパスワード（例： `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}`）を使用してログインします。
+開始するには、 {{ ECLIPSE_CHE_URL }}[CodeReady Workspaces インスタンスにアクセス^] し、割り当てられたユーザー名とパスワード（例： `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}`）を使用してログインします。
 
 image::che-login.png[cdw, 700]
 
@@ -80,6 +80,11 @@ image::rhamt_project_issues.png[rhamt_project_issues, 700]
 
 RHAMTは、課題をより深く理解し、移行のためのガイダンスを提供するための有用なリンクを提供しています。
 
+[NOTE]
+====
+（訳注）ここで Issue の一覧にある `WebLogic ApplicationLifecycleEvent	` を開いて下さい。そして、Issue の対象となるファイルと Issue の詳細を確認してから以下へお進み下さい。
+====
+
 WebLogic `ApplicationLifecycleListener` 抽象クラスは、機能を実行したり、サーバーの起動や停止など Oracle WebLogic でジョブをスケジュールしたりするために使用されます。今回の場合、 `postStart` メソッドと `preStop` メソッドがコードにあります。これらはWeblogic が起動した後とシャットダウンする前にそれぞれ実行されます。
 
 Jakarta EEでは、これらのイベントを傍受することに相当するものはありません。しかし、RHAMTレポートの問題で提案されているように、標準的なアノテーションを持つ _Singleton EJB_ を使用して同等の機能を得られます。
@@ -90,7 +95,7 @@ Jakarta EEでは、これらのイベントを傍受することに相当する�
 
 ==== 3.ApplicationLifecycleListener の問題を修正
 
-まず、Monolithアプリケーションの問題を修正します。プロジェクトツリーの `cloud-native-workshop-v2m1-labs` フォルダに移動し、 `monolith/src/main/java/com/redhat/coolstore/utils/StartupListener.java` ファイルをクリックして開きます。
+まず、Monolith アプリケーションの問題を修正します。プロジェクトツリーの `cloud-native-workshop-v2m1-labs` フォルダに移動し、 `monolith/src/main/java/com/redhat/coolstore/utils/StartupListener.java` ファイルをクリックして開きます。
 
 ファイルの内容を以下の様に置き換えます。
 
@@ -158,11 +163,11 @@ CodeReady は、（Gitを使用して） 変更した内容を追跡し、バー
 
 ==== 5.ロガーの問題を修正
 
-私たちのアプリケーションの中には、 `NonCatalogLogger` やクライアントサーバロギングのような Weblogic 固有のロギングメソッドを使用しているものがあります。NonCatalogLoggerは国際化されたコンテンツのロギングに関連した機能を提供します。
+私たちのアプリケーションの中には、 `NonCatalogLogger` やクライアントサーバロギングのような Weblogic 固有のロギングメソッドを使用しているものがあります。NonCatalogLogger は国際化されたコンテンツのロギングに関連した機能を提供します。
 
 WebLogic  `NonCatalogLogger` は、JBoss EAP (またはその他の Java EE プラットフォーム) ではサポートされていません。これは JDK Logger や JBoss Logging などのサポートされているロギングフレームワークに移行する必要があります。
 
-移植性の高いフレームワークである標準的なJava Loggingフレームワークを使用します。フレームワークも必要に応じて https://docs.oracle.com/javase/8/docs/technotes/guides/logging/overview.html#a1.17[国際化をサポートしています^]。
+移植性の高いフレームワークである標準的な Java Logging フレームワークを使用します。フレームワークも必要に応じて https://docs.oracle.com/javase/8/docs/technotes/guides/logging/overview.html#a1.17[国際化をサポートしています^]。
 
 同じ `monolith` ディレクトリで、 `src/main/java/com/redhat/coolstore/service/OrderServiceMDB.java` ファイルを開き、その内容を次のように置き換えます。
 
@@ -237,15 +242,15 @@ mvn -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/monolith clean package
 
 この最後のステップでは、アプリ内の Weblogic 固有のコードを標準の Java EE インターフェイスと JBoss 固有のインターフェイスを使用するように再度移行します。
 
-私たちのアプリケーションは https://ja.wikipedia.org/wiki/Java_Message_Service[JMS^] を使用して通信を行っています。アプリケーションで注文が入るたびに、JMSトピックにJMSメッセージが送信されます。これは、Java EE アプリケーションがメッセージを非同期的に処理できるようにする Enterprise JavaBeans (EJB) の一形態である https://docs.oracle.com/javaee/6/tutorial/doc/gipko.html[Message-driven beans^] を使用して注文を処理するために、そのトピックへのリスナー (サブスクライバ) によって消費されます。
+私たちのアプリケーションは https://ja.wikipedia.org/wiki/Java_Message_Service[JMS^] を使用して通信を行っています。アプリケーションで注文が入るたびに、JMS トピックに JMS メッセージが送信されます。これは、Java EE アプリケーションがメッセージを非同期的に処理できるようにする Enterprise JavaBeans (EJB) の一形態である https://docs.oracle.com/javaee/6/tutorial/doc/gipko.html[Message-driven beans^] を使用して注文を処理するために、そのトピックへのリスナー (サブスクライバ) によって消費されます。
 
 この場合、 `InventoryNotificationMDB` は、 `ShoppingCartService` からのメッセージを購読し、リッスンしている。 `ShoppingCartService` を経由して注文が来ると、JMS トピックにメッセージが置かれます。その時点で、 `InventoryNotificationMDB` はメッセージを受信します。そして、インベントリサービスが事前に定義された閾値を下回っている場合、製品の供給者に通知する必要があることを示すメッセージをログに送信します。
 
-残念ながら、このMDBは少し前に書かれたものです。これは、MDBを構成して操作するために、WebLogic 固有のインターフェースを利用しています。RHAMT はこれにフラグを立て、いくつかの課題を使用して報告しました。
+残念ながら、この MDB は少し前に書かれたものです。これは、MDBを構成して操作するために、WebLogic 固有のインターフェースを利用しています。RHAMT はこれにフラグを立て、いくつかの課題を使用して報告しました。
 
 JBoss EAP は、MDB のライフサイクルを設定して管理するための、より効率的で宣言的な方法を提供します。この場合、アノテーションを利用して、必要な初期化や設定のロジックや設定を行えます。Weblogicと同じ機能を提供するため `MessageListener` インターフェースに加えて、私たちは `@MessageDriven` と `@ActivationConfigProperty` アノテーションを使用するでしょう。
 
-MDB のような EJB コンポーネントのための Weblogic のインターフェースの多くは、Weblogic の XML ディスクリプタファイルにあります。 `src/main/webapp/WEB-INF/weblogic-ejb-jar.xml` を開いて、これらのディスクリプタのいずれかを確認してください。このファイルには、EJB と MDB のための多くの異なる設定の可能性があります。しかし、幸いにも私たちのアプリケーションはそれらのうちの 1 つしか使用していません、すなわち、 `<trans-timeout-seconds>` を 30 に設定しています。これは、MDB 操作内のあるトランザクションが完了するのに時間がかかりすぎる（ 30 秒以上）場合に、それを意味します。この時、トランザクションはロールバックされ、例外がスローされます。このインターフェイスは Weblogic 固有のものなので、JBossで同等のものを見つける必要があります。
+MDB のような EJB コンポーネントのための Weblogic のインターフェースの多くは、Weblogic の XML ディスクリプタファイルにあります。 `src/main/webapp/WEB-INF/weblogic-ejb-jar.xml` を開いて、これらのディスクリプタのいずれかを確認してください。このファイルには、EJB と MDB のための多くの異なる設定の可能性があります。しかし、幸いにも私たちのアプリケーションはそれらのうちの 1 つしか使用していません。すなわち、 `<trans-timeout-seconds>` を 30 に設定しています。これは、MDB 操作内のあるトランザクションが完了するのに時間がかかりすぎる（ 30 秒以上）ことを意味します。この時、トランザクションはロールバックされ、例外がスローされます。このインターフェイスは Weblogic 固有のものなので、JBoss で同等のものを見つける必要があります。
 
 [NOTE]
 ====
@@ -256,7 +261,7 @@ MDB のような EJB コンポーネントのための Weblogic のインター�
 
 RHAMTの課題レポートから、残っている課題を修正していきます。
 
-* `JNDI lookupの呼び出し` - 私たちのアプリは Weblogic 固有の https://ja.wikipedia.org/wiki/Java_Naming_and_Directory_Interface[JNDI^] ルックアップスキームを使用
+* `JNDI ルックアップの呼び出し` - 私たちのアプリは Weblogic 固有の https://ja.wikipedia.org/wiki/Java_Naming_and_Directory_Interface[JNDI^] ルックアップスキームを使用
 * `固有の InitialContext の初期化` - Weblogic は InitialContext オブジェクトのルックアップメカニズムが大きく異なる
 * `WebLogic InitialContextFactory` - これは上記に関連しており、基本的には Weblogic 固有のメカニズム
 * `WebLogic T3 JNDI バインディング` - EJB が Weblogic で通信する方法は、Weblogic 固有な実装であるT2を介する
@@ -277,7 +282,9 @@ image::codeready-workspace-delete-weblogic.png[codeready-workspace-convert, 500]
 
 ==== 9.コードの修正
 
+
 `monolith/src/main/java/com/redhat/coolstore/service/InventoryNotificationMDB.java` ファイルを開き、その内容を置き換えます。
+
 
 [source,java, role="copypaste"]
 ----

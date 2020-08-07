@@ -19,7 +19,7 @@ Quarkusは、 _Kubernetes ネイティブ_ Java スタックであり、最高�
 
 image::goal.png[lab3_goal, 700]
 
-==== 1.在庫プロジェクトの設定
+==== 1. 在庫プロジェクトの設定
 
 以下のコマンドを実行して、このラボの環境を設定し、正しいディレクトリで起動します。
 
@@ -27,7 +27,7 @@ image::goal.png[lab3_goal, 700]
 
 image::codeready-workspace-inventory-project.png[inventory_setup, 700]
 
-==== 2.Maven プロジェクトの構造を調査
+==== 2. Maven プロジェクトの構造を調査
 
 サンプルの Quarkus プロジェクトでは、いくつかのエンドポイントを REST で公開している最小限の CRUD サービスを示しています。Angularをベースにしたフロントエンドが付いているのでブラウザから遊べます。
 
@@ -44,7 +44,7 @@ image::codeready-workspace-inventory-project.png[inventory_setup, 700]
 
 image::inventory-arch.png[Inventory RESTful Service, 700]
 
-==== 3.Quarkusの拡張機能を追加
+==== 3. Quarkusの拡張機能を追加
 
 _Panache_ （Hibernate ORM 経由でデータにアクセスするための簡略化された方法）を使用するための Inventory アプリケーションに Quarkus の拡張機能を追加します。これは Postgres （本番用）と _H2_ （テスト用のインメモリデータベース）を使ったデータベースです。また、MicroProfile Health 拡張機能を使用して、ヘルスプローブを追加する機能も追加します (これは後ほど使用します)。以下のコマンドを実行して、CodeReady Terminal を使用して拡張機能を追加します。
 
@@ -68,7 +68,7 @@ mvn quarkus:add-extension -Dextensions="hibernate-orm-panache, jdbc-h2, health" 
 Quarkus 用の https://vertx.io/[Vert.x^]、 http://camel.apache.org/[Apache Camel^]、 http://infinispan.org/[Infinispan^]、Spring （`@Autowired`など）に加えて人気フレームワーク用の https://quarkus.io/extensions/[さらなる拡張機能^] がたくさんあります。
 ====
 
-==== 4.在庫エンティティの作成
+==== 4. 在庫エンティティの作成
 
 スケルトンプロジェクトができたので、ビジネスロジックの定義に取り掛かりましょう。
 
@@ -109,7 +109,7 @@ public class Inventory extends PanacheEntity {
 
 エンティティが `@Cacheable` でアノテーションされている場合、コレクションと他のエンティティとの関係を除いて、すべてのフィールド値がキャッシュされます。つまり、頻繁にアクセスされるが、めったに変化しないデータをデータベースに問い合わせることなく、エンティティをより迅速にロードすることができるということです。
 
-==== 5.在庫の RESTful エンドポイントの定義
+==== 5. 在庫の RESTful エンドポイントの定義
 
 このステップでは、_サービス_の抽象化を正確に描画します。ということで、将来的には在庫 _サービス_ を様々な場所（RESTful リソースのエンドポイントのような）に注入することができるようになります。これは私たちのモノリスが使っているのと同じアプローチなので、このアイデアを再利用することができます。 _com.redhat.coolstore_ パッケージ内の空の *InventoryResource.java* クラスを開きます。
 
@@ -178,7 +178,7 @@ public class InventoryResource {
 * `/services/inventory` これは、すべての既知の製品在庫の実体をJSONとして返す。 _HTTP GET_ 経由でアクセス可能です。
 * `/services/inventory/<itemId>` これは _HTTP GET_ 経由でアクセスできます。例えば `services/inventory/329199` で、最後のパスのパラメータには在庫の状態を知りたいIDを指定します。
 
-==== 6.在庫データの追加
+==== 6. 在庫データの追加
 
 データベースに在庫データを追加して、テストできるようにしておきましょう。 `src/main/resources/import.sql` ファイルを開き、以下の SQL 文を *import.sql* にコピーします。
 
@@ -208,7 +208,7 @@ INSERT INTO INVENTORY (id, itemId, link, location, quantity) values (nextval('hi
 %dev.quarkus.hibernate-orm.log.sql=false
 ----
 
-==== 7.Quarkus 在庫アプリケーションを実行する
+==== 7. Quarkus 在庫アプリケーションを実行する
 
 ターミナルで、 _ライブ コーディング_ モードでプロジェクトを実行します。
 
@@ -267,7 +267,7 @@ curl http://localhost:8080/services/inventory | jq
   }
 ----
 
-==== 8.ヘルスプローブの追加
+==== 8. ヘルスプローブの追加
 
 === MicroProfile Healthとは何ですか？
 
@@ -301,7 +301,7 @@ curl -s http://localhost:8080/health | jq
 
 ヘルスチェックの一般的な _結果_ は、宣言されたすべてのヘルスチェック手順の論理 AND として計算されます。また、Quarkus の拡張機能では、デフォルトのヘルスチェック機能も提供されています。今回、データベース拡張モジュールを使用しているので、上の `Database connections health check（データベース接続のヘルスチェック）` が表示される理由です。
 
-==== 9.初めてのヘルスチェックを作成
+==== 9. 初めてのヘルスチェックを作成
 
 次に、新しい RESTful エンドポイントを作成してクラスを埋めてみましょう。これは OpenShift でサービスをプローブするために使用されます。空のJavaクラス: `src/main/java/com/redhat/coolstore/InventoryHealthCheck.java` を開き、以下のコードを追加します。
 
@@ -379,7 +379,7 @@ curl -s http://localhost:8080/health | jq
 
 アプリが実行されているターミナルで kbd:[CTRL-C] と入力して Quarkus アプリを停止します。
 
-==== 10.OpenShiftプロジェクトの作成
+==== 10. OpenShiftプロジェクトの作成
 
 このステップでは、CoolStore アプリケーション用の新しい在庫マイクロサービスを別のプロジェクトにデプロイして、それを格納します。これにより、モノリスや後に作成する他のマイクロサービスとは切り離された状態になります。
 
@@ -442,7 +442,7 @@ OpenShift では、 _Developer_ パースペクティブにいることを確認
 
 まだ何もありませんが、それが変わろうとしています。
 
-==== 11.OpenShiftへのデプロイ
+==== 11. OpenShiftへのデプロイ
 
 新しい在庫のマイクロサービスを OpenShift にデプロイしよう！
 
@@ -470,7 +470,7 @@ image::db-postgres-inventory-values.png[db, 700]
 
 image::inventory-database-deployment.png[inventory_db_deployments, 700]
 
-==== 12.OpenShift へのデプロイ
+==== 12. OpenShift へのデプロイ
 
 では、アプリケーション自体をデプロイしてみましょう。以下のコマンドを実行すると、OpenShift 拡張機能を使用してビルドとデプロイを行います。
 
@@ -539,7 +539,7 @@ curl $(oc get route inventory -o jsonpath={% raw %}"{.spec.host}"{% endraw %})/h
 }
 ----
 
-==== 13.プローブのタイムアウトを調整
+==== 13. プローブのタイムアウトを調整
 
 プローブの様々なタイムアウト値は、いくつかの方法で設定できます。 _レディネスプローブ_ の初期遅延を調整して、30 秒待ってから起動するようにしましょう。 _oc_ コマンドを使用して、プローブのポーリングを開始する前に 30 秒間待つようにプローブを調整します。
 
@@ -564,7 +564,7 @@ oc describe dc/inventory | egrep 'Readiness|Liveness'
 
 次のステップでは、プローブを行使して失敗し、OpenShift がアプリケーションを回復するのを見守ります。
 
-==== 14.ヘルスチェックの練習
+==== 14. ヘルスチェックの練習
 
 http://inventory-{{ USER_ID }}-inventory.{{ ROUTE_SUBDOMAIN}}[在庫 UI^] を開きます。
 
