@@ -62,7 +62,7 @@ Red Hat がサポートする Apache Tomcat などのバージョンを使用し
 Undertow は Red Hat によってメンテナンスされているもう 1 つのオープンソースプロジェクトであり、Red Hat は近日中に Undertow のサポートを追加する予定です。
 ====
 
-Red Hat の BOM と Red Hat の maven リポジトリへのアクセスのため、サポートされているサーブレットコンテナとしての Apache Tomcat を有効にする必要があります。それは、次の依存関係を _pom.xml_ に追加することです `<!-- TODO: Add web (tomcat) dependency here -\->` のマーカーがある位置に以下を追加します。
+Red Hat の BOM と Red Hat の maven リポジトリへのアクセスのため、サポートされているサーブレットコンテナとしての Apache Tomcat を有効にする必要があります。それは、次の依存関係を _pom.xml_ に追加することです。 `<!-- TODO: Add web (tomcat) dependency here -\->` のマーカーがある位置に以下を追加します。
 
 [source,xml, role="copypaste"]
 ----
@@ -160,10 +160,10 @@ public class ProductRepository {
 
 [NOTE]
 ====
-このクラスには `@Repository` がアノテーションされています。これはスプリングの特徴であり、ボイラープレートのコードを多く回避できます。これはこのデータリポジトリの実装の詳細を書き込むだけです。また、NoSQL　データベースのような別のデータストレージへの切り替えも非常に簡単です。
+このクラスには `@Repository` がアノテーションされています。これは Spring の特徴であり、ボイラープレートのコードを多く回避できます。これはこのデータリポジトリの実装の詳細を書き込むだけです。また、NoSQL データベースのような別のデータストレージへの切り替えも非常に簡単です。
 ====
 
-Spring Data　は、ボイラープレートのコードをたくさん書かなくてもデータにアクセスできる便利な方法を提供してくれます。1 つの方法としては、 _JdbcTemplate_ を使用することです。まず、 _ProductRepository_ のメンバーとして自動で結びつける（autowire）必要があります。 `TODO: Autowire the jdbcTemplate here` の場所に以下を追加します。
+Spring Data は、ボイラープレートのコードをたくさん書かなくてもデータにアクセスできる便利な方法を提供してくれます。1 つの方法としては、 _JdbcTemplate_ を使用することです。まず、 _ProductRepository_ のメンバーとして自動で結びつける（autowire）必要があります。 `TODO: Autowire the jdbcTemplate here` の場所に以下を追加します。
 
 [source, java, role="copypaste"]
 ----
@@ -171,7 +171,7 @@ Spring Data　は、ボイラープレートのコードをたくさん書かな
     private JdbcTemplate jdbcTemplate;
 ----
 
-_JdbcTemplate_ は _RowMapper_ を提供する必要があります。 これは、クエリの行間をJavaオブジェクトにマッピングできるようにするためです。 _RowMapper_ をこのように定義します。 `<!-- TODO: Add row mapper here -->` の位置に以下を追加します。
+_JdbcTemplate_ は _RowMapper_ を提供する必要があります。 これは、クエリの行間をJavaオブジェクトにマッピングできるようにするためです。 _RowMapper_ をこのように定義します。 `//TODO: Add row mapper here` の位置に以下を追加します。
 
 [source, java, role="copypaste"]
 ----
@@ -182,7 +182,7 @@ _JdbcTemplate_ は _RowMapper_ を提供する必要があります。 これは
             rs.getDouble("price"));
 ----
 
-これで、ビジネスメソッドを作る準備が整いました。まずは `readAll()` を始めてみましょう。それは `List<Product>` を返す必要があります。 そして、クエリを `SELECT * FROM catalog` のように書けます。 そして、これはrowMapperを使用して `Product` オブジェクトにマッピングします。 `<!-- TODO:Create a method for returning all products -->` の位置に以下を追加します。
+これで、ビジネスメソッドを作る準備が整いました。まずは `readAll()` を始めてみましょう。それは `List<Product>` を返す必要があります。 そして、クエリを `SELECT * FROM catalog` のように書けます。 そして、これはrowMapperを使用して `Product` オブジェクトにマッピングします。 `//TODO: Create a method for returning all products` の位置に以下を追加します。
 
 [source, java, role="copypaste"]
 ----
@@ -191,7 +191,7 @@ _JdbcTemplate_ は _RowMapper_ を提供する必要があります。 これは
     }
 ----
 
-一つの製品要素を見つける方法も必要です。 `<!-- TODO: Create a method for returning one product -->` の位置に以下を追加します。
+一つの製品要素を見つける方法も必要です。 `//TODO: Create a method for returning one product` の位置に以下を追加します。
 
 [source, java, role="copypaste"]
 ----

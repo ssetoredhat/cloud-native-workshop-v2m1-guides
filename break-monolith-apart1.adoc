@@ -47,7 +47,7 @@ image::inventory-arch.png[Inventory RESTful Service, 700]
 
 ==== 3. Quarkusの拡張機能を追加
 
-_Panache_ （Hibernate ORM 経由でデータにアクセスするための簡略化された方法）を使用するための 在庫アプリケーションに Quarkus の拡張機能を追加します。これは Postgres （本番用）と _H2_ （テスト用のインメモリデータベース）を使ったデータベースです。また、MicroProfile Health 拡張機能を使用して、ヘルスプローブを追加する機能も追加します (これは後ほど使用します)。CodeReady Terminal を使用して `inventry` ディレクトリで以下のコマンドを実行して、拡張機能を追加します。
+_Panache_ （Hibernate ORM 経由でデータにアクセスするための簡略化された方法）を使用するための 在庫アプリケーションに Quarkus の拡張機能を追加します。これは Postgres （本番用）と _H2_ （テスト用のインメモリデータベース）を使ったデータベースです。また、MicroProfile Health 拡張機能を使用して、ヘルスプローブを追加する機能も追加します (これは後ほど使用します)。CodeReady Terminal を使用して以下のコマンドを実行して、拡張機能を追加します。
 
 [source,sh,role="copypaste"]
 ----
