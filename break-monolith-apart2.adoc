@@ -1,9 +1,10 @@
 = Lab4 - モノリスをバラバラにする - II
 :experimental:
 
+
 前のラボでは、既存のモノリシックアプリを使用して、Quarkus を使用して単一の _在庫サービス_ をリファクタリングする方法を学びました。前のラボでは在庫サービスを作っていましたが、今のところモノリスを _抑圧し_ 始めたわけではありません。それは、在庫サービスが UI から直接呼び出されることがないからです。他のバックエンドサービスでしか使われていないものです。このラボでは、カタログサービスを作成し、カタログサービスが在庫サービスを呼び出します。準備ができたら、UI コールを新サービスに紐付けるルートを変更します。
 
-これを実装するために、 https://access.redhat.com/products/spring-boot[Red Hat support for Spring Boot^] を利用します。このサービスに Spring を使う理由は、Spring Boot 開発の紹介と、 https://www.redhat.com/en/products/runtimes[Red Hat Runtimes^] がどのように Kubernetes 上での Spring 開発を簡単にするのに役立っているのかを紹介するためです。実際の生活の中で、Spring Boot を選ぶ理由は、ほとんどが既存の知識などの個人的な好みによるものです。核心部分では、Spring とJava EE は非常に似ています。
+これを実装するために、 https://access.redhat.com/products/spring-boot[Red Hat support for Spring Boot^] を利用します。このサービスに Spring を使う理由は、Spring Boot 開発の紹介と、 https://www.redhat.com/ja/products/application-runtimes[Red Hat Runtimes^] がどのように Kubernetes 上での Spring 開発を簡単にするのに役立っているのかを紹介するためです。実際の生活の中で、Spring Boot を選ぶ理由は、ほとんどが既存の知識などの個人的な好みによるものです。コア部分では、Spring とJava EE は非常に似ています。
 
 今回のゴールは以下のようなものを作ることです。
 
@@ -11,11 +12,11 @@ image::catalog-goal.png[Greeting, 700]
 
 === Spring Framework とは何ですか？
 
-Spring は最も人気のあるJavaフレームワークの1つであり、Java EEプログラミングモデルに代わるものを提供しています。また、Spring はマイクロサービスアーキテクチャをベースにしたアプリケーションの構築にも人気があります。Spring Boot は Spring エコシステムで人気のあるツールで、Spring と一緒にサードパーティのライブラリを整理して利用するのに役立ちます。また、Apache Tomcat のような埋め込み可能なランタイムをブートストラップするメカニズムも提供しています。起動可能なアプリケーション（ _fat jar_ と呼ばれることもあります）はコンテナモデルに非常によく適合します。OpenShiftのようなコンテナプラットフォームでは、アプリケーションの起動、停止、監視などの責任はアプリケーションサーバーの代わりにコンテナプラットフォームで処理されるからです。
+Spring は最も人気のある Java フレームワークの 1 つであり、Java EE プログラミングモデルに代わるものを提供しています。また、Spring はマイクロサービスアーキテクチャをベースにしたアプリケーションの構築にも人気があります。Spring Boot は Spring エコシステムで人気のあるツールで、Spring と一緒にサードパーティのライブラリを整理して利用するのに役立ちます。また、Apache Tomcat のような組込み可能なランタイムを自動実行するメカニズムも提供しています。起動可能なアプリケーション（ _fat jar_ と呼ばれることもあります）はコンテナモデルに非常によく適合します。OpenShift のようなコンテナプラットフォームでは、アプリケーションの起動、停止、監視などの責任はアプリケーションサーバーの代わりにコンテナプラットフォームで処理されるからです。
 
-*Red Hat& は、 _Spring Boot_ の主要バージョンのサポートとメンテナンスを、定められた期間にわたって提供しています。 https://access.redhat.com/documentation/en-us/red_hat_support_for_spring_boot[さらに学ぶ^]。
+*Red Hat* は、 _Spring Boot_ の主要バージョンのサポートとメンテナンスを、定められた期間にわたって提供しています。 https://access.redhat.com/documentation/en-us/red_hat_support_for_spring_boot[さらに学ぶ^]。
 
-=== マイクロサービスの呼び出しを集約します。
+=== マイクロサービスの呼び出しを集約
 
 このラボで学ぶもう 1 つのことは、サービス間の呼び出しを利用してサービスを集約する技術の一つです。他に考えられる解決策としては、マイクロサービスゲートウェイを使用したり、クライアント側のロジックを使用してサービスを組み合わせることが考えられます。
 
@@ -31,11 +32,11 @@ image::catalog-project.png[catalog-setup, 700]
 
 サンプルプロジェクトは、基本的な Spring Boot プロジェクトのコンポーネントを Maven のベストプラクティスに従って異なるサブディレクトリにレイアウトしています。
 
-ご覧の通り、今回のプロジェクトでご用意したファイルがあります。 _src/main/resources/static/index.html_ の下に、例えば、html ベースのシンプルな UI ファイルを用意しました。これは https://start.spring.io[Spring Initializr^] ウェブページから空のプロジェクトを生成した場合と非常によく一致します。
+ご覧の通り、今回のプロジェクトで用意したファイルがあります。 _src/main/resources/static/index.html_ の下に、例えば、html ベースのシンプルな UI ファイルを用意しました。これは https://start.spring.io[Spring Initializr^] ウェブページから空のプロジェクトを生成した場合と非常によく一致します。
 
-若干異なるファイルとしては、 `pom.xml` があります。開いて、もう少し近くで吟味してみてください（ただし、このときは何も変えないでください）
+若干異なるファイルとしては、 `pom.xml` があります。開いて、もう少し詳しく吟味してみてください（ただし、今は何も変えないでください）
 
-内容を見直していくと、 _TODO_ コメントが多いことに気づきます。*絶対にコメントアウトしてはいけません！*これらのコメントはマーカーとして使用され、これがないとこのラボを終えることができません。
+内容を見直していくと、 _TODO_ コメントが多いことに気づきます。 *絶対にコメントアウトしてはいけません！* これらのコメントはマーカーとして使用され、これがないとこのラボを終えることができません。
 
 Spring Boot プロジェクトが通常使用するデフォルトのBOM（部品表）を使用していないことに注意してください。代わりに、 http://snowdrop.me/[Snowdrop^] プロジェクトの一部として Red Hat が提供している BOM を使用しています。
 
@@ -61,7 +62,7 @@ Red Hat がサポートする Apache Tomcat などのバージョンを使用し
 Undertow は Red Hat によってメンテナンスされているもう 1 つのオープンソースプロジェクトであり、Red Hat は近日中に Undertow のサポートを追加する予定です。
 ====
 
-Red Hat の BOM と Red Hat の maven リポジトリへのアクセスのため、サポートされているサーブレットコンテナとしての Apache Tomcat を有効にする必要があります。それは、次の依存関係を _pom.xml_ に追加することです !-- TODO: Add web (tomcat) dependency here -->` のマーカーがある位置に以下を追加します。
+Red Hat の BOM と Red Hat の maven リポジトリへのアクセスのため、サポートされているサーブレットコンテナとしての Apache Tomcat を有効にする必要があります。それは、次の依存関係を _pom.xml_ に追加することです `<!-- TODO: Add web (tomcat) dependency here -\->` のマーカーがある位置に以下を追加します。
 
 [source,xml, role="copypaste"]
 ----
@@ -71,7 +72,7 @@ Red Hat の BOM と Red Hat の maven リポジトリへのアクセスのため
         </dependency>
 ----
 
-また、Java Persistence API（JPA）も利用します。そのため _pom.xml_ の `<!-- TODO: Add jdbc dependency here -->` に以下を追加します。
+また、Java Persistence API（JPA）も利用します。そのため _pom.xml_ の `<!-- TODO: Add jdbc dependency here -\->` に以下を追加します。
 
 [source,xml, role="copypaste"]
 ----
@@ -81,7 +82,7 @@ Red Hat の BOM と Red Hat の maven リポジトリへのアクセスのため
         </dependency>
 ----
 
-先に行きましょう。pom.xmlを開いている間に他の依存関係の束を追加します。これらについては後ほど説明します。 `<!-- TODO: Add actuator, feign and hystrix dependency here -->` の場所へ以下を追加します。
+先に行きましょう。pom.xmlを開いている間に他の依存関係の束を追加します。これらについては後ほど説明します。 `<!-- TODO: Add actuator, feign and hystrix dependency here -\->` の場所へ以下を追加します。
 
 [source,xml, role="copypaste"]
 ----
