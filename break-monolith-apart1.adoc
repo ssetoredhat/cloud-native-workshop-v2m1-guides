@@ -1,19 +1,20 @@
 = Lab3 - モノリスをバラバラにする - I
 :experimental:
 
-以前のラボでは、既存のモノリシックな Java EE アプリケーションを JBoss EAP と OpenShift を使用してクラウドに移行する方法を学びました。そして、既存のアプリケーションに対するOpenShiftの威力を垣間見ることができました。
+
+以前のラボでは、既存のモノリシックな Java EE アプリケーションを JBoss EAP と OpenShift を使用してクラウドに移行する方法を学びました。そして、既存のアプリケーションに対する OpenShift の威力を垣間見ることができました。
 
 これで、アプリケーションを異なる技術を使って複数のマイクロサービスに分解し、アプリケーションを近代化するプロセスを開始できます。これは、分散マイクロサービスのセットとしてアプリケーション全体を再設計することを最終的な目標としています。後ほど、アプリケーションが再アーキテクトされた後に、どのようにしてより良い管理と監視ができるかを探っていきます。
 
 このラボでは、 https://quarkus.io/[Quarkus^] を使って _Supersonic（超音速）、Subatomic（粒子並みに小さい）、Java_ について学びます。これはコンテナと開発者が使いやすいように設計されています。
 
-Quarkusは、 _Kubernetes ネイティブ_ Java スタックであり、最高の Java ライブラリと標準規格から作られています。驚くほど高速な起動時間、信じられないほど低いRSSメモリ（ヒープサイズだけではありません！）を提供し、Kubernetes のようなコンテナオーケストレーションプラットフォームで、ほぼ瞬時にスケールアップし、高密度のメモリ利用を実現します。Quarkus はコンパイルタイムブートと呼ばれる技術を使用しています。 
+Quarkus は、 _Kubernetes ネイティブ_ Java スタックであり、最高の Java ライブラリと標準規格から作られています。驚くほど高速な起動時間、信じられないほど低い RSS メモリ（ヒープサイズだけではありません！）を提供し、Kubernetes のようなコンテナオーケストレーションプラットフォームで、ほぼ瞬時にスケールアップし、高密度のメモリ利用を実現します。Quarkus はコンパイルタイムブートと呼ばれる技術を使用しています。 
 
-*Red Hat* では、Quarkusのサポートと保守が完全にサポートされた https://access.redhat.com/products/quarkus[Red Hat Build of Quarkus(RHBQ)^] を提供しています。このワークショップでは、Quarkus を使用して Kubernetes ネイティブのマイクロサービスを開発し、OpenShift にデプロイします。Quarkus は https://www.redhat.com/en/products/runtimes[Red Hat Runtimes^] に含まれるランタイムの 1 つです。 https://access.redhat.com/documentation/en-us/red_hat_build_of_quarkus[RHBQについてはこちらをご覧ください^]。
+*Red Hat* では、Quarkus のサポートと保守が完全にサポートされた https://access.redhat.com/products/quarkus[Red Hat Build of Quarkus(RHBQ)^] を提供しています。このワークショップでは、Quarkus を使用して Kubernetes ネイティブのマイクロサービスを開発し、OpenShift にデプロイします。Quarkus は https://www.redhat.com/en/products/runtimes[Red Hat Runtimes^] に含まれるランタイムの 1 つです。 https://access.redhat.com/documentation/en-us/red_hat_build_of_quarkus[RHBQについてはこちらをご覧ください^]。
 
 === このラボの目標
 
-モノリスの 1 つのコンポーネントを Quarkus マイクロサービスとして実装します。この修正は、マイクロサービスの懸念に対処するためにそれを修正し、その構造を理解し、OpenShiftにデプロイし、Quarkusアプリ、マイクロサービス、OpenShift/Kubernetesの間のインターフェイスを行使します。
+モノリスの 1 つのコンポーネントを Quarkus マイクロサービスとして実装します。この修正は、マイクロサービスの懸念に対処するためにそれを修正し、その構造を理解し、OpenShift にデプロイし、Quarkus アプリ、マイクロサービス、OpenShift/Kubernetes の間のインターフェイスを行使します。
 
 目標は、この新しいマイクロサービスを既存のモノリスと一緒にデプロイし、後でそれらを結びつけることです。でも、このラボの後には、次のようなものが完成するはずです。
 
@@ -29,16 +30,16 @@ image::codeready-workspace-inventory-project.png[inventory_setup, 700]
 
 ==== 2. Maven プロジェクトの構造を調査
 
-サンプルの Quarkus プロジェクトでは、いくつかのエンドポイントを REST で公開している最小限の CRUD サービスを示しています。Angularをベースにしたフロントエンドが付いているのでブラウザから遊べます。
+サンプルの Quarkus プロジェクトでは、いくつかのエンドポイントを REST で公開している最小限の CRUD サービスを示しています。Angular をベースにしたフロントエンドが付いているのでブラウザから遊べます。
 
-コードは驚くほどシンプルですが、内部ではこれらを使用しています。
+コードは驚くほどシンプルですが、内部では以下を使用しています。
 
 * REST エンドポイントを公開するための RESTEasy
-* Hibernate ORM with Panache でデータベースの CRUD 操作を実行する
-* PostgreSQL データベース; Linux コンテナを介して実行するには下部を参照してください。
+* Hibernate ORM with Panache でデータベースの CRUD 操作を実行
+* PostgreSQL データベース; Linux コンテナを介して実行するには下部を参照
 * JVMとネイティブモードのコンパイル用に新しいイメージを生成するための `Dockerfiles` の例をいくつか紹介します。
 
-`Hibernate ORM` は事実上の JPA 実装であり、オブジェクトリレーショナルマッパーの全幅を提供する。複雑なマッピングを可能にしますが、単純で一般的なマッピングをつまらなくするものではありません。Hibernate ORM with Panache は、Quarkus で書くのが楽しくなるように、エンティティを些細なものにすることに焦点を当てています。
+`Hibernate ORM` は事実上の JPA 実装であり、オブジェクトリレーショナルマッパーの全幅を提供します。複雑なマッピングを可能にしますが、単純で一般的なマッピングをつまらなくするものではありません。Hibernate ORM with Panache は、Quarkus で書くのが楽しくなるように、エンティティを些細なものにすることに焦点を当てています。
 
 それでは、いくつかのコードを書いて、ドメインモデル、サービスインターフェース、インベントリにアクセスするための RESTful エンドポイントを作成してみましょう。
 
@@ -46,7 +47,7 @@ image::inventory-arch.png[Inventory RESTful Service, 700]
 
 ==== 3. Quarkusの拡張機能を追加
 
-_Panache_ （Hibernate ORM 経由でデータにアクセスするための簡略化された方法）を使用するための Inventory アプリケーションに Quarkus の拡張機能を追加します。これは Postgres （本番用）と _H2_ （テスト用のインメモリデータベース）を使ったデータベースです。また、MicroProfile Health 拡張機能を使用して、ヘルスプローブを追加する機能も追加します (これは後ほど使用します)。以下のコマンドを実行して、CodeReady Terminal を使用して拡張機能を追加します。
+_Panache_ （Hibernate ORM 経由でデータにアクセスするための簡略化された方法）を使用するための 在庫アプリケーションに Quarkus の拡張機能を追加します。これは Postgres （本番用）と _H2_ （テスト用のインメモリデータベース）を使ったデータベースです。また、MicroProfile Health 拡張機能を使用して、ヘルスプローブを追加する機能も追加します (これは後ほど使用します)。CodeReady Terminal を使用して `inventry` ディレクトリで以下のコマンドを実行して、拡張機能を追加します。
 
 [source,sh,role="copypaste"]
 ----
@@ -55,17 +56,17 @@ mvn quarkus:add-extension -Dextensions="hibernate-orm-panache, jdbc-h2, health" 
 
 あなたは以下を見られます。
 
-✅ 拡張機能 io.quarkus:quarkus-hibernate-orm-panache を追加
+✅ Adding extension io.quarkus:quarkus-hibernate-orm-panache
 
-✅ 拡張機能 io.quarkus:quarkus-jdbc-h2 を追加
+✅ Adding extension io.quarkus:quarkus-jdbc-h2
 
-✅ 拡張機能 io.quarkus:quarkus-smallrye-health を追加
+✅ Adding extension io.quarkus:quarkus-smallrye-health
 
 そして、これは `pom.xml` に拡張機能を追加します。
 
 [NOTE]
 ====
-Quarkus 用の https://vertx.io/[Vert.x^]、 http://camel.apache.org/[Apache Camel^]、 http://infinispan.org/[Infinispan^]、Spring （`@Autowired`など）に加えて人気フレームワーク用の https://quarkus.io/extensions/[さらなる拡張機能^] がたくさんあります。
+Quarkus 用の https://vertx.io/[Vert.x^]、 http://camel.apache.org/[Apache Camel^]、 http://infinispan.org/[Infinispan^]、Spring （ `@Autowired` など）に加えて人気フレームワーク用の https://quarkus.io/extensions/[さらなる拡張機能^] がたくさんあります。
 ====
 
 ==== 4. 在庫エンティティの作成
@@ -105,13 +106,13 @@ public class Inventory extends PanacheEntity {
 
 パブリックフィールドを使用することで、ゲッターやセッターといったメソッド（単にフィールドを取得したり設定したりするだけのもの）は不要になります。Inventory.getLocation() の実装を書かなくても、Inventory.location のようなフィールドを参照するだけです。Panacheは、あなたが書いていないゲッターやセッターを自動生成します。また、取得/設定以上の機能を持つ独自のゲッター/セッターの開発もできます。これらは、フィールドに直接アクセスしたときに呼び出されます。
 
-`PanacheEntity` スーパークラスには多くの便利なスタティックメソッドがあります。あなたは派生エンティティクラスに独自のメソッドを追加できます。伝統的なオブジェクト指向プログラミングと同様に、それは自然なことです。これはカスタムクエリを可能な限りエンティティに近づけ、理想的にはエンティティ定義自体の中に配置することを推奨しています。ユーザーは、Inventory と入力するだけで、エンティティ Inventory の使用を開始でき、すべての操作の完了を一箇所で得ることができます。
+`PanacheEntity` スーパークラスには多くの便利な static メソッドがあります。あなたは派生エンティティクラスに独自のメソッドを追加できます。伝統的なオブジェクト指向プログラミングと同様に、それは自然なことです。これはカスタムクエリを可能な限りエンティティに近づけ、理想的にはエンティティ定義自体の中に配置することを推奨しています。ユーザーは、Inventory と入力するだけで、エンティティ Inventory の使用を開始でき、すべての操作の完了を一箇所で得ることができます。
 
 エンティティが `@Cacheable` でアノテーションされている場合、コレクションと他のエンティティとの関係を除いて、すべてのフィールド値がキャッシュされます。つまり、頻繁にアクセスされるが、めったに変化しないデータをデータベースに問い合わせることなく、エンティティをより迅速にロードすることができるということです。
 
 ==== 5. 在庫の RESTful エンドポイントの定義
 
-このステップでは、_サービス_の抽象化を正確に描画します。ということで、将来的には在庫 _サービス_ を様々な場所（RESTful リソースのエンドポイントのような）に注入することができるようになります。これは私たちのモノリスが使っているのと同じアプローチなので、このアイデアを再利用することができます。 _com.redhat.coolstore_ パッケージ内の空の *InventoryResource.java* クラスを開きます。
+このステップでは、 _サービス_ の抽象化を正確に描画します。ということで、将来的には在庫 _サービス_ を様々な場所（RESTful リソースのエンドポイントのような）に注入できるようになります。これは私たちのモノリスが使っているのと同じアプローチなので、このアイデアを再利用することができます。 _com.redhat.coolstore_ パッケージ内の空の *InventoryResource.java* クラスを開きます。
 
 以下のコードを追加します。
 
@@ -227,7 +228,7 @@ mvn clean compile quarkus:dev -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-l
 2020-03-19 14:41:17,457 INFO  [io.quarkus] (main) Installed features: [agroal, cdi, hibernate-orm, hibernate-orm-panache, jdbc-h2, narayana-jta, resteasy, resteasy-jsonb, smallrye-health]
 ----
 
-CodeReady は、Quarkus アプリが `5005` 番ポート（デバッグ用）と `8080` 番ポート（ウェブリクエスト用）を開いていることも検出します。5005 番ポートは開かず、プロンプトが表示されたら `8080` 番ポートを開き、CodeReady で小さな Web ブラウザを開きます。
+CodeReady は、Quarkus アプリが `5005` 番ポート（デバッグ用）と `8080` 番ポート（Webリクエスト用）を開いていることも検出します。5005 番ポートは開かず、プロンプトが表示されたら `8080` 番ポートを開き、CodeReady で小さな Web ブラウザを開きます。
 
 image::open-port.png[Inventory RESTful Service, 700]
 
@@ -271,7 +272,7 @@ curl http://localhost:8080/services/inventory | jq
 
 === MicroProfile Healthとは何ですか？
 
-*MicroProfile Health* は、アプリケーションがその状態に関する情報を外部のビューアに提供することを可能にします。これは通常、アプリケーションを破棄するか再起動するかを自動プロセスが判断できるようにしなければならないOpenShiftのようなクラウド環境で有用です。
+*MicroProfile Health* は、アプリケーションがその状態に関する情報を外部のビューアに提供することを可能にします。これは通常、アプリケーションを破棄するか再起動するかを自動プロセスが判断できるようにしなければならない OpenShift のようなクラウド環境で有用です。
 
 === ヘルスチェックを実行
 

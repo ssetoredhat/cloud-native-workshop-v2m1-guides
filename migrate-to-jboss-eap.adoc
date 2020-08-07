@@ -392,7 +392,7 @@ image::rhamt_project_issues_story.png[rhamt_project_issues_story, 700]
 `monolith/pom.xml` ファイルを開きます。
 
 
-この `<!-- TODO: Add OpenShift profile here --&gt;` pom.xml に以下の設定を追加します。
+この `<!-- TODO: Add OpenShift profile here -\->` pom.xml に以下の設定を追加します。
 
 [source,xml,role="copypaste"]
 ----
@@ -459,7 +459,7 @@ image::project_overview.png[create_new, 700]
 
 ==== 開発者視点への切り替え
 
-OpenShift 4では、コンソールに _Administrator_ ビューと _Developer_ ビューの両方を提供しています。左側のドロップダウンを使用して、 _Developer_ 視点に切り替えます。
+OpenShift 4 では、コンソールに _Administrator_ ビューと _Developer_ ビューの両方を提供しています。左側のドロップダウンを使用して、 _Developer_ ビューに切り替えます。
 
 image::dev_perspective.png[create_new, 700]
 
@@ -486,11 +486,11 @@ image::from_catalog_bin_details.png[create_new, 700]
 
 _Topology_ ビューに移動して、デプロイされた要素を確認します。
 
-Web コンソールの _Developer_ 視点の *Topology* ビューでは、プロジェクト内のすべてのアプリケーション、そのビルドステータス、およびそれらに関連するコンポーネントとサービスを視覚的に表示します。
+Web コンソールの _Developer_ ビューの *Topology* ビューでは、プロジェクト内のすべてのアプリケーション、そのビルドステータス、およびそれらに関連するコンポーネントとサービスを視覚的に表示します。
 
 image::coolstore_topology.png[create_new, 700]
 
-実行中の _postgres_ データベース（紺色の丸で囲んでいます）と、まだデプロイも起動もされていないcoolstoreモノリスを見ることができます。
+実行中の _postgres_ データベース（紺色の丸で囲んでいます）と、まだデプロイも起動もされていない coolstore モノリスを見ることができます。
 
 ==== モノリスを CLI を使ってデプロイ
 
@@ -553,7 +553,7 @@ image::coolstore-labels.png[create_new, 600]
 
 この開発プロジェクトでは、 _バイナリビルド_ と呼ばれるプロセスを使用することを選択しました。つまり、公開されている Git リポジトリを指す代わりに、S2I  (Source-to-Image) のビルドプロセスをダウンロードしてビルドします。そして、コンテナイメージを作成して、ローカルに構築し、成果物 （例えば `.war` ファイル）をアップロードするだけです。バイナリでのデプロイは、ビルドプロセスを大幅にスピードアップします。
 
-まず、 `openshift` の Maven プロファイルを使用してプロジェクトをもう一度構築します。これはOpenShiftで使用するのに適したバイナリを作成します（これはまだコンテナイメージではなく、 `.war` ファイルだけです）。 `oc` コマンドラインでこれを行います。
+まず、 `openshift` の Maven プロファイルを使用してプロジェクトをもう一度構築します。これは OpenShift で使用するのに適したバイナリを作成します（これはまだコンテナイメージではなく、 `.war` ファイルだけです）。 `oc` コマンドラインでこれを行います。
 
 CodeReady Workspaces ターミナルウィンドウからプロジェクトをビルドします。
 
@@ -588,6 +588,13 @@ image::monolith_starting.png[building, 700]
 image::monolith_wait.png[building, 700]
 
 Route リンクをクリックしてアプリケーションをテストします。
+
+
+[NOTE]
+====
+（訳注）クラスタのリソースによっては起動にしばらく時間が掛かり、なかなか表示されないことがあります。
+====
+
 
 image::route_link.png[route_link, 400]
 
