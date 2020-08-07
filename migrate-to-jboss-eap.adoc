@@ -82,7 +82,7 @@ RHAMTは、課題をより深く理解し、移行のためのガイダンスを
 
 [NOTE]
 ====
-（訳注）ここで Issue の一覧にある `WebLogic ApplicationLifecycleEvent	` を開いて下さい。そして、Issue の対象となるファイルと Issue の詳細を確認してから以下へお進み下さい。
+（訳注）ここで Issue の一覧にある `WebLogic ApplicationLifecycleEvent` を開いて下さい。そして、Issue の対象となるファイルと Issue の詳細を確認してから以下へお進み下さい。
 ====
 
 WebLogic `ApplicationLifecycleListener` 抽象クラスは、機能を実行したり、サーバーの起動や停止など Oracle WebLogic でジョブをスケジュールしたりするために使用されます。今回の場合、 `postStart` メソッドと `preStop` メソッドがコードにあります。これらはWeblogic が起動した後とシャットダウンする前にそれぞれ実行されます。
