@@ -388,7 +388,9 @@ image::rhamt_project_issues_story.png[rhamt_project_issues_story, 700]
 
 '''''
 
- `monolith/pom.xml` ファイルを開きます。
+
+`monolith/pom.xml` ファイルを開きます。
+
 
 この `<!-- TODO: Add OpenShift profile here -->` pom.xml に以下の設定を追加します。
 
