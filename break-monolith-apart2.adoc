@@ -645,7 +645,7 @@ image::catalog-goal.png[Greeting, 700]
 
 以下の手順に従って、 *オリジン間リソース共有 （CORS）* ベースのルートを作成します。CORS は、Web ページ上の制限されたリソースを、最初のリソースが提供されたドメイン以外の別のドメインから要求できるようにするメカニズムです。
 
-Quarkus には、 _javax.servlet.Filter_ インターフェイスを実装した _CORS フィルター_ が付属しており、すべての受信 HTTP リクエストを遮断します。これは Quarkus の設定ファイルで有効にできます。 `src/main/resources/application.properties` ファイル内の `在庫` プロジェクト先に作成した Quarkus アプリ）に以下の行を追加します。
+Quarkus には、 _javax.servlet.Filter_ インターフェイスを実装した _CORS フィルター_ が付属しており、すべての受信 HTTP リクエストを遮断します。これは Quarkus の設定ファイルで有効にできます。 `src/main/resources/application.properties` ファイル内の `inventory` プロジェクト先に作成した Quarkus アプリ）に以下の行を追加します。
 
 [source, properties, role="copypaste"]
 ----
