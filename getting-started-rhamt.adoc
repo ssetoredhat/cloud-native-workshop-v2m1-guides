@@ -1,105 +1,96 @@
-= Getting Started with Application Migration
+= アプリケーションの移行入門 
 :experimental:
 
-In this module you’ll work with an existing Java EE application designed for a retail webshop.  The current
-version of the webshop is a Java EE application built for Oracle Weblogic Application Server. As part of a modernization
-strategy you've decided to move this application to JBoss EAP, containerize it, and run it on a Kubernetes platform with OpenShift.
+このモジュールでは、小売店の Web ショップ用に設計された既存の Java EE アプリケーションを使用します。現在の Web ショップのバージョンは、Oracle Weblogic Application Server 用に構築された Java EE アプリケーションです。近代化戦略の一環として、このアプリケーションを JBoss EAP に移動し、コンテナ化し、OpenShift を使用して Kubernetes プラットフォーム上で実行することにしました。
 
-=== What is Red Hat Application Migration Toolkit?
+=== Red Hat Application Migration Toolkit とは？
 
 image::rhamt_logo.png[RHAMT Logo, 500]
 
-Red Hat Application Migration Toolkit (RHAMT) is an extensible and customizable rule-based tool that helps simplify migration of
-Java applications.
+Red Hat Application Migration Toolkit (RHAMT) は、拡張可能でカスタマイズ可能なルールベースのツールで、Java アプリケーションの移行を簡素化します。
 
-It is used by organizations for:
+これは以下の様な仕事で使用されています。
 
-* Planning and work estimation
-* Identifying migration issues and providing solutions
-* Detailed reporting
-* Using built-in rules and migration paths
-* Rule extension and customizability
-* Ability to analyze source code or application archives
+* 企画・作業見積り
+* 移行の問題点の特定と解決策の提供
+* 詳細なレポート
+* 組み込みのルールと移行パスの使用
+* ルールの拡張とカスタマイズ性
+* ソースコードやアプリケーションのアーカイブを分析する能力
 
-Read more about it in the https://access.redhat.com/documentation/en/red-hat-application-migration-toolkit[RHAMT documentation^]
+詳しくは https://access.redhat.com/documentation/en/red-hat-application-migration-toolkit[RHAMT ドキュメント^] をご覧ください。
 
-== Lab 1 - Login to RHAMT and analyze app
+== Lab 1 - RHAMT にログインしてアプリを分析
 
-In this step we will analyze a monolithic application built for use with Oracle® WebLogic Server (WLS). This application is a Java
-EE application using a number of different technologies, including standard Java EE APIs as well as proprietary Weblogic APIs and
-best practices.
+このステップでは、Oracle® WebLogic Server（WLS）で使用するために構築されたモノリシック・アプリケーションを分析します。このアプリケーションは、標準の Java EE API だけでなく、独自の Weblogic API やベストプラクティスなど、さまざまな技術を使用した Java EE アプリケーションです。
 
-For this lab, we will use the RHAMT Web Console on top of OpenShift Container Platform.
+このラボでは、OpenShift Container Platform の上で RHAMT Web Console を使用します。
 
-=== 1. Login to the RHAMT web console in OpenShift cluster
+=== 1. OpenShift クラスタの RHAMT Web コンソールにログイン
 
-To get started, {{ RHAMT_URL }}[access the Red Hat Application Migration Toolkit^] and log in
-using the username and password you’ve been assigned (e.g. `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}`):
+開始するには、 {{ RHAMT_URL }}[Red Hat Application Migration Toolkitにアクセス^] し、割り当てられたユーザー名とパスワード（例： `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}` ）を使用してログインします。
 
 image::rhamt_login.png[RHAMT Login, 900]
 
-=== 2. Create a new project
+=== 2. 新規プロジェクトの作成
 
-Click **New Project**. Input a name and optional description to create a project. Name the project `{{USER_ID}}-eap-migration` to avoid conflicts with other attendees.
+**New Project** をクリックします。名前とオプションの説明を入力してプロジェクトを作成します。他の参加者との衝突を避けるため、プロジェクト名を `{{USER_ID}}-eap-migration` としてください。
 
 image::rhamt_landing_page.png[RHAMT Landing Page, 900]
 
 image::rhamt_create_project.png[RHAMT Create Project, 900]
 
-=== 3. Add the monolith application to the project
+=== 3. モノリスアプリケーションをプロジェクトに追加
 
-Select *Server Path* to analyze our monolithic application:
+*Server Path* を選択して、私たちのモノリシック アプリケーションを分析します。
 
 * Server Path: `/opt/apps`
 
 image::rhamt_add_monolith_app1.png[RHAMT Add App, 900]
 
-=== 4. Select _Migration to JBoss EAP 7_ in Transformation Path
+=== 4. Transformation Path で _Migration to JBoss EAP 7_ を選択
 
-Choose the `com` and `weblogic` checkboxes to include these packages during analysis and click the *Save & Run* button. You
-will be taken to Analysis Results dashboard page, wait until the analysis is complete (it will take a minute or two).
+分析中に `com` と `weblogic` のパッケージを含めるため、これらのパッケージのチェックボックスを選択し、 *Save & Run* ボタンをクリックします。分析結果のダッシュボードページに移動しますので、分析が完了するまで待ちます（1～2分程度かかります）。
 
 image::rhamt_check_monolith_app.png[RHAMT Add App, 900]
 
 
-=== 5. Go to the Active Analysis page and click on the latest when it’s completed
+=== 5. Active Analysis のページに移動し、完了したら最新の結果をクリック
 
 [NOTE]
 ====
-Your report may be _queued_ for a few seconds. Soon you will see a progress bar, then when the report is complete you can continue. If it seems to be queued for more than a minute, try refreshing the browser page.
+あなたのレポートは数秒 _待機（queued）_ 状態になっているかもしれません。
+すぐにプログレスバーが表示され、レポートが完了したら続けられます。
+1分以上待たされているようであれば、ブラウザのページを更新してみてください。
 ====
 
-Click the `#1` link (or `#2`) to see the report:
+`#1` リンク（または `#2` ）をクリックすると、レポートが表示されます。
 
 image::rhamt_complete_analysis.png[RHAMT Complete, 900]
 
-=== 6. Review the report
+=== 6. レポートを確認
 
 image::rhamt_result_landing_page.png[RHAMT Langing Page, 900]
 
-The main landing page of the report lists the applications that were processed. Each row contains a high-level overview of the
-story points, number of incidents, and technologies encountered in that application.
+レポートの一番最初のページには、処理されたアプリケーションが掲載されています。各行には、そのアプリケーションでストーリーポイント、インシデントの数、遭遇した技術が概要で記載されています。
 
-**Click on the `monolith.war` link** to access details for the project:
+**`monolith.war` のリンクをクリックすると** 、プロジェクトの詳細にアクセスできます。
 
 image::rhamt_project_overview.png[RHAMT Project Overview, 900]
 
-=== 7. Understanding the report
+=== 7. レポートの理解
 
-The Dashboard gives an overview of the entire application migration effort. It summarizes:
+ダッシュボードでは、アプリケーションの全体の移行作業の概要を確認できます。それは以下をまとめています。
 
-* The incidents and story points by category
-* The incidents and story points by level of effort of the suggested changes
-* The incidents by package
+* カテゴリー別のインシデント・ストーリーポイント
+* 提案された変更点の労力レベル別のインシデントとストーリーポイント
+* パッケージ別のインシデント
 
 [NOTE]
 ====
-Story points are an abstract metric commonly used in Agile software development to estimate the relative level of effort needed to
-implement a feature or change. Red Hat Application Migration Toolkit uses story points to express the level of effort needed to
-migrate particular application constructs, and the application as a whole. The level of effort will vary greatly depending on the
-size and complexity of the application(s) to migrate.
+ストーリーポイントは、アジャイルソフトウェア開発で一般的に使用される抽象的なメトリックです。これは、機能や変更を実装するために必要な労力の相対的なレベルを見積もるために使われます。Red Hat Application Migration Toolkit は、ストーリーポイントを使用して、特定のアプリケーション構成やアプリケーション全体の移行に必要な労力のレベルを表現します。移行するアプリケーションの規模や複雑さによって、労力のレベルは大きく変わります。
 ====
 
-You can use this report to estimate how easy/hard each app is, and make decisions about which apps to migrate, which to refactor, and which to leave alone. In this case we will do a straight migration to JBoss EAP.
+このレポートを使って、各アプリがどれくらい簡単か、どれくらい難しいかを見積もれます。そして、どのアプリを移行するか、リファクタリングを行うか、そして放置するかを決定します。今回は JBoss EAP へのストレートな移行を行います。
 
-On to the next step to change the code!
+次のステップでコードを変更します!
