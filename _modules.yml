@@ -5,7 +5,7 @@ modules:
   workshop-environment:
     name: ワークショップの環境
   getting-started-rhamt:
-    name: Application Migration Toolkit 入門
+    name: Migration Toolkit for Applications 入門
   migrate-to-jboss-eap:
     name: JBoss EAP への移行
   break-monolith-apart1:

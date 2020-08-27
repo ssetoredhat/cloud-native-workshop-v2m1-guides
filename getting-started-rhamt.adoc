@@ -3,11 +3,11 @@
 
 このモジュールでは、小売店の Web ショップ用に設計された既存の Java EE アプリケーションを使用します。現在の Web ショップのバージョンは、Oracle Weblogic Application Server 用に構築された Java EE アプリケーションです。近代化戦略の一環として、このアプリケーションを JBoss EAP に移動し、コンテナ化し、OpenShift を使用して Kubernetes プラットフォーム上で実行することにしました。
 
-=== Red Hat Application Migration Toolkit とは？
+=== Migration Toolkit for Applications とは？
 
-image::rhamt_logo.png[RHAMT Logo, 500]
+image::rhamt_logo.png[MTA Logo, 500]
 
-Red Hat Application Migration Toolkit (RHAMT) は、拡張可能でカスタマイズ可能なルールベースのツールで、Java アプリケーションの移行を簡素化します。
+Migration Toolkit for Applications (MTA) は、拡張可能でカスタマイズ可能なルールベースのツールで、Java アプリケーションの移行を簡素化します。
 
 これは以下の様な仕事で使用されています。
 
@@ -18,27 +18,27 @@ Red Hat Application Migration Toolkit (RHAMT) は、拡張可能でカスタマ�
 * ルールの拡張とカスタマイズ性
 * ソースコードやアプリケーションのアーカイブを分析する能力
 
-詳しくは https://access.redhat.com/documentation/en/red-hat-application-migration-toolkit[RHAMT ドキュメント^] をご覧ください。
+詳しくは https://access.redhat.com/documentation/en-us/migration_toolkit_for_applications/[MTA ドキュメント^] をご覧ください。
 
-== Lab 1 - RHAMT にログインしてアプリを分析
+== Lab 1 - MTA にログインしてアプリを分析
 
 このステップでは、Oracle® WebLogic Server（WLS）で使用するために構築されたモノリシック・アプリケーションを分析します。このアプリケーションは、標準の Java EE API だけでなく、独自の Weblogic API やベストプラクティスなど、さまざまな技術を使用した Java EE アプリケーションです。
 
-このラボでは、OpenShift Container Platform の上で RHAMT Web Console を使用します。
+このラボでは、OpenShift Container Platform の上で MTA Web Console を使用します。
 
-=== 1. OpenShift クラスタの RHAMT Web コンソールにログイン
+=== 1. OpenShift クラスタの MTA Web コンソールにログイン
 
-開始するには、 {{ RHAMT_URL }}[Red Hat Application Migration Toolkitにアクセス^] ({{ RHAMT_URL }}) し、割り当てられたユーザー名とパスワード（例： `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}` ）を使用してログインします。
+開始するには、 {{ MTA_URL }}[Red Hat Migration Toolkit for Applicationsにアクセス^] し、割り当てられたユーザー名とパスワード（例： `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}` ）を使用してログインします。
 
-image::rhamt_login.png[RHAMT Login, 900]
+image::rhamt_login.png[MTA Login, 900]
 
 === 2. 新規プロジェクトの作成
 
 **New Project** をクリックします。名前とオプションの説明を入力してプロジェクトを作成します。他の参加者との衝突を避けるため、プロジェクト名を `{{USER_ID}}-eap-migration` としてください。
 
-image::rhamt_landing_page.png[RHAMT Landing Page, 900]
+image::rhamt_landing_page.png[MTA Landing Page, 900]
 
-image::rhamt_create_project.png[RHAMT Create Project, 900]
+image::rhamt_create_project.png[MTA Create Project, 900]
 
 === 3. モノリスアプリケーションをプロジェクトに追加
 
@@ -46,13 +46,13 @@ image::rhamt_create_project.png[RHAMT Create Project, 900]
 
 * Server Path: `/opt/apps`
 
-image::rhamt_add_monolith_app1.png[RHAMT Add App, 900]
+image::rhamt_add_monolith_app1.png[MTA Add App, 900]
 
 === 4. Transformation Path で _Migration to JBoss EAP 7_ を選択
 
 分析中に `com` と `weblogic` のパッケージを含めるため、これらのパッケージのチェックボックスを選択し、 *Save & Run* ボタンをクリックします。分析結果のダッシュボードページに移動しますので、分析が完了するまで待ちます（1～2分程度かかります）。
 
-image::rhamt_check_monolith_app.png[RHAMT Add App, 900]
+image::rhamt_check_monolith_app.png[MTA Add App, 900]
 
 
 === 5. Active Analysis のページに移動し、完了したら最新の結果をクリック
@@ -66,17 +66,17 @@ image::rhamt_check_monolith_app.png[RHAMT Add App, 900]
 
 `#1` リンク（または `#2` ）をクリックすると、レポートが表示されます。
 
-image::rhamt_complete_analysis.png[RHAMT Complete, 900]
+image::rhamt_complete_analysis.png[MTA Complete, 900]
 
 === 6. レポートを確認
 
-image::rhamt_result_landing_page.png[RHAMT Langing Page, 900]
+image::rhamt_result_landing_page.png[MTA Langing Page, 900]
 
 レポートの一番最初のページには、処理されたアプリケーションが掲載されています。各行には、そのアプリケーションでストーリーポイント、インシデントの数、遭遇した技術が概要で記載されています。
 
 **`monolith.war` のリンクをクリックすると** 、プロジェクトの詳細にアクセスできます。
 
-image::rhamt_project_overview.png[RHAMT Project Overview, 900]
+image::rhamt_project_overview.png[MTA Project Overview, 900]
 
 === 7. レポートの理解
 
@@ -88,7 +88,7 @@ image::rhamt_project_overview.png[RHAMT Project Overview, 900]
 
 [NOTE]
 ====
-ストーリーポイントは、アジャイルソフトウェア開発で一般的に使用される抽象的なメトリックです。これは、機能や変更を実装するために必要な労力の相対的なレベルを見積もるために使われます。Red Hat Application Migration Toolkit は、ストーリーポイントを使用して、特定のアプリケーション構成やアプリケーション全体の移行に必要な労力のレベルを表現します。移行するアプリケーションの規模や複雑さによって、労力のレベルは大きく変わります。
+ストーリーポイントは、アジャイルソフトウェア開発で一般的に使用される抽象的なメトリックです。これは、機能や変更を実装するために必要な労力の相対的なレベルを見積もるために使われます。Red Hat Migration Toolkit for Applications は、ストーリーポイントを使用して、特定のアプリケーション構成やアプリケーション全体の移行に必要な労力のレベルを表現します。移行するアプリケーションの規模や複雑さによって、労力のレベルは大きく変わります。
 ====
 
 このレポートを使って、各アプリがどれくらい簡単か、どれくらい難しいかを見積もれます。そして、どのアプリを移行するか、リファクタリングを行うか、そして放置するかを決定します。今回は JBoss EAP へのストレートな移行を行います。
