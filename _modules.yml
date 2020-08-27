@@ -3,12 +3,12 @@ config:
 
 modules:
   workshop-environment:
-    name: Your Workshop Environment
+    name: ワークショップの環境
   getting-started-rhamt:
-    name: Getting Started with Application Migration Toolkit
+    name: Application Migration Toolkit 入門
   migrate-to-jboss-eap:
-    name: Migrate to JBoss EAP
+    name: JBoss EAP への移行
   break-monolith-apart1:
-    name: Break Monolith Apart - I
+    name: モノリスの分解 - I
   break-monolith-apart2:
-    name: Break Monolith Apart - II
+    name: モノリスの分解 - II
