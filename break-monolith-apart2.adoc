@@ -708,9 +708,9 @@ oc start-build -n {{ USER_ID }}-coolstore-dev coolstore --from-file $CHE_PROJECT
 
 新しいカタログがモノリスと一緒に使われていることを確認してください。
 
-image::coolstore-web.png[Greeting, 700]
+image::coolstore_web.png[Greeting, 700]
 
-適正な在庫があれば、画面は同じようになります。しかし、以前の製品である _Atari 2600 Joystick_ は、私たちの新しいカタログマイクロサービスで削除されたため、今ではなくなっていることに注意してください。
+適正な在庫があれば、画面は同じようになります。しかし、以前の製品である _Women RHEL 8 t-shirt_ は、私たちの新しいカタログマイクロサービスで削除されたため、今ではなくなっていることに注意してください。
 
 [NOTE]
 ====
