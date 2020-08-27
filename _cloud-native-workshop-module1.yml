@@ -16,7 +16,7 @@ vars:
   CHE_USER_PASSWORD:
   OPENSHIFT_USER_NAME:
   OPENSHIFT_USER_PASSWORD:
-  MAT_URL:
+  MTA_URL:
 
 modules:
   activate:
