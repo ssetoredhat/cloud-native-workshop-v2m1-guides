@@ -51,16 +51,19 @@ _Panache_ （Hibernate ORM 経由でデータにアクセスするための簡�
 
 [source,sh,role="copypaste"]
 ----
-mvn quarkus:add-extension -Dextensions="hibernate-orm-panache, jdbc-h2, health" -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/inventory
+mvn -q quarkus:add-extension -Dextensions="hibernate-orm-panache, jdbc-h2, health" -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/inventory
 ----
 
 あなたは以下を見られます。
 
+[source,sh]
+----
 ✅ Adding extension io.quarkus:quarkus-hibernate-orm-panache
 
 ✅ Adding extension io.quarkus:quarkus-jdbc-h2
 
 ✅ Adding extension io.quarkus:quarkus-smallrye-health
+----
 
 そして、これは `pom.xml` に拡張機能を追加します。
 
@@ -220,7 +223,7 @@ mvn clean compile quarkus:dev -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-l
 
 以下で終わるログ出力の束が表示されるはずです。
 
-[source,console,role="copypaste"]
+[source,console]
 ----
 2020-03-19 14:41:17,171 INFO  [io.agr.pool] (main) Datasource '<default>': Initial size smaller than min. Connections will be created when necessary
 2020-03-19 14:41:17,454 INFO  [io.quarkus] (main) inventory 1.0-SNAPSHOT (running on Quarkus xx.xx.xx) started in 3.353s. Listening on: http://0.0.0.0:8080
@@ -270,11 +273,12 @@ curl http://localhost:8080/services/inventory | jq
 
 ==== 8. ヘルスプローブの追加
 
-=== MicroProfile Healthとは何ですか？
+===== MicroProfile Healthとは何ですか？
+>>>>>>> ocp-4.5
 
 *MicroProfile Health* は、アプリケーションがその状態に関する情報を外部のビューアに提供することを可能にします。これは通常、アプリケーションを破棄するか再起動するかを自動プロセスが判断できるようにしなければならない OpenShift のようなクラウド環境で有用です。
 
-=== ヘルスチェックを実行
+===== ヘルスチェックを実行
 
 先に _health 拡張機能_ をインポートした場合、ヘルスチェックの手順を実行するために使用できる `/health` エンドポイントが自動的に直接公開されます。
 
@@ -392,14 +396,17 @@ CodeReady Workspaces Terminal 経由で _quarkus-jdbc-postgresql_ と _openshift
 
 [source,sh,role="copypaste"]
 ----
-mvn quarkus:add-extension -Dextensions="jdbc-postgresql,openshift" -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/inventory
+mvn -q quarkus:add-extension -Dextensions="jdbc-postgresql,openshift" -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/inventory
 ----
 
 あなたを以下を見られます。
 
+[source,sh]
+----
 ✅ Adding extension io.quarkus:quarkus-openshift
 
 ✅ Adding extension io.quarkus:quarkus-jdbc-postgresql
+----
 
 Quarkus は、 _設定プロファイル_ の概念をサポートしています。これらは、同じファイル内に複数の設定を持つことができ、 _プロファイル名_ を介して選択できます。
 

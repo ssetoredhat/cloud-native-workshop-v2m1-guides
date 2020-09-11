@@ -616,14 +616,14 @@ oc start-build catalog-springboot --from-file $CHE_PROJECTS_ROOT/cloud-native-wo
 
 [source,sh,role="copypaste"]
 ----
-oc new-app catalog-springboot -e JAVA_OPTS_APPEND='-Dspring.profiles.active=openshift'
+oc new-app catalog-springboot --as-deployment-config -e JAVA_OPTS_APPEND='-Dspring.profiles.active=openshift' 
 ----
 
 を実行してサービスを世界に公開し、ヘルスチェックを追加します。
 
 [source,sh,role="copypaste"]
 ----
-oc expose service catalog-springboot && oc set probe dc/catalog-springboot  --readiness --get-url=http://:8080 --initial-delay-seconds=5 --period-seconds=5 --failure-threshold=15
+oc expose service catalog-springboot && oc set probe deployment/catalog-springboot  --readiness --get-url=http://:8080 --initial-delay-seconds=5 --period-seconds=5 --failure-threshold=15
 
 ----
 

@@ -3,82 +3,25 @@
 
 このステップでは、アプリ内の Weblogic 固有のコードを移行して、標準（Jakarta EE）インターフェースを使用するようにします。
 
-=== 1.開発環境へのアクセス
+=== 1. コードへジャンプ
 
-https://www.eclipse.org/che/[Eclipse Che^] をベースにしたオンライン IDE である Red Hat CodeReady Workspaces を使用していただきます。 *ファイルへの変更は数秒ごとに自動保存* されるので、明示的に変更を保存する必要はありません。
+特定された移行問題を含むコードにジャンプしてみましょう。MTAエクスプローラで *monolith* ソースプロジェクトを展開します。
 
-開始するには、 {{ ECLIPSE_CHE_URL }}[CodeReady Workspaces インスタンスにアクセス^] し、割り当てられたユーザー名とパスワード（例： `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}`）を使用してログインします。
+image::mta_project_issues.png[mta, 500]
 
-image::che-login.png[cdw, 700]
+エクスプローラでは、MTAが発見した課題が深刻度レベルとステータスを示すアイコンで示されています。次の表では、さまざまなアイコンの意味を説明します。
 
-ログインすると、個人のダッシュボードが表示されます。左側の作成済みワークスペースの名前をクリックすると、以下のようになります（割り当てられた番号によって名前が異なります）。
+image::mta-issues-table.png[mta, 700]
 
-image::crw-landing.png[cdw, 700]
+=== 2. マイグレーションの課題の詳細を確認
 
-また、中央のワークスペースの名前をクリックして、画面右上の _Open_ と書かれた緑色の {{ USER_ID}}-namespace をクリックします。
+マイグレーションの課題の詳細を見てみましょう。 _StartupListener.java_ ファイルの _Hints_ 内の `WebLogic ApplicationLifecycleListenerEvent[rule-id:xxx]` を右クリックします。 `View Details` をクリックします。
 
-image::crw-landing-start.png[cdw, 700]
+image::mta-issue-detail.png[rhamt_project_issues, 900]
 
-1～2分後、ワークスペースに配置されます。
+MTAはまた、`Open Report` をクリックすると、問題をより深く理解し、移行のためのガイダンスを提供するための有用なリンクを提供しています。
 
-image::che-workspace.png[cdw, 900]
-
-この IDE は、Eclipse Cheをベースにしています（これは、同様にMicroSoft VS Code editorをベースにしています）。
-
-左側には、プロジェクトエクスプローラ、検索、バージョン管理（Gitなど）、デバッグ、その他のプラグイン間を移動するためのアイコンが表示されています。このワークショップでは、これらを使用します。気軽にクリックしてみてください。
-
-image::crw-icons.png[cdw, 400]
-
-[NOTE]
-====
-おかしなことになったり、ブラウザに表れたりした場合、単にブラウザタブを再読み込みして表示を更新するだけです。
-====
-
-CodeReady Workspaces の多くの機能は、 *コマンド* を介してアクセスできます。ホームページでは、リンク付きのコマンドをいくつか見られます (例: _New File.._ 、 _Git Clone.._ 、その他)。
-
-メニューに表示されていないコマンドを実行したい場合は、kbd:[F1] を押してコマンドウィンドウを開くか、従来の kbd:[Control+SHIFT+P] （Mac OS Xでは kbd:[Command+SHIFT+P] ）を押してコマンドを実行ができます。
-
-最初のプロジェクトをインポートしてみましょう。 **Git Clone..** をクリックします。（または kbd:[F1] とするか、'git'と入力し自動で補完された _Git Clone.._ をクリックします）
-
-image::che-workspace-gitclone.png[cdw, 900]
-
-**リポジトリの URL** に次の値を使用して、プロンプトを進めます。 *FireFox* を使っていると、最後に余計なスペースを貼り付けてしまうことがあるので、貼り付けた後にバックスペースを押してください。
-
-[source,none,role="copypaste"]
-----
-https://github.com/RedHat-Middleware-Workshops/cloud-native-workshop-v2m1-labs.git
-----
-
-image::crw-clone-repo.png[crw,900]
-
-プロジェクトはワークスペースにインポートされ、プロジェクト エクスプローラに表示されます。
-
-image::crw-clone-explorer.png[crw,900]
-
-==== 重要：適切な Git ブランチをチェック
-
-プロジェクトファイルの正しいバージョンを使用していることを確認するには、CodeReady ターミナルでこのコマンドを実行してください。
-
-[source,sh,role="copypaste"]
-----
-cd $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs && git checkout ocp-4.5
-----
-
-[NOTE]
-====
-CodeReady Workspacesのターミナルウィンドウ。開発者ワークスペースで実行されているコンテナのターミナル ウィンドウを開けます。これらのラボの残りの部分については、ターミナルでコマンドを実行する必要がある場合はいつでも、右側の **>_ New Terminal** コマンドを使用できます。
-====
-
-image::codeready-workspace-terminal.png[codeready-workspace-terminal, 700]
-
-
-==== 2. `ApplicationLifecycleListener` の問題を修正
-
-{{ MTA_URL }}[MTA Console^] で Issues レポートを開きます。
-
-image::rhamt_project_issues.png[rhamt_project_issues, 700]
-
-RHAMTは、課題をより深く理解し、移行のためのガイダンスを提供するための有用なリンクを提供しています。
+image::mta-issue-open-report.png[rhamt_project_issues, 900]
 
 [NOTE]
 ====
@@ -87,15 +30,20 @@ RHAMTは、課題をより深く理解し、移行のためのガイダンスを
 
 WebLogic `ApplicationLifecycleListener` 抽象クラスは、機能を実行したり、サーバーの起動や停止など Oracle WebLogic でジョブをスケジュールしたりするために使用されます。今回の場合、 `postStart` メソッドと `preStop` メソッドがコードにあります。これらはWeblogic が起動した後とシャットダウンする前にそれぞれ実行されます。
 
-Jakarta EEでは、これらのイベントを傍受することに相当するものはありません。しかし、RHAMTレポートの問題で提案されているように、標準的なアノテーションを持つ _Singleton EJB_ を使用して同等の機能を得られます。
+Jakarta EEでは、これらのイベントを傍受することに相当するものはありません。しかし、MTAレポートの問題で提案されているように、標準的なアノテーションを持つ _Singleton EJB_ を使用して同等の機能を得られます。
 
 `@Startup` アノテーションを使用して、アプリケーションの開始時にシングルトンセッション Bean を初期化するようにコンテナに指示します。同様に `@PostConstruct` と `@PreDestroy` アノテーションを使用して、アプリケーションのライフサイクルの開始時と終了時に呼び出すメソッドを指定しますが、独自のインターフェイスを使用せずに同じ結果を得られます。
 
 このメソッドを使用することで、コードの移植性が格段に向上します。
 
-==== 3.ApplicationLifecycleListener の問題を修正
+=== 3.ApplicationLifecycleListener の問題を修正
 
-まず、Monolith アプリケーションの問題を修正します。プロジェクトツリーの `cloud-native-workshop-v2m1-labs` フォルダに移動し、 `monolith/src/main/java/com/redhat/coolstore/utils/StartupListener.java` ファイルをクリックして開きます。
+まず、Monolith アプリケーションの問題を修正します。
+_StartupListener.java_ ファイルの _Hints_ 内の `WebLogic ApplicationLifecycleListenerEvent[rule-id:xxx]` を右クリックします。コードを開く」をクリックします。
+
+image::mta-issue-open-code.png[rhamt_project_issues, 900]
+
+プロジェクトツリーの `cloud-native-workshop-v2m1-lab` フォルダに移動し、ファイル `monolith/src/main/java/com/redhat/coolstore/utils/StartupListener.java` をクリックして開くこともできます。
 
 ファイルの内容を以下の様に置き換えます。
 
@@ -136,7 +84,7 @@ public class StartupListener {
 ====
 
 
-==== 4.ビルドのテスト
+=== 4.ビルドのテスト
 
 `quarkus-tools` コンテナの下にある新しいターミナルウィンドウを開きます（右側）。ターミナルで以下のコマンドを実行してビルドをテストします。
 
@@ -151,7 +99,7 @@ image::codeready-workspace-build.png[rhamt_project_issues, 700]
 
 image::codeready-workspace-build-result.png[rhamt_project_issues, 700]
 
-===== 差分を見る
+==== 差分を見る
 
 変更した内容を見直せます。左側の _Version Control_ （バージョン管理）アイコンをクリックすると、変更されたファイルの一覧が表示されます。 `StartupListener.java` をダブルクリックして、変更点を確認します。
 
@@ -161,7 +109,7 @@ CodeReady は、（Gitを使用して） 変更した内容を追跡し、バー
 
 とりあえず、 _Explorer_ ツリーに戻って、残っている問題を修正しましょう。
 
-==== 5.ロガーの問題を修正
+=== 5.ロガーの問題を修正
 
 私たちのアプリケーションの中には、 `NonCatalogLogger` やクライアントサーバロギングのような Weblogic 固有のロギングメソッドを使用しているものがあります。NonCatalogLogger は国際化されたコンテンツのロギングに関連した機能を提供します。
 
@@ -227,7 +175,7 @@ public class OrderServiceMDB implements MessageListener {
 
 これは簡単でした。
 
-==== 6.ビルドのテスト
+=== 6.ビルドのテスト
 
 前と同じようにアプリをビルドしてパッケージ化し直します。
 
@@ -246,7 +194,8 @@ mvn -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/monolith clean package
 
 この場合、 `InventoryNotificationMDB` は、 `ShoppingCartService` からのメッセージを購読し、リッスンしている。 `ShoppingCartService` を経由して注文が来ると、JMS トピックにメッセージが置かれます。その時点で、 `InventoryNotificationMDB` はメッセージを受信します。そして、インベントリサービスが事前に定義された閾値を下回っている場合、製品の供給者に通知する必要があることを示すメッセージをログに送信します。
 
-残念ながら、この MDB は少し前に書かれたものです。これは、MDBを構成して操作するために、WebLogic 固有のインターフェースを利用しています。RHAMT はこれにフラグを立て、いくつかの課題を使用して報告しました。
+残念ながら、この MDB は少し前に書かれたものです。これは、MDBを構成して操作するために、WebLogic 固有のインターフェースを利用しています。
+MTA はこれにフラグを立て、いくつかの課題を使用して報告しました。
 
 JBoss EAP は、MDB のライフサイクルを設定して管理するための、より効率的で宣言的な方法を提供します。この場合、アノテーションを利用して、必要な初期化や設定のロジックや設定を行えます。Weblogicと同じ機能を提供するため `MessageListener` インターフェースに加えて、私たちは `@MessageDriven` と `@ActivationConfigProperty` アノテーションを使用するでしょう。
 
@@ -254,12 +203,12 @@ MDB のような EJB コンポーネントのための Weblogic のインター�
 
 [NOTE]
 ====
-このタイプの移行は、以前のステップよりも複雑であることを認識しておく必要があります。そして、実際のアプリケーションでは、移行のために一度に 1 行ずつ変更するような単純なことはほとんどありません。Red Hat のアプリケーション移行戦略の詳細については https://access.redhat.com/documentation/en/red-hat-application-migration-toolkit[RHAMT ドキュメント^] を参照するか、Red Hat がお客様の移行パスでどのように支援できるかについて、お近くの Red Hat の担当者にお問い合わせください。
+このタイプの移行は、以前のステップよりも複雑であることを認識しておく必要があります。そして、実際のアプリケーションでは、移行のために一度に 1 行ずつ変更するような単純なことはほとんどありません。Red Hat のアプリケーション移行戦略の詳細については https://access.redhat.com/documentation/en-us/migration_toolkit_for_applications/[MTA documentation^] を参照するか、Red Hat がお客様の移行パスでどのように支援できるかについて、お近くの Red Hat の担当者にお問い合わせください。
 ====
 
-==== 7.課題の見直し
+=== 7.課題の見直し
 
-RHAMTの課題レポートから、残っている課題を修正していきます。
+MTAの課題レポートから、残っている課題を修正していきます。
 
 * `JNDI ルックアップの呼び出し` - 私たちのアプリは Weblogic 固有の https://ja.wikipedia.org/wiki/Java_Naming_and_Directory_Interface[JNDI^] ルックアップスキームを使用
 * `固有の InitialContext の初期化` - Weblogic は InitialContext オブジェクトのルックアップメカニズムが大きく異なる
@@ -268,7 +217,7 @@ RHAMTの課題レポートから、残っている課題を修正していきま
 
 上記のすべてのインターフェイスは、JBoss で同等のものを持っています。しかし、これらは非常に単純化されていて、私たちのアプリケーションには過剰なものです。これは https://activemq.apache.org/artemis/[Apache ActiveMQ Artemis^] によって提供される JBoss EAP の内部メッセージキュー実装を使用します。
 
-==== 8.weblogic EJB ディスクリプタを削除
+=== 8. weblogic EJB ディスクリプタを削除
 
 最初のステップは、不要な `weblogic-ejb-jar.xml` ファイルを削除することです。このファイルは Weblogic 固有であり、JBoss EAP によって認識または処理されることはありません。 `src/main/webapp/WEB-INF/weblogic-ejb-jar.xml` ファイルを右クリックして削除し、 **Delete** を選択して **OK** をクリックします。
 
@@ -280,11 +229,9 @@ image::codeready-workspace-delete-jar.png[codeready-workspace-convert, 500]
 
 image::codeready-workspace-delete-weblogic.png[codeready-workspace-convert, 500]
 
-==== 9.コードの修正
-
+=== 9.コードの修正
 
 `monolith/src/main/java/com/redhat/coolstore/service/InventoryNotificationMDB.java` ファイルを開き、その内容を置き換えます。
-
 
 [source,java, role="copypaste"]
 ----
@@ -347,7 +294,11 @@ public class InventoryNotificationMDB implements MessageListener {
 
 これで、MDB は JBoss EAP に適切に移行されるはずです。
 
-==== 10.ビルドのテスト
+最後に、 *org.jboss.spec.javax.rmi:jboss-rmi-api_1.0_spec* へのMaven依存を削除します。JBoss EAP 7.3(またはそれ以降)では、groupId _org.jboss.spec.javax.rmi_ と artifactId _jboss-rmi-api_1.0_spec_ を持つアーティファクトはサポートされていない依存関係です。 `pom.xml` 内の以下の依存関係を削除してください。
+
+image::mta-remove-dependency.png[rhamt_rerun_analysis_report, 700]
+
+=== 10.ビルドのテスト
 
 もう一度ビルドしてください。
 
@@ -360,21 +311,24 @@ image::codeready-workspace-build.png[rhamt_project_issues, 700]
 
 ビルドが成功した場合（ `BUILD SUCCESS` と表示されます）。コンパイルできない場合は、すべての変更が正しく行われていることを確認し、再度ビルドを試してください。
 
-==== 11.RHAMTレポートの再実行
+=== 11. MTAレポートの再実行
 
-このステップでは、移行が成功したことを確認するためにRHAMTレポートを再実行します。
+このステップでは、移行が成功したことを確認するためにMTAレポートを再実行します。
 
-{{ MTA_URL }}[RHAMT Console^] で、左メニューの `Applications` に移動し、 *Add* をクリックします。 *Server Path* タブを開き、固定プロジェクトのパスを `/opt/solution` と入力し、 *Upload* をクリックしてプロジェクトを追加します。
+MTA エクスプローラで *mtaConfiguration* を右クリックして WebLogic アプリケーションを再度分析します。ポップアップメニューの `Run` をクリックします。
 
-image::rhamt_rerun_analysis_report_solution.png[rhamt_rerun_analysis_report, 700]
+image::mta-rerun-report.png[rhamt_rerun_analysis_report, 700]
 
-古い `monolith.war` を削除して、再度分析しないようにしてから、 *Save and Run* をクリックしてプロジェクトを分析してください。
+Migration Toolkit for Applications (MTA) CLIは新しいターミナルで自動的に実行され、分析を完了するには数分かかります。 `Open Report` をクリックします。
 
-image::rhamt_rerun_analysis_report_solution_del.png[rhamt_rerun_analysis_report, 700]
+image::mta-analysis-rerun-complete.png[MTA Add App, 700]
 
-レポートを実行している他の受講者の数にもよりますが、あなたの分析は数分 _待ち_ になるかもしれません。時間がかかりすぎる場合は、次のセクションをスキップして、ステップ *13* に進み、後で分析に戻って、すべての問題を排除したことを確認してください。
+[NOTE]
+====
+時間がかかりすぎる場合は、次のセクションをスキップして、ステップ *13* に進み、後で分析に戻って、すべての問題が解消されたことを確認してください。
+====
 
-==== 12.結果を確認
+=== 12.結果を確認
 
 最新の結果をクリックしてレポートのWebページに移動し、現在はストーリーポイントが 0 を報告していることを確認してください。
 
@@ -384,9 +338,7 @@ image::rhamt_project_issues_story.png[rhamt_project_issues_story, 700]
 
 アプリの移行が完了したので、デプロイしてテストし、JBoss EAP に加え Red Hat OpenShift がもたらす機能のいくつかを探ってみましょう。
 
-==== 13.OpenShiftプロファイルの追加
-
-'''''
+=== 13.OpenShiftプロファイルの追加
 
 
 `monolith/pom.xml` ファイルを開きます。
@@ -420,7 +372,7 @@ image::rhamt_project_issues_story.png[rhamt_project_issues_story, 700]
         </profile>
 ----
 
-==== 14.OpenShiftプロジェクトの作成
+=== 14.OpenShiftプロジェクトの作成
 
 まず、新規ブラウザで {{ CONSOLE_URL }}[OpenShift web コンソール^] を開きます。
 
@@ -465,7 +417,7 @@ image::dev_perspective.png[create_new, 700]
 
 これにより、プロジェクトにデプロイされたアプリケーションの開発者中心のビューを提供します。まだ何もデプロイされていないので、アプリケーションをデプロイする方法が提示されています。
 
-==== 15.モノリスの展開
+=== 15.モノリスのデプロイ
 
 使用するアプリケーション _テンプレート_ をあらかじめインストールしておきました。 *From Catalog* をクリックします。
 
@@ -549,7 +501,7 @@ image::coolstore-labels.png[create_new, 600]
 
 前のステップで構築したコンテナイメージをまだデプロイしていませんが、次のステップでデプロイします。
 
-==== 16.バイナリビルドを利用したアプリケーションのデプロイ
+=== 16.バイナリビルドを利用したアプリケーションのデプロイ
 
 この開発プロジェクトでは、 _バイナリビルド_ と呼ばれるプロセスを使用することを選択しました。つまり、公開されている Git リポジトリを指す代わりに、S2I  (Source-to-Image) のビルドプロセスをダウンロードしてビルドします。そして、コンテナイメージを作成して、ローカルに構築し、成果物 （例えば `.war` ファイル）をアップロードするだけです。バイナリでのデプロイは、ビルドプロセスを大幅にスピードアップします。
 

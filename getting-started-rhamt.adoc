@@ -24,61 +24,131 @@ Migration Toolkit for Applications (MTA) は、拡張可能でカスタマイズ
 
 このステップでは、Oracle® WebLogic Server（WLS）で使用するために構築されたモノリシック・アプリケーションを分析します。このアプリケーションは、標準の Java EE API だけでなく、独自の Weblogic API やベストプラクティスなど、さまざまな技術を使用した Java EE アプリケーションです。
 
-このラボでは、OpenShift Container Platform の上で MTA Web Console を使用します。
+このラボでは、CodeReady WorkspacesをベースにしたMTA https://access.redhat.com/documentation/en-us/migration_toolkit_for_applications/5.0/html-single/ide_plugin_guide/index[IDE Plugin^] を使用します。
 
-=== 1. OpenShift クラスタの MTA Web コンソールにログイン
+Migration Toolkit for Applications の IDE プラグインは、Eclipse や Red Hat CodeReady Studio/Workspaces で、移行やモダナイズのために変更を行う開発者を直接支援します。MTA を使用してプロジェクトを分析し、ソースコード内の移行問題をマークし、問題を修正するためのガイダンスを提供し、可能な場合は自動的にコードを置き換えます。
 
-開始するには、 {{ MTA_URL }}[Red Hat Migration Toolkit for Applicationsにアクセス^] し、割り当てられたユーザー名とパスワード（例： `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}` ）を使用してログインします。
+=== 1. 開発環境へのアクセス
 
-image::rhamt_login.png[MTA Login, 900]
+Red Hat CodeReady Workspaces は https://www.eclipse.org/che/[Eclipse Che^] をベースにしたオンライン IDE です。
+*ファイルへの変更は数秒ごとに自動保存されます* ので、明示的に変更を保存する必要はありません。
 
-=== 2. 新規プロジェクトの作成
+開始するには、 {{ ECLIPSE_CHE_URL }}[CodeReady Workspacesインスタンスにアクセス^] し、割り当てられたユーザー名とパスワード(例: `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}` )を使用してログインします。
 
-**New Project** をクリックします。名前とオプションの説明を入力してプロジェクトを作成します。他の参加者との衝突を避けるため、プロジェクト名を `{{USER_ID}}-eap-migration` としてください。
+image::che-login.png[cdw, 700]
 
-image::rhamt_landing_page.png[MTA Landing Page, 900]
+ログインすると、個人のダッシュボードが開きます。以下に示すように、左側にあるあらかじめ作成されたワークスペースの名前をクリックします（割り当てられた番号によって名前が異なります）。
 
-image::rhamt_create_project.png[MTA Create Project, 900]
+image::crw-landing.png[cdw, 700]
 
-=== 3. モノリスアプリケーションをプロジェクトに追加
+また、中央のワークスペースの名前をクリックして、画面右上の _Open_ と書かれた緑色の {{ USER_ID}}-namespace をクリックします。
 
-*Server Path* を選択して、私たちのモノリシック アプリケーションを分析します。
+image::crw-landing-start.png[cdw, 700]
 
-* Server Path: `/opt/apps`
+数分後にワークスペースが開きます。
 
-image::rhamt_add_monolith_app1.png[MTA Add App, 900]
+image::che-workspace.png[cdw, 900]
 
-=== 4. Transformation Path で _Migration to JBoss EAP 7_ を選択
+このIDEは、Eclipse Cheをベースにしています（ということは、MicroSoft VS Code editorをベースにしているということです）。
 
-分析中に `com` と `weblogic` のパッケージを含めるため、これらのパッケージのチェックボックスを選択し、 *Save & Run* ボタンをクリックします。分析結果のダッシュボードページに移動しますので、分析が完了するまで待ちます（1～2分程度かかります）。
+プロジェクトエクスプローラ、検索、バージョン管理(Gitなど)、デバッグ、その他のプラグインの間を移動するためのアイコンが左に表示されています。 このワークショップではこれらを使います。自由にクリックして何ができるか見てみてください。
 
-image::rhamt_check_monolith_app.png[MTA Add App, 900]
-
-
-=== 5. Active Analysis のページに移動し、完了したら最新の結果をクリック
+image::crw-icons.png[cdw, 400]
 
 [NOTE]
 ====
-あなたのレポートは数秒 _待機（queued）_ 状態になっているかもしれません。
-すぐにプログレスバーが表示され、レポートが完了したら続けられます。
-1分以上待たされているようであれば、ブラウザのページを更新してみてください。
+何かおかしくなったり表示が変わらない場合には、ブラウザタブを再読み込みして表示を更新してみてください。
 ====
 
-`#1` リンク（または `#2` ）をクリックすると、レポートが表示されます。
+CodeReady Workspaces の多くの機能は *Commands* からアクセスできます。いくつかのコマンドは、ホームページにリンクが張られています（例： _New File..._ 、 _Git Clone..._ など）。
 
-image::rhamt_complete_analysis.png[MTA Complete, 900]
+メニューに表示されていないコマンドを実行したい場合は、 kbd:[F1] を押してコマンドウィンドウを開くか、従来通り kbd:[Control+SHIFT+P] （Mac OS Xでは kbd:[Command+SHIFT+P] ）を押してコマンドを実行することができます。
 
-=== 6. レポートを確認
+Let's import our first project. Click on **Git Clone..** (or type kbd:[F1], enter 'git' and click on the auto-completed _Git Clone.._ )
+最初のプロジェクトをインポートしてみましょう。 **Git Clone...** をクリックします (または kbd:[F1] と入力して 'git' と入力し、自動補完された _Git Clone..._ をクリックします)。
+
+image::che-workspace-gitclone.png[cdw, 900]
+
+プロンプトの指示に従って、**Repository URL** に次の値を使用してください。 *FireFox* を使用している場合、最後に余分なスペースを貼り付けてしまう可能性があるので、貼り付けた後はバックスペースを押してください。
+
+[source,none,role="copypaste"]
+----
+https://github.com/RedHat-Middleware-Workshops/cloud-native-workshop-v2m1-labs.git
+----
+
+image::crw-clone-repo.png[crw,900]
+
+プロジェクトはワークスペースにインポートされ、プロジェクト エクスプローラに表示されます。
+
+image::crw-clone-explorer.png[crw,900]
+
+==== 重要: 適切な Git ブランチをチェックアウトしてください。
+
+プロジェクトファイルの正しいバージョンを使用していることを確認するには、CodeReadyターミナルでこのコマンドを実行してください。
+
+[source,sh,role="copypaste"]
+----
+cd $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs && git checkout ocp-4.5
+----
+
+[NOTE]
+====
+CodeReady ワークスペースのターミナルウィンドウについて。Developer ワークスペースで実行しているコンテナのいずれかのターミナルウィンドウを開くことができます。これらのラボの残りの部分については、ターミナルでコマンドを実行する必要がある場合はいつでも、右側の **>_New Terminal** コマンドを使用できます。
+====
+
+image::codeready-workspace-terminal.png[codeready-workspace-terminal, 700]
+
+=== 2. コンフィグレーションエディタを使用して分析方法を指定します。
+
+左側の `MTA Explorer` アイコンをクリックして `+` アイコンをクリックすると、新しい MTA の設定が追加されます。
+
+image::mta_newconf.png[MTA Landing Page, 500]
+
+[NOTE]
+====
+アイコンが表示されない場合は、 _MIGRATION TOOLKIT FOR APPLICATIONS_ メニューを右クリックして *Explorer* のチェックを外してから、再度チェックしてください。
+====
+
+ソースファイルとディレクトリを入力するには、`Add` をクリックし、`Open File Explorer` を選択します。
+
+image::mta-add-input.png.png[MTA Add App, 700]
+
+`projects > cloud-native-workshop-v2m1-labs` を開き、`monolith` ディレクトリを選択して、 `Choose...` をクリックします。
+
+image::mta-add-opendir.png[MTA Add App, 700]
+
+すると、 _--input_ の設定に */projects/cloud-native-workshop-v2m1-lab/monoilth* ディレクトリが追加されていることがわかります。
+
+移行先の _--target_ サーバで `eap7` を選択します。
+
+image::mta-target.png[MTA Add App, 700]
+
+移行元の `--source` をクリックし、 `weblogic` を選択します。他の設定はそのままにしておきます。
+
+image::mta-source.png[MTA Add App, 700]
+
+=== 3. 分析レポートの実行
+
+WebLogicアプリケーションを分析するには、*mtaConfiguration* を右クリックします。ポップアップメニューの `Run` をクリックします。
+
+image::mta-run-report.png[MTA Add App, 700]
+
+Migration Toolkit for Applications (MTA) CLIは新しいターミナルで自動的に実行され、分析を完了するには数分かかります。
+`Open Report` をクリックします。
+
+image::mta-analysis-complete.png[MTA Add App, 700]
+
+=== 4. レポートを確認
 
 image::rhamt_result_landing_page.png[MTA Langing Page, 900]
 
 レポートの一番最初のページには、処理されたアプリケーションが掲載されています。各行には、そのアプリケーションでストーリーポイント、インシデントの数、遭遇した技術が概要で記載されています。
 
-**`monolith.war` のリンクをクリックすると** 、プロジェクトの詳細にアクセスできます。
+** `monolith` のリンクをクリックすると ** 、プロジェクトの詳細にアクセスできます。
 
 image::rhamt_project_overview.png[MTA Project Overview, 900]
 
-=== 7. レポートの理解
+=== 5. レポートの理解
 
 ダッシュボードでは、アプリケーションの全体の移行作業の概要を確認できます。それは以下をまとめています。
 
