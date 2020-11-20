@@ -347,7 +347,7 @@ curl http://localhost:8081/services/products | jq
 
 次のステップでは、別のサービスを呼び出して、エンドポイントの応答を在庫の状態を使って強化します。
 
-[NOTE]
+[WARNING]
 ====
 アプリが起動しているターミナルで kbd:[CTRL-C] をクリックしてサービスを停止してください！
 ====
@@ -545,10 +545,10 @@ image::db-catalog-postgres.png[db, 700]
 *Instantiate Template* をクリックして、以下のフィールドを入力します。他のものはデフォルト値のままにします。
 
 * **Namespace** : _最初の名前空間は `{{ USER_ID }}-catalog` を選択します。 2 つ目は `openshift` のままにしておきます。_
-* **Database Service Name** : `catalog-database`
-* **PostgreSQL Connection Username** : `catalog`
-* **PostgreSQL Connection Password** : `mysecretpassword`
-* **PostgreSQL Database Name** : `catalog`
+* **Database Service Name**: `catalog-database`
+* **PostgreSQL Connection Username**: `catalog`
+* **PostgreSQL Connection Password**: `mysecretpassword`
+* **PostgreSQL Database Name**: `catalog`
 
 image::db-catalog-postgres-fields.png[db, 700]
 
@@ -558,7 +558,7 @@ image::db-catalog-postgres-fields.png[db, 700]
 
 CodeReady Workspaces の `src/main/resources` に `application-openshift.properties` という名前の新しいファイルを作成します。
 
-[NOTE]
+[WARNING]
 ====
 新しいファイルは、既存の `application-default.properties` と同じディレクトリにあることを確認してください！
 ====

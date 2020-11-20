@@ -5,7 +5,7 @@
 
 === 1. コードへジャンプ
 
-特定された移行問題を含むコードにジャンプしてみましょう。MTAエクスプローラで *monolith* ソースプロジェクトを展開します。
+特定された移行問題を含むコードにジャンプしてみましょう。MTAエクスプローラで *monolith* ソースプロジェクトを展開します。そして `monolith > src > main > java > com > redhat > coolstore > utils > StartupListener.java` へ移動します。実際のクラス名 `StartupListener.java` の横にある矢印をクリックすると、ヒントが展開されて表示されます。
 
 image::mta_project_issues.png[mta, 500]
 
@@ -23,10 +23,6 @@ MTAはまた、`Open Report` をクリックすると、問題をより深く理
 
 image::mta-issue-open-report.png[rhamt_project_issues, 900]
 
-[NOTE]
-====
-（訳注）ここで Issue の一覧にある `WebLogic ApplicationLifecycleEvent` を開いて下さい。そして、Issue の対象となるファイルと Issue の詳細を確認してから以下へお進み下さい。
-====
 
 WebLogic `ApplicationLifecycleListener` 抽象クラスは、機能を実行したり、サーバーの起動や停止など Oracle WebLogic でジョブをスケジュールしたりするために使用されます。今回の場合、 `postStart` メソッドと `preStop` メソッドがコードにあります。これらはWeblogic が起動した後とシャットダウンする前にそれぞれ実行されます。
 
@@ -429,8 +425,8 @@ image::from_catalog_bin.png[create_new, 700]
 
 以下の項目を記入してください。
 
-* *Namespace* : `{{USER_ID}}-coolstore-dev` (これは既に選択されているはずです)
-* *User ID* : `{{ USER_ID }}`
+* *Namespace*: `{{USER_ID}}-coolstore-dev` (これは既に選択されているはずです)
+* *User ID*: `{{ USER_ID }}`
 
 image::from_catalog_bin_details.png[create_new, 700]
 

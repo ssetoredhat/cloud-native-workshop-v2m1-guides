@@ -64,7 +64,6 @@ CodeReady Workspaces の多くの機能は *Commands* からアクセスでき�
 
 メニューに表示されていないコマンドを実行したい場合は、 kbd:[F1] を押してコマンドウィンドウを開くか、従来通り kbd:[Control+SHIFT+P] （Mac OS Xでは kbd:[Command+SHIFT+P] ）を押してコマンドを実行することができます。
 
-Let's import our first project. Click on **Git Clone..** (or type kbd:[F1], enter 'git' and click on the auto-completed _Git Clone.._ )
 最初のプロジェクトをインポートしてみましょう。 **Git Clone...** をクリックします (または kbd:[F1] と入力して 'git' と入力し、自動補完された _Git Clone..._ をクリックします)。
 
 image::che-workspace-gitclone.png[cdw, 900]
