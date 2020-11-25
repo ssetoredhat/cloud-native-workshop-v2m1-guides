@@ -147,7 +147,7 @@ image::rhamt_result_landing_page.png[MTA Langing Page, 900]
 
 レポートの一番最初のページには、処理されたアプリケーションが掲載されています。各行には、そのアプリケーションでストーリーポイント、インシデントの数、遭遇した技術が概要で記載されています。
 
-** `monolith` のリンクをクリックすると ** 、プロジェクトの詳細にアクセスできます。
+**`monolith` のリンクをクリックすると** 、プロジェクトの詳細にアクセスできます。
 
 image::rhamt_project_overview.png[MTA Project Overview, 900]
 
