@@ -35,7 +35,7 @@ Jakarta EEでは、これらのイベントを傍受することに相当する�
 === 3.ApplicationLifecycleListener の問題を修正
 
 まず、Monolith アプリケーションの問題を修正します。
-_StartupListener.java_ ファイルの _Hints_ 内の `WebLogic ApplicationLifecycleListenerEvent[rule-id:xxx]` を右クリックします。コードを開く」をクリックします。
+_StartupListener.java_ ファイルの _Hints_ 内の `WebLogic ApplicationLifecycleListenerEvent[rule-id:xxx]` を右クリックします。`Open Code` をクリックします。
 
 image::mta-issue-open-code.png[rhamt_project_issues, 900]
 
