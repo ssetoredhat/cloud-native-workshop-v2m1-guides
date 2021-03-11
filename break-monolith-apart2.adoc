@@ -100,11 +100,6 @@ Red Hat の BOM と Red Hat の maven リポジトリへのアクセスのため
           <groupId>org.springframework.cloud</groupId>
           <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
         </dependency>
-
-        <dependency>
-          <groupId>org.springframework.cloud</groupId>
-          <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
-        </dependency>
 ----
 
 これで、赤いエラーアイコンも消えるはずです！さて、プロジェクトをビルドして、これまでのところすべてがコンパイルされていることを確認してください。
@@ -390,7 +385,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@FeignClient(name="inventory")
+@FeignClient(name = "inventory", url = "${inventory.url}")
 public interface InventoryClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/services/inventory/{itemId}", consumes = {MediaType.APPLICATION_JSON_VALUE})
@@ -405,11 +400,11 @@ public interface InventoryClient {
 
 [source, java, role="copypaste"]
 ----
-inventory.ribbon.listOfServers=inventory.{{ USER_ID }}-inventory.svc.cluster.local:8080
+inventory.url=inventory.{{ USER_ID }}-inventory.svc.cluster.local:8080
 feign.hystrix.enabled=true
 ----
 
-`inventory.ribbon.listOfServers` を設定することで、サービスの実際の URL を `{{ USER_ID }}-inventory.svc.cluster.local:8080` (前回のラボで作成した在庫のマイクロサービスを指します) にハードコーディングしています。複数のサーバがある場合は、カンマを使って追加できます。しかし、Kubernetesを使用して、ここに複数のエンドポイントをリストアップする必要はありません。Kubernetesには、同じサービスの複数のインスタンス間を内部的にルーティングする _Services_ の概念があります。
+`inventory.url` を設定することで、サービスの実際の URL を `{{ USER_ID }}-inventory.svc.cluster.local:8080` (前回のラボで作成した在庫のマイクロサービスを指します) にハードコーディングしています。Kubernetesを使用している場合、ここに複数のエンドポイントをリストアップする必要はありません。Kubernetesには、同じサービスの複数のインスタンス間を内部的にルーティングする _Services_ の概念があります。
 
 今、我々は我々の _CatalogService_ でそれを使用できるクライアントを持っています。
 
@@ -478,11 +473,11 @@ import com.redhat.coolstore.client.InventoryClient;
     }
 ----
 
-フォールバックファクトリーを作成した後は、問題が発生した場合にそのフォールバックを使用するようにFeignに指示し、 `@FeignClient` アノテーションにfallbackFactoryプロパティを追加します。既存の `@FeignClient(name="inventory")` の行を以下の様に置き換えます。
+フォールバックファクトリーを作成した後は、問題が発生した場合にそのフォールバックを使用するようにFeignに指示し、 `@FeignClient` アノテーションにfallbackFactoryプロパティを追加します。既存の `@FeignClient(name = "inventory", url = "${inventory.url}")` の行を以下の様に置き換えます。
 
 [source, java, role="copypaste"]
 ----
-@FeignClient(name="inventory",fallbackFactory = InventoryClient.InventoryClientFallbackFactory.class)
+@FeignClient(name = "inventory", url = "${inventory.url}", fallbackFactory = InventoryClient.InventoryClientFallbackFactory.class)
 ----
 
 === 9.サービスの動作が遅い
@@ -513,7 +508,7 @@ mvn clean spring-boot:run -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/
 curl http://localhost:8081/services/products | jq
 ----
 
-以下が直ぐに見られるでしょう。
+以下のようなものが直ぐに見られるでしょう。
 
 [source,json]
 ----
@@ -526,7 +521,7 @@ curl http://localhost:8081/services/products | jq
   }
 ----
 
-`"quantity":230` に注目して下さい - CodeReady Workspaces は OpenShift クラスタで動作しているため、先に設定した `inventory.ribbon.listOfServers` の値は完全に有効です。
+`"quantity":230` に注目して下さい - CodeReady Workspaces は OpenShift クラスタで動作しているため、先に設定した `inventory.url` の値は完全に有効です。
 
 おめでとう！これで、製品カタログから製品を取得し、外部サービスの在庫データでデータを充足させるためのフレームワークが完成しました。このラボの次のステップでは、アプリケーションを OpenShift Container Platform にデプロイします。そして、クラウドネイティブマイクロサービス開発の様々な側面をケアするための追加機能の追加を開始します。
 
@@ -579,7 +574,7 @@ spring.datasource.continue-on-error=true
 
 feign.hystrix.enabled=true
 hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds=20000
-inventory.ribbon.listOfServers=inventory.{{ USER_ID }}-inventory.svc.cluster.local:8080
+inventory.url=inventory.{{ USER_ID }}-inventory.svc.cluster.local:8080
 ----
 
 このファイルは OpenShift にデプロイする際に Spring _プロファイル_ を指定して使用します。
@@ -623,7 +618,7 @@ oc new-app catalog-springboot --as-deployment-config -e JAVA_OPTS_APPEND='-Dspri
 
 [source,sh,role="copypaste"]
 ----
-oc expose service catalog-springboot && oc set probe deployment/catalog-springboot  --readiness --get-url=http://:8080 --initial-delay-seconds=5 --period-seconds=5 --failure-threshold=15
+oc expose service catalog-springboot && oc set probe dc/catalog-springboot  --readiness --get-url=http://:8080 --initial-delay-seconds=5 --period-seconds=5 --failure-threshold=15
 
 ----
 

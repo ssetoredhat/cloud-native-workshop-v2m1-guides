@@ -77,9 +77,9 @@ https://github.com/RedHat-Middleware-Workshops/cloud-native-workshop-v2m1-labs.g
 
 image::crw-clone-repo.png[crw,900]
 
-*Select Repository Location* をクリックしてから、*Add to Workpace* をクリックして下さい:
+*Select Repository Location* をクリックしてから、*Open in New Window* をクリックして下さい。すぐにWebブラウザが再読み込みされます。:
 
-image::crw-add-workspace.png[crw, 600, align="center"]
+image::crw-add-workspace.png[crw, 900]
 
 プロジェクトはワークスペースにインポートされ、プロジェクト エクスプローラに表示されます。
 

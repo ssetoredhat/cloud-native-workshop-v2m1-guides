@@ -200,7 +200,7 @@ INSERT INTO INVENTORY (id, itemId, link, location, quantity) values (nextval('hi
 
 [source,properties,role="copypaste"]
 ----
-%dev.quarkus.datasource.url=jdbc:h2:file://projects/database.db
+%dev.quarkus.datasource.url=jdbc:h2:mem:inventory
 %dev.quarkus.datasource.driver=org.h2.Driver
 %dev.quarkus.datasource.username=inventory
 %dev.quarkus.datasource.password=mysecretpassword
