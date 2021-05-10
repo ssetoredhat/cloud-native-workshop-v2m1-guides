@@ -1,3 +1,5 @@
+:imagesdir: images
+
 = Lab3 - モノリスをバラバラにする - I
 :experimental:
 
@@ -216,22 +218,31 @@ INSERT INTO INVENTORY (id, itemId, link, location, quantity) values (nextval('hi
 
 [source,sh,role="copypaste"]
 ----
-mvn quarkus:dev -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/inventory
+mvn quarkus:dev -Dquarkus.http.host=0.0.0.0 -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/inventory
 ----
 
 以下で終わるログ出力の束が表示されるはずです。
 
 [source,console]
 ----
-2020-03-19 14:41:17,171 INFO  [io.agr.pool] (main) Datasource '<default>': Initial size smaller than min. Connections will be created when necessary
-2020-03-19 14:41:17,454 INFO  [io.quarkus] (main) inventory 1.0-SNAPSHOT (running on Quarkus xx.xx.xx) started in 3.353s. Listening on: http://0.0.0.0:8080
-2020-03-19 14:41:17,457 INFO  [io.quarkus] (main) Profile dev activated. Live Coding activated.
-2020-03-19 14:41:17,457 INFO  [io.quarkus] (main) Installed features: [agroal, cdi, hibernate-orm, hibernate-orm-panache, jdbc-h2, narayana-jta, resteasy, resteasy-jsonb, smallrye-health]
+Listening for transport dt_socket at address: 5005
+__  ____  __  _____   ___  __ ____  ______
+ --/ __ \/ / / / _ | / _ \/ //_/ / / / __/
+ -/ /_/ / /_/ / __ |/ , _/ ,< / /_/ /\ \
+--\___\_\____/_/ |_/_/|_/_/|_|\____/___/
+INFO  [io.quarkus] (Quarkus Main Thread) inventory 1.0-SNAPSHOT on JVM (powered by Quarkus xx.xx.xx) started in 8.380s. Listening on: http://0.0.0.0:8080
+INFO  [io.quarkus] (Quarkus Main Thread) Profile dev activated. Live Coding activated.
+INFO  [io.quarkus] (Quarkus Main Thread) Installed features: [agroal, cdi, hibernate-orm, hibernate-orm-panache, jdbc-h2, mutiny, narayana-jta, resteasy, resteasy-jsonb, smallrye-context-propagation, smallrye-health]
 ----
 
-CodeReady は、Quarkus アプリが `5005` 番ポート（デバッグ用）と `8080` 番ポート（Webリクエスト用）を開いていることも検出します。5005 番ポートは開かず、プロンプトが表示されたら `8080` 番ポートを開き、CodeReady で小さな Web ブラウザを開きます。
+<<<<<<< HEAD
+CodeReady は、Quarkus アプリが `5005` 番ポート（デバッグ用）と `8080` 番ポート（Webリクエスト用）を開いていることも検出します。5005 番ポートは開かず、`8080` 番ポートを受け入れます。
 
-image::open-port.png[Inventory RESTful Service, 700]
+image::open-port-1.png[Inventory RESTful Service, 700]
+
+プロンプトが表示されたら、ポート `8080` のリンクを開くと、CodeReady で小さな Web ブラウザが開きます:
+
+image::open-port-2.png[Inventory RESTful Service, 700]
 
 CodeReady で在庫の Web フロントエンドを直接見ることができるはずです( _リロード_ アイコンをクリックする必要があるかもしれません)。
 
@@ -283,7 +294,7 @@ curl http://localhost:8080/services/inventory | jq
 
 [source,sh,role="copypaste"]
 ----
-curl -s http://localhost:8080/health | jq
+curl -s http://localhost:8080/q/health | jq
 ----
 
 以下の出力が表示されます。
@@ -337,7 +348,7 @@ public class InventoryHealthCheck implements HealthCheck {
 }
 ----
 
-`call()` メソッドは HTTP GET エンドポイントを公開します。これはサービスの状態を返します。このチェックのロジックは、基盤となるデータベースへの接続が安定しており、利用可能であることを確認するために、簡単なクエリを実行します。また、このメソッドには MicroProfile の `@Readiness` アノテーションが付けられています。これは、Quarkus がこのエンドポイントを `/health/ready` のヘルスチェックとして公開するように指示します。
+`call()` メソッドは HTTP GET エンドポイントを公開します。これはサービスの状態を返します。このチェックのロジックは、基盤となるデータベースへの接続が安定しており、利用可能であることを確認するために、簡単なクエリを実行します。また、このメソッドには MicroProfile の `@Readiness` アノテーションが付けられています。これは、Quarkus がこのエンドポイントを `/q/health/ready` のヘルスチェックとして公開するように指示します。
 
 [NOTE]
 ====
@@ -348,7 +359,7 @@ _curl_ を使用して再度ヘルスエンドポイントにアクセスする�
 
 [source,sh,role="copypaste"]
 ----
-curl -s http://localhost:8080/health | jq
+curl -s http://localhost:8080/q/health | jq
 ----
 
 以下の結果が出るはずです。
@@ -374,8 +385,7 @@ curl -s http://localhost:8080/health | jq
 
 [NOTE]
 ====
-`@Liveness` アノテーションと `@Readiness` アノテーションを使用して、個別のライブネスプローブとレディネスプローブを定義できます。そして、これは `/health/live` と `/health/ready` で別々にそれらにアクセスします。
-====
+`@Liveness` アノテーションと `@Readiness` アノテーションを使用して、個別のライブネスプローブとレディネスプローブを定義できます。そして、これは `/q/health/live` と `/q/health/ready` で別々にそれらにアクセスします。====
 
 ===== 清掃
 
@@ -416,8 +426,9 @@ _src/main/resources/application.properties_ に以下の変数を `追加` し�
 
 [source,shell,role="copypaste"]
 ----
-%prod.quarkus.datasource.url=jdbc:postgresql://inventory-database:5432/inventory
-%prod.quarkus.datasource.driver=org.postgresql.Driver
+%prod.quarkus.datasource.db-kind=postgresql
+%prod.quarkus.datasource.jdbc.url=jdbc:postgresql://inventory-database:5432/inventory
+%prod.quarkus.datasource.jdbc.driver=org.postgresql.Driver
 %prod.quarkus.datasource.username=inventory
 %prod.quarkus.datasource.password=mysecretpassword
 %prod.quarkus.datasource.max-size=8
@@ -425,22 +436,20 @@ _src/main/resources/application.properties_ に以下の変数を `追加` し�
 %prod.quarkus.hibernate-orm.database.generation=drop-and-create
 %prod.quarkus.hibernate-orm.sql-load-script=import.sql
 %prod.quarkus.hibernate-orm.log.sql=true
-%prod.quarkus.s2i.base-jvm-image=registry.access.redhat.com/ubi8/openjdk-11
 
 %prod.quarkus.kubernetes-client.trust-certs=true<1>
-%prod.quarkus.container-image.build=true<2>
-%prod.quarkus.kubernetes.deploy=true<3>
-%prod.quarkus.kubernetes.deployment-target=openshift<4>
+%prod.quarkus.kubernetes.deploy=true<2>
+%prod.quarkus.kubernetes.deployment-target=openshift<3>
+%prod.quarkus.openshift.build-strategy=docker<4>
 %prod.quarkus.openshift.expose=true<5>
-%prod.quarkus.openshift.labels.app.openshift.io/runtime=quarkus<6>
 ----
 
 <1> この単純な例では自己署名証明書を使用しているので、これは単に拡張機能に信頼するように言っているだけです。
-<2> コンテナイメージを構築するように拡張機能に指示します。
-<3> コンテナイメージが構築された後、拡張機能をOpenShiftにデプロイするように指示します。 
-<4> コンテナを構築した後に OpenShift リソース（ `DeploymentConfig` や `Service` のような）を生成して作成するように拡張機能に指示します。 
+<2> コンテナイメージが構築された後、OpenShiftにデプロイするように拡張機能に指示する
+<3> コンテナを構築した後に OpenShift リソース（ `DeploymentConfig` や `Service` のような）を生成して作成するように拡張機能に指示します。 
+<4> Dockerビルド戦略の設定 
 <5> OpenShift `Route` を生成するように拡張機能に指示します。
-<6> OpenShift Developer Toplogy を表示する際に、アプリに見栄えの良いアイコンを追加します。
+*Docker build* 戦略は、OpenShiftクラスタの外で、ローカルまたはCI環境で成果物（JARファイルまたはネイティブの実行ファイル）をビルドし、DockerfileとともにOpenShiftビルドシステムに提供します。コンテナはOpenShiftクラスター内でビルドされ、イメージストリームとして提供されます。
 
 OpenShift では、 _Developer_ パースペクティブにいることを確認し、 `{{ USER_ID }}-inventory` プロジェクトを選択します。これはすでにあなたのために作成されています。
 
@@ -521,7 +530,7 @@ UI は 2 秒ごとに在庫リテーブルを更新します。
 
 [source,sh,role="copypaste"]
 ----
-curl $(oc get route inventory -o jsonpath={% raw %}"{.spec.host}"{% endraw %})/health/ready | jq
+curl $(oc get route inventory -o jsonpath={% raw %}"{.spec.host}"{% endraw %})/q/health/ready | jq
 ----
 
 同じJSONレスポンスを使用する必要があります。
@@ -563,7 +572,7 @@ oc describe dc/inventory | egrep 'Readiness|Liveness'
 
 [source,console]
 ----
-    Readiness:          http-get http://:8080/health/ready delay=30s timeout=1s period=10s #success=1 #failure=3
+    Readiness:          http-get http://:8080/q/health/ready delay=30s timeout=1s period=10s #success=1 #failure=3
 ----
 
 次のステップでは、プローブを行使して失敗し、OpenShift がアプリケーションを回復するのを見守ります。
@@ -584,10 +593,10 @@ image::inventory.png[Greeting, 700]
 
 [source,sh,role="copypaste"]
 ----
-oc rsh dc/inventory kill 1
+oc rsh dc/inventory /bin/bash -c 'kill 1'
 ----
 
-これは、コンテナ内で実行中のJavaプロセスを停止するために Linux の *pkill* コマンドを実行します。
+これは、コンテナ内で実行中のJavaプロセスを停止するために Linux の *kill* コマンドを実行します。
 
 アプリケーションのサンプル UI ページをチェックして、在庫データへのアクセスに失敗していることに気付きます。 _最後に成功したフェッチ_ カウンタが増加し始め、UI がインベントリにアクセスできないことを示しています。これは、サーバの過負荷、コードのバグ、またはアプリケーションを不健全な状態にする他の理由によって引き起こされた可能性があります。
 

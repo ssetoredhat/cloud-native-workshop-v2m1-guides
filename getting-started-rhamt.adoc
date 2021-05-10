@@ -1,3 +1,5 @@
+:imagesdir: images
+
 = アプリケーションの移行入門 
 :experimental:
 

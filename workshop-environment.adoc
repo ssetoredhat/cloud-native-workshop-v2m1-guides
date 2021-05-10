@@ -1,3 +1,5 @@
+:imagesdir: images
+
 = ワークショップ環境 
 :experimental:
 

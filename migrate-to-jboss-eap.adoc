@@ -1,3 +1,5 @@
+:imagesdir: images
+
 = Lab 2 - JBoss EAPにアプリケーションを移行する
 :experimental:
 
