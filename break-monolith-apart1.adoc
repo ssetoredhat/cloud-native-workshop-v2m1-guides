@@ -235,7 +235,6 @@ INFO  [io.quarkus] (Quarkus Main Thread) Profile dev activated. Live Coding acti
 INFO  [io.quarkus] (Quarkus Main Thread) Installed features: [agroal, cdi, hibernate-orm, hibernate-orm-panache, jdbc-h2, mutiny, narayana-jta, resteasy, resteasy-jsonb, smallrye-context-propagation, smallrye-health]
 ----
 
-<<<<<<< HEAD
 CodeReady は、Quarkus アプリが `5005` 番ポート（デバッグ用）と `8080` 番ポート（Webリクエスト用）を開いていることも検出します。5005 番ポートは開かず、`8080` 番ポートを受け入れます。
 
 image::open-port-1.png[Inventory RESTful Service, 700]
