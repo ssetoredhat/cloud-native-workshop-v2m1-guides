@@ -1,82 +1,75 @@
-= Getting Started with Migration Toolkit for Applications?
+= アプリケーションの移行入門 
 :experimental:
 :imagesdir: images
 
-In this module you’ll work with an existing Java EE application designed for a retail webshop.  The current
-version of the webshop is a Java EE application built for Oracle Weblogic Application Server. As part of a modernization
-strategy you've decided to move this application to JBoss EAP, containerize it, and run it on a Kubernetes platform with OpenShift.
+このモジュールでは、小売店の Web ショップ用に設計された既存の Java EE アプリケーションを使用します。現在の Web ショップのバージョンは、Oracle Weblogic Application Server 用に構築された Java EE アプリケーションです。近代化戦略の一環として、このアプリケーションを JBoss EAP に移動し、コンテナ化し、OpenShift を使用して Kubernetes プラットフォーム上で実行することにしました。
 
-=== What is Migration Toolkit for Applications?
+=== Migration Toolkit for Applications とは？
 
 image::rhamt_logo.png[MTA Logo, 500]
 
-Migration Toolkit for Applications (MTA) is an extensible and customizable rule-based tool that helps simplify migration of
-Java applications.
+Migration Toolkit for Applications (MTA) は、拡張可能でカスタマイズ可能なルールベースのツールで、Java アプリケーションの移行を簡素化します。
 
-It is used by organizations for:
+これは以下の様な仕事で使用されています。
 
-* Planning and work estimation
-* Identifying migration issues and providing solutions
-* Detailed reporting
-* Built-in rules and migration paths
-* Rule extensibility and customization
-* Ability to analyze source code or application archives
+* 企画・作業見積り
+* 移行の問題点の特定と解決策の提供
+* 詳細なレポート
+* 組み込みのルールと移行パスの使用
+* ルールの拡張とカスタマイズ性
+* ソースコードやアプリケーションのアーカイブを分析する能力
 
-Read more about it in the https://access.redhat.com/documentation/en-us/migration_toolkit_for_applications/[MTA documentation^]
+詳しくは https://access.redhat.com/documentation/en-us/migration_toolkit_for_applications/[MTA ドキュメント^] をご覧ください。
 
-== Lab 1 - Analyze app using MTA IDE Plugin
+== Lab 1 - MTA にログインしてアプリを分析
 
-In this step we will analyze a monolithic application built for use with Oracle WebLogic Server (WLS). This application is a Java
-EE application using a number of different technologies, including standard Java EE APIs as well as proprietary Weblogic APIs and
-best practices.
+このステップでは、Oracle® WebLogic Server（WLS）で使用するために構築されたモノリシック・アプリケーションを分析します。このアプリケーションは、標準の Java EE API だけでなく、独自の Weblogic API やベストプラクティスなど、さまざまな技術を使用した Java EE アプリケーションです。
 
-For this lab, we will use the MTA https://access.redhat.com/documentation/en-us/migration_toolkit_for_applications/5.1/html-single/ide_plugin_guide/index[IDE Plugin^] based on CodeReady Workspaces.
+このラボでは、CodeReady WorkspacesをベースにしたMTA https://access.redhat.com/documentation/en-us/migration_toolkit_for_applications/5.0/html-single/ide_plugin_guide/index[IDE Plugin^] を使用します。
 
-The IDE Plugin for the Migration Toolkit for Applications provides assistance directly in Eclipse and Red Hat CodeReady Studio/Workspaces for developers making changes for a migration or modernization effort. It analyzes your projects using MTA, marks migration issues in the source code, provides guidance to fix the issues, and offers automatic code replacement when possible.
+Migration Toolkit for Applications の IDE プラグインは、Eclipse や Red Hat CodeReady Studio/Workspaces で、移行やモダナイズのために変更を行う開発者を直接支援します。MTA を使用してプロジェクトを分析し、ソースコード内の移行問題をマークし、問題を修正するためのガイダンスを提供し、可能な場合は自動的にコードを置き換えます。
 
-=== 1. Access Your Development Environment
+=== 1. 開発環境へのアクセス
 
-You will be using Red Hat CodeReady Workspaces, an online IDE based on https://www.eclipse.org/che/[Eclipse
-Che^]. *Changes to files are auto-saved every few seconds*, so you don’t need to explicitly save changes.
+Red Hat CodeReady Workspaces は https://www.eclipse.org/che/[Eclipse Che^] をベースにしたオンライン IDE です。
+*ファイルへの変更は数秒ごとに自動保存されます* ので、明示的に変更を保存する必要はありません。
 
-To get started, {{ ECLIPSE_CHE_URL }}[access the CodeReady Workspaces instance^] and log in using the username
-and password you’ve been assigned (e.g. `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}`):
+開始するには、 {{ ECLIPSE_CHE_URL }}[CodeReady Workspacesインスタンスにアクセス^] し、割り当てられたユーザー名とパスワード(例: `{{ USER_ID }}/{{ CHE_USER_PASSWORD }}` )を使用してログインします。
 
 image::che-login.png[cdw, 700]
 
-Once you log in, you’ll be placed on your personal dashboard. Click on the name of
-the pre-created workspace on the left, as shown below (the name will be different depending on your assigned number).
+ログインすると、個人のダッシュボードが開きます。以下に示すように、左側にあるあらかじめ作成されたワークスペースの名前をクリックします（割り当てられた番号によって名前が異なります）。
 
 image::crw-landing.png[cdw, 700]
 
-You can also click on the name of the workspace in the center, and then click on the green {{ USER_ID}}-namespace that says _Open_ on the top right hand side of the screen:
+また、中央のワークスペースの名前をクリックして、画面右上の _Open_ と書かれた緑色の {{ USER_ID}}-namespace をクリックします。
 
 image::crw-landing-start.png[cdw, 700]
 
-After a minute or two, you’ll be placed in the workspace:
+数分後にワークスペースが開きます。
 
 image::che-workspace.png[cdw, 900]
 
-This IDE is based on Eclipse Che (which is in turn based on Microsoft VS Code editor).
+このIDEは、Eclipse Cheをベースにしています（ということは、MicroSoft VS Code editorをベースにしています）。
 
-You can see icons on the left for navigating between project explorer, search, version control (e.g. Git), debugging, and other plugins.  You’ll use these during the course of this workshop. Feel free to click on them and see what they do:
+プロジェクトエクスプローラ、検索、バージョン管理(Gitなど)、デバッグ、その他のプラグインの間を移動するためのアイコンが左に表示されています。 このワークショップではこれらを使います。自由にクリックして何ができるか見てみてください。
 
 image::crw-icons.png[cdw, 400]
 
 [NOTE]
 ====
-If things get weird or your browser appears, you can simply reload the browser tab to refresh the view.
+何かおかしくなったり表示が変わらない場合には、ブラウザタブを再読み込みして表示を更新してみてください。
 ====
 
-Many features of CodeReady Workspaces are accessed via *Commands*. You can see a few of the commands listed with links on the home page (e.g. _New File.._, _Git Clone.._, and others).
+CodeReady Workspaces の多くの機能は *Commands* からアクセスできます。いくつかのコマンドは、ホームページにリンクが張られています（例： _New File..._ 、 _Git Clone..._ など）。
 
-If you ever need to run commands that you don't see in a menu, you can press kbd:[F1] to open the command window, or the more traditional kbd:[Control+SHIFT+P] (or kbd:[Command+SHIFT+P] on Mac OS X).
+メニューに表示されていないコマンドを実行したい場合は、 kbd:[F1] を押してコマンドウィンドウを開くか、従来通り kbd:[Control+SHIFT+P] （Mac OS Xでは kbd:[Command+SHIFT+P] ）を押してコマンドを実行することができます。
 
-Let's import our first project. Click on **Git Clone..** (or type kbd:[F1], enter 'git' and click on the auto-completed _Git Clone.._ )
+最初のプロジェクトをインポートしてみましょう。 **Git Clone...** をクリックします (または kbd:[F1] と入力して 'git' と入力し、自動補完された _Git Clone..._ をクリックします)。
 
 image::che-workspace-gitclone.png[cdw, 900]
 
-Step through the prompts, using the following value for **Repository URL**. If you use *FireFox*, it may end up pasting extra spaces at the end, so just press backspace after pasting:
+プロンプトの指示に従って、**Repository URL** に次の値を使用してください。 *FireFox* を使用している場合、最後に余分なスペースを貼り付けてしまう可能性があるので、貼り付けた後はバックスペースを押してください。
 
 [source,none,role="copypaste"]
 ----
@@ -85,19 +78,19 @@ https://github.com/RedHat-Middleware-Workshops/cloud-native-workshop-v2m1-labs.g
 
 image::crw-clone-repo.png[crw,900]
 
-Ensure `projects/` is selected, then click on *Select Repository Location* then click on *Open*:
+`projects/` が選択されていることを確認し、 *Select Repository Location* をクリックし、続いて *Open* をクリックしてください:
 
 image::crw-add-workspace-2.png[crw, 900]
 
-Note that you probably need to reload your web browser to load the new workspace.
+新しいワークスペースを読み込むために、Webブラウザーを再読み込みする必要があるかもしれません。
 
-The project is imported into your workspace and is visible in the project explorer (collapse the *OPEN EDITORS*):
+プロジェクトはワークスペースにインポートされ、プロジェクトエクスプローラーに表示されます（ *OPEN EDITORS* を折りたたんでください）：
 
 image::crw-clone-explorer.png[crw,900]
 
-==== IMPORTANT: Check out proper Git branch
+==== 重要: 適切な Git ブランチをチェックアウトしてください。
 
-To make sure you're using the right version of the project files, run this command in a CodeReady Terminal:
+プロジェクトファイルの正しいバージョンを使用していることを確認するには、CodeReadyターミナルでこのコマンドを実行してください。
 
 [source,sh,role="copypaste"]
 ----
@@ -106,74 +99,71 @@ cd $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs && git checkout ocp-4.9
 
 [NOTE]
 ====
-The Terminal window in CodeReady Workspaces. You can open a terminal window for any of the containers running in your Developer workspace. For the rest of these labs, anytime you need to run a command in a terminal, you can use the **>_ New Terminal** command on the right:
+CodeReady ワークスペースのターミナルウィンドウについて。Developer ワークスペースで実行しているコンテナのいずれかのターミナルウィンドウを開くことができます。これらのラボの残りの部分については、ターミナルでコマンドを実行する必要がある場合はいつでも、右側の **>_New Terminal** コマンドを使用できます。
 
 image::codeready-workspace-terminal.png[codeready-workspace-terminal, 700]
 ====
 
-=== 2. Use the configuration editor to setup the analysis
+=== 2. コンフィグレーションエディタを使用して分析方法を指定します。
 
-Click on `MTA Explorer` icon on the left. Then, a new MTA configuration will be shown up:
+左側の `MTA Explorer` アイコンをクリックします。すると、新しい MTA の設定が現れます。
 
 image::mta_newconf.png[MTA Landing Page, 700]
 
-To input source files and directories, click on `Add` then select `Open File Explorer`:
+ソースファイルとディレクトリを入力するには、`Add` をクリックし、`Open File Explorer` を選択します。
 
 Note that you might need to remove an existing input directory.
 
 image::mta-add-input.png[MTA Add App, 700]
 
-Open `projects > cloud-native-workshop-v2m1-labs` then select `monolith` directory. Click on `Choose...`:
+`projects > cloud-native-workshop-v2m1-labs` を開き、`monolith` ディレクトリを選択して、 `Choose...` をクリックします。
 
 image::mta-add-opendir.png[MTA Add App, 700]
 
-Then you will see that */projects/cloud-native-workshop-v2m1-labs/monoilth* directory is added in _--input_ configuration.
+すると、 _--input_ の設定に */projects/cloud-native-workshop-v2m1-lab/monoilth* ディレクトリが追加されていることがわかります。
 
-Be sure that `eap7` is already selected in _--target_ server to migrate:
+移行先の _--target_ サーバで `eap7` が選択されていることを確認します。
 
 image::mta-target.png[MTA Add App, 700]
 
-Click on `--source` to migrate from then select `weblogic`. Leave the other configurations:
+移行元の `--source` をクリックし、 `weblogic` を選択します。他の設定はそのままにしておきます。
 
 image::mta-source.png[MTA Add App, 700]
 
-=== 3. Run an analysis report
+=== 3. 分析レポートの実行
 
-Click on `Run` icon to analyze the WebLogic application. Note that if you don't see the _Run_ icon, you need to click on the _mtaConfiguration_:
+WebLogicアプリケーションを分析するには、 `Run` アイコンをクリックします。 _Run_ アイコンが見つからない場合には、 _mtaConfiguration_ をクリックする必要があることに注意してください。
 
 image::mta-run-report.png[MTA Add App, 700]
 
-Migration Toolkit for Applications (MTA) CLI will be executed automatically in a new terminal then it will take a few mins to complete the analysis. Click on `Open Report`:
+Migration Toolkit for Applications (MTA) CLIは新しいターミナルで自動的に実行され、分析を完了するには数分かかります。
+`Open Report` をクリックします。
 
 image::mta-analysis-complete.png[MTA Add App, 700]
 
-=== 4. Review the report
+=== 4. レポートを確認
 
 image::rhamt_result_landing_page.png[MTA Langing Page, 900]
 
-The main landing page of the report lists the applications that were processed. Each row contains a high-level overview of the
-story points, number of incidents, and technologies encountered in that application.
+レポートの一番最初のページには、処理されたアプリケーションが掲載されています。各行には、そのアプリケーションでストーリーポイント、インシデントの数、遭遇した技術が概要で記載されています。
 
-**Click on the `monolith` link** to access details for the project:
+**`monolith` のリンクをクリックすると** 、プロジェクトの詳細にアクセスできます。
 
 image::rhamt_project_overview.png[MTA Project Overview, 900]
 
-=== 5. Understanding the report
+=== 5. レポートの理解
 
-The Dashboard gives an overview of the entire application migration effort. It summarizes:
+ダッシュボードでは、アプリケーションの全体の移行作業の概要を確認できます。それは以下をまとめています。
 
-* The incidents and story points by category
-* The incidents and story points by level of effort of the suggested changes
-* The incidents by package
+* カテゴリー別のインシデント・ストーリーポイント
+* 提案された変更点の労力レベル別のインシデントとストーリーポイント
+* パッケージ別のインシデント
 
 [NOTE]
 ====
-Story points are an abstract metric commonly used in Agile software development to estimate the relative level of effort needed to
-implement a feature or change. Migration Toolkit for Application uses story points to express the level of effort needed to
-migrate particular application constructs, and the application as a whole. The level of effort will vary greatly depending on the
-size and complexity of the application(s) to migrate.
+ストーリーポイントは、アジャイルソフトウェア開発で一般的に使用される抽象的なメトリックです。これは、機能や変更を実装するために必要な労力の相対的なレベルを見積もるために使われます。Red Hat Migration Toolkit for Applications は、ストーリーポイントを使用して、特定のアプリケーション構成やアプリケーション全体の移行に必要な労力のレベルを表現します。移行するアプリケーションの規模や複雑さによって、労力のレベルは大きく変わります。
 ====
 
-You can use this report to estimate how easy/hard each app is, and make decisions about which apps to migrate, which to refactor, and which to leave alone. In this case we will do a straight migration to JBoss EAP.
+このレポートを使って、各アプリがどれくらい簡単か、どれくらい難しいかを見積もれます。そして、どのアプリを移行するか、リファクタリングを行うか、そして放置するかを決定します。今回は JBoss EAP へのストレートな移行を行います。
 
-On to the next step to change the code!
+次のステップでコードを変更します!

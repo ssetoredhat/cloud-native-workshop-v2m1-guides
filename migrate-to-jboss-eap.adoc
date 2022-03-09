@@ -1,58 +1,57 @@
-= Lab 2 - Migrate your application to JBoss EAP
+= Lab 2 - JBoss EAPにアプリケーションを移行する
 :experimental:
 :imagesdir: images
 
-In this step you will migrate some Weblogic-specific code in the app to use standard (Jakarta EE) interfaces.
+このステップでは、アプリ内の Weblogic 固有のコードを移行して、標準（Jakarta EE）インターフェースを使用するようにします。
 
-=== 1. Jump to Code
+=== 1. コードへジャンプ
 
-Let's jump to code containing identified migration issues. Expand the *monolith* source project in the MTA explorer and navigate to `monolith > src > main > java > com > redhat > coolstore > utils > StartupListener.java`. Be sure to click the arrow next to the actual class name `StartupListener.java` to expand and show the Hints:
+特定された移行問題を含むコードにジャンプしてみましょう。MTAエクスプローラで *monolith* ソースプロジェクトを展開します。そして `monolith > src > main > java > com > redhat > coolstore > utils > StartupListener.java` へ移動します。実際のクラス名 `StartupListener.java` の横にある矢印をクリックすると、ヒントが展開されて表示されます。
 
 TIP: You can use kbd:[CTRL+p] (or kbd:[CMD+p] on Mac OSX) to quickly open a file.  Simply start typing the name of the file in the text box that appears and select your file from the list that is produced.
 
 image::mta_project_issues.png[mta, 500]
 
-In the Explorer, MTA issues use an icon to indicate their severity level and status. The following table describes the meaning of the various icons:
+エクスプローラでは、MTAが発見した課題が深刻度レベルとステータスを示すアイコンで示されています。次の表では、さまざまなアイコンの意味を説明します。
 
 image::mta-issues-table.png[mta, 700]
 
-=== 2. View Details about the Migration Issues
+=== 2. マイグレーションの課題の詳細を確認
 
-Let's take a look at the details about the migration issue. Right-click on `WebLogic ApplicationLifecycleListenerEvent[rule-id:xxx]` in _Hints_ of _StartupListener.java_ file. Click on `View Details`:
+マイグレーションの課題の詳細を見てみましょう。 _StartupListener.java_ ファイルの _Hints_ 内の `WebLogic ApplicationLifecycleListenerEvent[rule-id:xxx]` を右クリックします。 `View Details` をクリックします。
 
 image::mta-issue-detail.png[rhamt_project_issues, 900]
 
-MTA also provides helpful links to understand the issue deeper and offer guidance for the migration when you click on `Open Report`:
+MTAはまた、`Open Report` をクリックすると、問題をより深く理解し、移行のためのガイダンスを提供するための有用なリンクを提供しています。
 
 image::mta-issue-open-report.png[rhamt_project_issues, 900]
 
-The WebLogic `ApplicationLifecycleListener` abstract class is used to perform functions or schedule jobs in Oracle WebLogic, like server start and stop. In this case we have code in the `postStart` and `preStop` methods which are executed after Weblogic starts up and before it shuts down, respectively.
 
-In Jakarta EE, there is no equivalent to intercept these events, but you can get equivalent
-functionality using a _Singleton EJB_ with standard annotations, as suggested in the issue in the MTA report.
+WebLogic `ApplicationLifecycleListener` 抽象クラスは、機能を実行したり、サーバーの起動や停止など Oracle WebLogic でジョブをスケジュールしたりするために使用されます。今回の場合、 `postStart` メソッドと `preStop` メソッドがコードにあります。これらはWeblogic が起動した後とシャットダウンする前にそれぞれ実行されます。
 
-We will use the `@Startup` annotation to tell the container to initialize the singleton session bean at application start. We
-will similarly use the `@PostConstruct` and `@PreDestroy` annotations to specify the methods to invoke at the start and end of
-the application lifecyle achieving the same result but without using proprietary interfaces.
+Jakarta EEでは、これらのイベントを傍受することに相当するものはありません。しかし、MTAレポートの問題で提案されているように、標準的なアノテーションを持つ _Singleton EJB_ を使用して同等の機能を得られます。
 
-Using this method makes the code much more portable.
+`@Startup` アノテーションを使用して、アプリケーションの開始時にシングルトンセッション Bean を初期化するようにコンテナに指示します。同様に `@PostConstruct` と `@PreDestroy` アノテーションを使用して、アプリケーションのライフサイクルの開始時と終了時に呼び出すメソッドを指定しますが、独自のインターフェイスを使用せずに同じ結果を得られます。
 
-=== 3. Fix the ApplicationLifecycleListener issues
+このメソッドを使用することで、コードの移植性が格段に向上します。
+
+=== 3.ApplicationLifecycleListener の問題を修正
 
 [INFO]
 ====
-In this section we're going to deal with the following two issues from the report:
+このセクションでは、レポートの中から次の2つの問題を取り上げます。:
 
 image::report_applifecycle_issues.png[Lifecycle Issues]
 ====
 
-To begin we are fixing the issues under the Monolith application. Click on `WebLogic ApplicationLifecycleListenerEvent[rule-id:xxx]` in _Hints_ of _StartupListener.java_ file:
+まず、Monolith アプリケーションの問題を修正します。
+_StartupListener.java_ ファイルの _Hints_ 内の `WebLogic ApplicationLifecycleListenerEvent[rule-id:xxx]` をクリックします。
 
 image::mta-issue-open-code.png[rhamt_project_issues, 900]
 
-You can also navigate to the `cloud-native-workshop-v2m1-labs` folder in the project tree, then open the file `monolith/src/main/java/com/redhat/coolstore/utils/StartupListener.java` by clicking on it.
+プロジェクトツリーの `cloud-native-workshop-v2m1-lab` フォルダに移動し、ファイル `monolith/src/main/java/com/redhat/coolstore/utils/StartupListener.java` をクリックして開くこともできます。
 
-Replace the file content with:
+ファイルの内容を以下の様に置き換えます。
 
 [source,java, role="copypaste"]
 ----
@@ -87,14 +86,13 @@ public class StartupListener {
 
 [NOTE]
 ====
-Where is the Save button? CodeReady workspaces will autosave your changes, that is why you can’t find a SAVE button - no
-more losing code because you forgot to save. You can undo with kbd:[CTRL-Z] (or kbd:[CMD-Z] on a Mac) or by using the `Edit -> Undo` menu option.
+保存ボタンはどこにありますか？CodeReadyワークスペースは変更内容を自動的に保存します。それがSAVEボタンが見つからない理由です。保存を忘れたためにコードを失うことはもうありません。元に戻すには kbd:[CTRL-Z] （Mac の場合は kbd:[CMD-Z] ）を使用するか、 `Edit （編集） -> Undo（元に戻す）` メニューオプションを使用します。
 ====
 
 
-=== 4. Test the build
+=== 4.ビルドのテスト
 
-Open a new Terminal window under the `quarkus-tools` container (on the right). In the terminal, issue the following command to test the build:
+`quarkus-tools` コンテナの下にある新しいターミナルウィンドウを開きます（右側）。ターミナルで以下のコマンドを実行してビルドをテストします。
 
 [source,sh,role="copypaste"]
 ----
@@ -103,41 +101,36 @@ mvn -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/monolith clean package
 
 image::codeready-workspace-build.png[rhamt_project_issues, 700]
 
-If it builds successfully (you will see `BUILD SUCCESS`), let’s move on to the next issue! If it does not compile, verify
-you made all the changes correctly and try the build again.
+ビルドが成功したら（ `BUILD SUCCESS` と表示されます）、次の課題に進みましょう！コンパイルできない場合は、すべての変更が正しく行われていることを確認し、再度ビルドを試してください。
 
 image::codeready-workspace-build-result.png[rhamt_project_issues, 700]
 
-==== View the diffs
+==== 差分を見る
 
-You can review the changes you've made. On the left, click on the _Version Control_ icon, which shows a list of the changed files. Double-click on `StartupListener.java` to view the differences you've made:
+変更した内容を見直せます。左側の _Version Control_ （バージョン管理）アイコンをクリックすると、変更されたファイルの一覧が表示されます。 `StartupListener.java` をダブルクリックして、変更点を確認します。
 
 image::codeready-workspace-diffs.png[diffs, 700]
 
-CodeReady keeps track (using Git) of the changes you make, and you can use version control to check in, update, and compare files as you change them.
+CodeReady は、（Gitを使用して） 変更した内容を追跡し、バージョン管理を使用して、変更したファイルのチェックイン、更新、変更したファイルの比較を行えます。
 
-For now, go back to the _Explorer_ tree and lets fix the remaining issues.
+とりあえず、 _Explorer_ ツリーに戻って、残っている問題を修正しましょう。
 
-=== 5. Fix the logger issues
+=== 5.ロガーの問題を修正
 
 [INFO]
 ====
-In this section we'll be looking to remediate this part of the migration report:
+このセクションでは、移行レポートの下記の部分を修正することを考えます:
 
 image::report_logging_issues.png[Logging Issues]
 ====
 
-Some of our application makes use of Weblogic-specific logging methods like the `NonCatalogLogger`, which offer features related to logging of
-internationalized content, and client-server logging.
+私たちのアプリケーションの中には、 `NonCatalogLogger` やクライアントサーバロギングのような Weblogic 固有のロギングメソッドを使用しているものがあります。NonCatalogLogger は国際化されたコンテンツのロギングに関連した機能を提供します。
 
-The WebLogic `NonCatalogLogger` is not supported on JBoss EAP (or any other Java EE platform), and should be migrated to a
-supported logging framework, such as the JDK Logger or JBoss Logging.
+WebLogic  `NonCatalogLogger` は、JBoss EAP (またはその他の Java EE プラットフォーム) ではサポートされていません。これは JDK Logger や JBoss Logging などのサポートされているロギングフレームワークに移行する必要があります。
 
-We will use the standard Java Logging framework, a much more portable framework. The framework also
-https://docs.oracle.com/javase/8/docs/technotes/guides/logging/overview.html#a1.17[supports
-internationalization^] if needed.
+移植性の高いフレームワークである標準的な Java Logging フレームワークを使用します。フレームワークも必要に応じて https://docs.oracle.com/javase/8/docs/technotes/guides/logging/overview.html#a1.17[国際化をサポートしています^]。
 
-In the same `monolith` directory, open the `src/main/java/com/redhat/coolstore/service/OrderServiceMDB.java` file and replace its contents with:
+同じ `monolith` ディレクトリで、 `src/main/java/com/redhat/coolstore/service/OrderServiceMDB.java` ファイルを開き、その内容を次のように置き換えます。
 
 [source,java, role="copypaste"]
 ----
@@ -193,91 +186,78 @@ public class OrderServiceMDB implements MessageListener {
 }
 ----
 
-That one was pretty easy.
+これは簡単でした。
 
-=== 6. Test the build
+=== 6.ビルドのテスト
 
-Build and package the app again just as before:
+前と同じようにアプリをビルドしてパッケージ化し直します。
 
 [source,sh,role="copypaste"]
 ----
 mvn -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/monolith clean package
 ----
 
-If builds successfully (you will see `BUILD SUCCESS`), then let’s move on to the next issue! If it does not compile, verify you made all the changes correctly and try the build again.
+ビルドが成功したら（ `BUILD SUCCESS` と表示されます）、次の課題に移りましょう！コンパイルできない場合は、すべての変更が正しく行われていることを確認し、再度ビルドを試してください。
 
-=== 7. Remove the Weblogic EJB Descriptors
+=== 7. Weblogic EJB Descriptorsの削除
 
 [INFO]
 ====
-In this and the following few sections we'll be addressing this part of the report
+このセクションと次のいくつかのセクションでは、報告書のこの部分を取り上げます。
 
 image::report_mdb_issues.png[MDB Issues, 1100]
 
-To highlight in a little more detail:
+もう少し詳しく説明します。
 
-* `Call of JNDI lookup` - Our apps use a weblogic-specific
-https://en.wikipedia.org/wiki/Java_Naming_and_Directory_Interface[JNDI^] lookup scheme.
-* `Proprietary InitialContext initialization` - Weblogic has a very different lookup mechanism for InitialContext objects
-* `WebLogic InitialContextFactory` - This is related to the above, essentially a Weblogic proprietary mechanism
-* `WebLogic T3 JNDI binding` - The way EJBs communicate in Weblogic is over T2, a proprietary implementation of Weblogic.
+* `JNDI ルックアップの呼び出し` - 私たちのアプリは Weblogic 固有の https://ja.wikipedia.org/wiki/Java_Naming_and_Directory_Interface[JNDI^] ルックアップスキームを使用
+* `固有の InitialContext の初期化` - Weblogic は InitialContext オブジェクトのルックアップメカニズムが大きく異なる
+* `WebLogic InitialContextFactory` - これは上記に関連しており、基本的には Weblogic 固有のメカニズム
+* `WebLogic T3 JNDI バインディング` - EJB が Weblogic で通信する方法は、Weblogic 固有な実装であるT2を介する
 
 ====
 
-All of the above interfaces have equivalents in JBoss, however they are greatly simplified and overkill for our application which uses JBoss EAP’s internal message queue implementation provided by https://activemq.apache.org/artemis/[Apache ActiveMQ Artemis^].
+上記のすべてのインターフェイスは、JBoss で同等のものを持っています。しかし、これらは非常に単純化されていて、私たちのアプリケーションには過剰なものです。これは https://activemq.apache.org/artemis/[Apache ActiveMQ Artemis^] によって提供される JBoss EAP の内部メッセージキュー実装を使用します。
 
 [NOTE]
-.A word about JMS
+.JMSについて
 ====
-In this final step we will again migrate some Weblogic-specific code in the app to use standard Java EE interfaces, and one JBoss-specific interface.
+この最後のステップでは、アプリ内の Weblogic 固有のコードを標準の Java EE インターフェイスと JBoss 固有のインターフェイスを使用するように再度移行します。
 
-Our application uses https://en.wikipedia.org/wiki/Java_Message_Service[JMS^] to
-communicate. Each time an order is placed in the application, a JMS message is sent to a JMS Topic, which is then consumed by
-listeners (subscribers) to that topic to process the order using
-https://docs.oracle.com/javaee/6/tutorial/doc/gipko.html[Message-driven beans^], a form of
-Enterprise JavaBeans (EJBs) that allow Java EE applications to process messages asynchronously.
+私たちのアプリケーションは https://ja.wikipedia.org/wiki/Java_Message_Service[JMS^] を使用して通信を行っています。アプリケーションで注文が入るたびに、JMS トピックに JMS メッセージが送信されます。これは、Java EE アプリケーションがメッセージを非同期的に処理できるようにする Enterprise JavaBeans (EJB) の一形態である https://docs.oracle.com/javaee/6/tutorial/doc/gipko.html[Message-driven beans^] を使用して注文を処理するために、そのトピックへのリスナー (サブスクライバ) によって消費されます。
 
-In this case, `InventoryNotificationMDB` is subscribed to and listening for messages from `ShoppingCartService`. When an order
-comes through the `ShoppingCartService`, a message is placed on the JMS Topic. At that point, the `InventoryNotificationMDB`
-receives a message and if the inventory service is below a pre-defined threshold, sends a message to the log indicating that the
-supplier of the product needs to be notified.
+この場合、 `InventoryNotificationMDB` は、 `ShoppingCartService` からのメッセージを購読し、リッスンしている。 `ShoppingCartService` を経由して注文が来ると、JMS トピックにメッセージが置かれます。その時点で、 `InventoryNotificationMDB` はメッセージを受信します。そして、インベントリサービスが事前に定義された閾値を下回っている場合、製品の供給者に通知する必要があることを示すメッセージをログに送信します。
 
-Unfortunately this MDB was written a while ago and makes use of weblogic-proprietary interfaces to configure and operate the MDB.
-MTA has flagged this and reported it using a number of issues.
+残念ながら、この MDB は少し前に書かれたものです。これは、MDBを構成して操作するために、WebLogic 固有のインターフェースを利用しています。
+MTA はこれにフラグを立て、いくつかの課題を使用して報告しました。
 
-JBoss EAP provides an even more efficient and declarative way to configure and manage the lifecycle of MDBs. In this case, we can
-use annotations to provide the necessary initialization and configuration logic and settings. We will use the `@MessageDriven`
-and `@ActivationConfigProperty` annotations, along with the `MessageListener` interfaces to provide the same functionality as
-from Weblogic.
+JBoss EAP は、MDB のライフサイクルを設定して管理するための、より効率的で宣言的な方法を提供します。この場合、アノテーションを利用して、必要な初期化や設定のロジックや設定を行えます。Weblogicと同じ機能を提供するため `MessageListener` インターフェースに加えて、私たちは `@MessageDriven` と `@ActivationConfigProperty` アノテーションを使用するでしょう。
 
-Much of Weblogic’s interfaces for EJB components like MDBs reside in Weblogic descriptor XML files. Use kbd:[CTRL+p] (or kbd:[CMD+p] on a Mac) to Quickly Open
-`src/main/webapp/WEB-INF/weblogic-ejb-jar.xml` to see one of these descriptors. There are many different configuration
-possibilities for EJBs and MDBs in this file, but luckily our application only uses one of them, namely it configures
-`<trans-timeout-seconds>` to 30, which means that if a given transaction within an MDB operation takes too long to complete
-(over 30 seconds), then the transaction is rolled back and exceptions are thrown. This interface is Weblogic-specific so we’ll
-need to find an equivalent in JBoss.
+MDB のような EJB コンポーネントのための Weblogic のインターフェースの多くは、Weblogic の XML ディスクリプタファイルにあります。 `src/main/webapp/WEB-INF/weblogic-ejb-jar.xml` を開いて、これらのディスクリプタのいずれかを確認してください。このファイルには、EJB と MDB のための多くの異なる設定の可能性があります。しかし、幸いにも私たちのアプリケーションはそれらのうちの 1 つしか使用していません。すなわち、 `<trans-timeout-seconds>` を 30 に設定しています。これは、MDB 操作内のあるトランザクションが完了するのに時間がかかりすぎる（ 30 秒以上）ことを意味します。この時、トランザクションはロールバックされ、例外がスローされます。このインターフェイスは Weblogic 固有のものなので、JBoss で同等のものを見つける必要があります。
+
 ====
 
-The first step is to remove the unneeded `weblogic-ejb-jar.xml` file from the **Project Explorer** (not the **Migration Assistant**). This file is proprietary to Weblogic and not recognized or processed by JBoss EAP. Delete the file by right-clicking on the `src/main/webapp/WEB-INF/weblogic-ejb-jar.xml` file from the **Project Explorer** and choosing **Delete**, and click **OK**.
+MTAの課題レポートから、残っている課題を修正していきます。
+
+最初のステップは、不要な `weblogic-ejb-jar.xml` ファイルを削除することです。このファイルは Weblogic 固有であり、JBoss EAP によって認識または処理されることはありません。 `src/main/webapp/WEB-INF/weblogic-ejb-jar.xml` ファイルを右クリックして削除し、 **Delete** を選択して **OK** をクリックします。
 
 [TIP]
 ====
-If you have the tab for the `weblogic-ejb-jar.xml` file open (or handy) you can quickly find it in the Project Explorer by right-clicking on the tab and then selecting **Reveal in Explorer** as shown.  You can also use the kbd:[ALT+R] (or kbd:[Option+R] on Mac).
+`weblogic-ejb-jar.xml`  ファイルのタブを開いている場合は、タブを右クリックして **Reveal in Explorer**  を選択すると、プロジェクトエクスプローラですぐに見つけることができます（下図参照）。 また、 kbd:[ALT+R] (Macでは kbd:[Option+R] )でも検索できます。
 
 image:reveal_in_explorer.png[reveal-in-explorer, 600]
 ====
 
 image::codeready-workspace-delete-jar.png[codeready-workspace-convert, 500]
 
-While we’re at it, let’s remove the stub weblogic implementation classes added as part of the scenario.
+今のうちに、シナリオの一部として追加されたスタブの weblogic 実装クラスを削除しておきましょう。
 
-Whilst still in the Project Explorer, right-click on the `src/main/java/weblogic` folder and select *Delete* to delete the folder:
+`src/main/java/weblogic` フォルダを右クリックし、 *Delete* を選択してフォルダを削除します。
 
 image::codeready-workspace-delete-weblogic.png[codeready-workspace-convert, 500]
 
-=== 8. Fix the code
+=== 8.コードの修正
 
-Use kbd:[CTRL+p] (or kbd:[CMD+p] on a Mac) to Quickly Open the `monolith/src/main/java/com/redhat/coolstore/service/InventoryNotificationMDB.java` file and replace its contents with:
+kbd:[CTRL+p] （Macの場合は kbd:[CMD+p] ）を使って、 `monolith/src/main/java/com/redhat/coolstore/service/InventoryNotificationMDB.java` ファイルを開き、その内容を置き換えます。
 
 [source,java, role="copypaste"]
 ----
@@ -335,18 +315,18 @@ public class InventoryNotificationMDB implements MessageListener {
     }
 }
 ----
-<.> Remember the `<trans-timeout-seconds>` setting from the `weblogic-ejb-jar.xml` file? This is now set as an
-`@ActivationConfigProperty` in the new code. There are pros and cons to using annotations vs. XML descriptors and care should be taken to consider the needs of the application.
 
-Your MDB should now be properly migrated to JBoss EAP.
+`weblogic-ejb-jar.xml` ファイルの `<trans-timeout-seconds>` 設定を覚えていますか？これを新しいコードで `@ActivationConfigProperty` として設定するようになりました。アノテーションとXML記述子の使用には長所と短所があり、アプリケーションのニーズを考慮して注意を払う必要があります。 
 
-Lastly, remove Maven dependency on *org.jboss.spec.javax.rmi:jboss-rmi-api_1.0_spec*. In JBoss EAP 7.3(or later), artifact with groupId _org.jboss.spec.javax.rmi_ and artifactId _jboss-rmi-api_1.0_spec_ are unsupported dependencies. Remove the following dependency in `monolith/pom.xml`:
+これで、MDB は JBoss EAP に適切に移行されるはずです。
+
+最後に、 *org.jboss.spec.javax.rmi:jboss-rmi-api_1.0_spec* へのMaven依存を削除します。JBoss EAP 7.3(またはそれ以降)では、groupId _org.jboss.spec.javax.rmi_ と artifactId _jboss-rmi-api_1.0_spec_ を持つアーティファクトはサポートされていない依存関係です。 `pom.xml` 内の以下の依存関係を削除してください。
 
 image::mta-remove-dependency.png[rhamt_rerun_analysis_report, 700]
 
-=== 9. Test the build
+=== 9.ビルドのテスト
 
-Build once again:
+もう一度ビルドしてください。
 
 [source,sh,role="copypaste"]
 ----
@@ -355,51 +335,44 @@ mvn -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/monolith clean package
 
 image::codeready-workspace-build.png[rhamt_project_issues, 700]
 
-If builds successfully (you will see `BUILD SUCCESS`). If it does not compile, verify you
-made all the changes correctly and try the build again.
+ビルドが成功した場合（ `BUILD SUCCESS` と表示されます）。コンパイルできない場合は、すべての変更が正しく行われていることを確認し、再度ビルドを試してください。
 
-=== 10. Re-run the MTA report
+=== 10. MTAレポートの再実行
 
-In this step we will re-run the MTA report to verify our migration was successful.
+このステップでは、移行が成功したことを確認するためにMTAレポートを再実行します。
 
-Click on `Run` icon to analyze the WebLogic application:
+WebLogicアプリケーションを分析するには、 `Run` アイコンをクリックします。
 
 image::mta-rerun-report.png[rhamt_rerun_analysis_report, 700]
 
-Migration Toolkit for Applications (MTA) CLI will be executed automatically in a new terminal then it will take a few mins to complete the analysis. Click on `Open Report`:
+Migration Toolkit for Applications (MTA) CLIは新しいターミナルで自動的に実行され、分析を完了するには数分かかります。 `Open Report` をクリックします。
 
 image::mta-analysis-rerun-complete.png[MTA Add App, 700]
 
 [NOTE]
 ====
-If it is taking too long, feel free to skip the next section and proceed to step *13* and return back to the analysis later to confirm that you
-eliminated all the issues.
+時間がかかりすぎる場合は、次のセクションをスキップして、ステップ *13* に進み、後で分析に戻って、すべての問題が解消されたことを確認してください。
 ====
 
-=== 11. View the results
+=== 11.結果を確認
 
-Click on the latest result to go to the report web page and verify that it now reports 0 Story Points:
+最新の結果をクリックしてレポートのWebページに移動し、現在はストーリーポイントが 0 を報告していることを確認してください。
 
-You have successfully migrated this app to JBoss EAP, congratulations!
+このアプリを JBoss EAP に正常に移行しました。おめでとうございます！
 
 image::rhamt_project_issues_story.png[rhamt_project_issues_story, 700]
 
 [NOTE]
 ====
-You should be aware that this type of migration is more involved than the previous steps, and in real world applications it will
-rarely be as simple as changing one line at a time for a migration. Consult the
-https://access.redhat.com/documentation/en-us/migration_toolkit_for_applications/[MTA documentation^] for more
-detail on Red Hat’s Application Migration strategies or contact your local Red Hat representative to learn more about how Red Hat
-can help you on your migration path.
+このタイプの移行は、以前のステップよりも複雑であることを認識しておく必要があります。そして、実際のアプリケーションでは、移行のために一度に 1 行ずつ変更するような単純なことはほとんどありません。Red Hat のアプリケーション移行戦略の詳細については https://access.redhat.com/documentation/en-us/migration_toolkit_for_applications/[MTA documentation^] を参照するか、Red Hat がお客様の移行パスでどのように支援できるかについて、お近くの Red Hat の担当者にお問い合わせください。
 ====
 
-=== 12. Add an OpenShift profile
+=== 12.OpenShiftプロファイルの追加
 
-Now that we’ve migrated the app, let’s deploy it and test it out and start to explore some of the features that JBoss EAP plus Red Hat OpenShift bring to the table.
+アプリの移行が完了したので、デプロイしてテストを行い、JBoss EAPとRed Hat OpenShiftがもたらす機能の一部を探り始めましょう。
+kbd:[CTRL+p] （Macの場合は kbd:[CMD+p] ）を使って、 `monolith/pom.xml` ファイルを開きます。
 
-Use kbd:[CTRL+p] (or kbd:[CMD+p] on a Mac) to Quickly Open the `monolith/pom.xml` file.
-
-At the `<!-- TODO: Add OpenShift profile here pass:[-->]` we are going to add a the following configuration to the pom.xml
+この `<!-- TODO: Add OpenShift profile here pass:[-->]` pom.xml に以下の設定を追加します。
 
 [source,xml,role="copypaste"]
 ----
@@ -427,110 +400,105 @@ At the `<!-- TODO: Add OpenShift profile here pass:[-->]` we are going to add a 
         </profile>
 ----
 
-=== 13. Create the OpenShift project
+=== 13.OpenShiftプロジェクトの作成
 
-First, open a new brower with the {{ CONSOLE_URL }}[OpenShift web console^]:
+まず、新規ブラウザで {{ CONSOLE_URL }}[OpenShift web コンソール^] を開きます。
 
 image::openshift_login.png[openshift_login, 700]
 
-Login using your credentials:
+資格情報を使ってログインします。
 
 * Username: `{{ USER_ID }}`
 * Password: `{{ OPENSHIFT_USER_PASSWORD }}`
 
-You will see a list of projects to which you have access:
+アクセスできるプロジェクトのリストが表示されます。
 
 image::openshift_landing.png[openshift_landing, 700]
 
 [NOTE]
 ====
-The project displayed in the landing page depends on which labs you will run today.
+最初に表示されるページに表示されるプロジェクトは、あなたが実行するラボによって異なります。
 ====
 
-Click **create a Project** link, fill in the fields, and click *Create*:
+**Create Project** をクリックし、フィールドを入力して、 *Create* をクリックします。
 
 * Name: `{{USER_ID }}-coolstore-dev`
 * Display Name: `{{ USER_ID }} Coolstore Monolith - Dev`
-* Description: _leave this field empty_
+* Description: _このフィールドは空にしてください_
 
 [WARNING]
 ====
-YOU *MUST* USE `{{ USER_ID }}-coolstore-dev` AS THE PROJECT NAME, as this name is referenced later on and you will experience
-failures if you do not name it `{{ USER_ID }}-coolstore-dev`!
+プロジェクト名として `{{ USER_ID }}-coolstore-dev` を使用しなければ *なりません* 。この名前は後に参照されるので、 `{{ USER_ID }}-coolstore-dev` と名前を付けないと失敗することになります！
 ====
 
 image::create_dialog.png[create_dialog, 700]
 
-This will take you to the Developer Console. There’s nothing there yet, but that’s about to change.
+これでプロジェクトの概要に移動します。まだ何もありませんが、それが変わろうとしています。
 
 image::project_overview.png[create_new, 700]
 
-==== Switch to Developer Perspective
+==== 開発者視点への切り替え
 
-OpenShift 4 provides both an _Administrator_ and _Developer_ view in its console. If you are not already in the _Developer Perspective_ you can switch to the _Developer Perspective_ using the dropdown on the left:
+OpenShift 4 では、コンソールに _Administrator_ ビューと _Developer_ ビューの両方を提供しています。左側のドロップダウンを使用して、 _Developer_ ビューに切り替えます。
 
 image::dev_perspective.png[create_new, 700]
 
-The _Developer Perspective_ provides a developer-centric view of applications deployed to the project. Since we have nothing deployed yet, you are presented with a set of ways to deploy applications.
+これにより、プロジェクトにデプロイされたアプリケーションの開発者中心のビューを提供します。まだ何もデプロイされていないので、アプリケーションをデプロイする方法が提示されています。
 
-=== 14. Deploy the monolith
+=== 14.モノリスのデプロイ
 
-We've pre-installed an application _template_ for use. Click the *Start building your application* in the _Topology_ view:
+使用するアプリケーション _テンプレート_ をあらかじめインストールしておきました。 *From Catalog* をクリックします。
 
-image::start_build_app.png[create_new, 700]
+image::from_catalog.png[create_new, 700]
 
-In the search box, type in `coolstore` and choose _Coolstore Monolith using binary build_ and then click *Instantiate Template*. 
+検索ボックスに `coolstore` と入力し、 _Coolstore Monolith using binary build_ を選択し、 *Instantiate Template* をクリックします。 _coolstore_ のテンプレートが表示されない場合は、 _Type_ にある *Operator Backed* チェックを外してください。
 
 image::from_catalog_bin.png[create_new, 700]
 
-Fill in the following fields:
+以下の項目を記入してください。
 
-* *Namespace*: `{{USER_ID}}-coolstore-dev` (this should already be selected)
+* *Namespace*: `{{USER_ID}}-coolstore-dev` (これは既に選択されているはずです)
 * *User ID*: `{{ USER_ID }}`
 
 image::from_catalog_bin_details.png[create_new, 700]
 
-Leave other values the same and click **Create**.
+他の値はそのままにして、 **Create** をクリックします。
 
-You will see the elements that were deployed in the _Topology_ view.
+_Topology_ ビューに移動して、デプロイされた要素を確認します。
 
 [NOTE]
 ====
-The template did a bit of work behind the scenes!  Using the information we entered above, it created the necessary Kubernetes (and OpenShift) "infrastructure" in which to deploy our newly migrated `.war` binary.  Here are some of the things that it created.
+テンプレートは、舞台裏でちょっとした仕事をしました。 上記で入力した情報を使って、新しく移行した `.war` バイナリをデプロイするために必要なKubernetes（およびOpenShift）の"infrastructure"を作成しました。 作成されたものは以下の通りです。
 
-PostgreSQL template has been removed since EAP 7.3. So you can provision these capabilities with Galleon provision layers:
-
-* GALLEON_PROVISION_FEATURE_PACKS - _org.jboss.eap:eap-datasources-galleon-pack:7.4.0.GA-redhat-00003_
-* POSTGRESQL_DRIVER_VERSION - _42.2.19_
-* All the necessary _Services_, _ConfigMaps_, and _Secrets_ for the previous _Deployments_
-* GALLEON_PROVISION_LAYERS - _cloud-server,ejb,postgresql-datasource_
-
+* Postgres データベース _Deployment_
+* クールストアのモノリス _DeploymentConfig_
+* これまでのデプロイメントに必要だった _Services_, _ConfigMaps_, _Secrets_ のすべて。
+* JBoss EAPを実行するようにセットアップされたコンテナにパッケージされる `.war` バイナリを期待する _BuildConfig_（画像を参照)
++
 image::coolstore_binary_build.png[Binary build, 500]
 
 ====
 
-The *Topology* view in the _Developer_ perspective of the web console provides a visual representation of all the applications
-within a project, their build status, and the components and services associated with them.
+Web コンソールの _Developer_ ビューの *Topology* ビューでは、プロジェクト内のすべてのアプリケーション、そのビルドステータス、およびそれらに関連するコンポーネントとサービスを視覚的に表示します。
 
 image::coolstore_topology.png[create_new, 700]
 
-You can see the _postgres_ database running (with a dark blue circle), and the coolstore monolith, which has not yet been deployed or started as it's waiting for the first container to be built that has JBoss EAP running our `.war` file.  We'll address that next.
+実行中の _postgres_ データベース（紺色の丸で囲んでいます）と、まだデプロイも起動もされていない coolstore monolithが表示されています。
+これは、JBoss EAPが `.war` ファイルを実行している最初のコンテナが構築されるのを待っているため、まだデプロイも起動もされていません。 これは、`.war` ファイルを実行する最初のコンテナが構築されるのを待っているからです。
 
-==== Deploy monolith using CLI
+==== モノリスを CLI を使ってデプロイ
 
-Although your Eclipse Che workspace is running on the Kubernetes cluster, it’s running with a default restricted _Service Account_
-that prevents you from creating most resource types. If you’ve completed other modules, you’re probably already logged in, but
-let’s login again: click on *Login to OpenShift*:
+Eclipse Che ワークスペースは Kubernetes クラスタ上で実行されています。これはデフォルトの制限付き _Service Account_ で実行されているため、ほとんどのリソース タイプを作成することができません。他のモジュールを完了している場合は、すでにログインしていると思いますが、もう一度ログインしてみましょう： *Login to OpenShift* をクリックして、与えられた資格情報を入力します。
 
 [NOTE]
 ====
-When you click on this, CodeReady Workspaces executes the following command:
+これをクリックすると、CodeReady Workspacesは以下のコマンドを実行します。:
 *oc login https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT --insecure-skip-tls-verify=true --username={{ USER_ID }} --password={{ OPENSHIFT_USER_PASSWORD }}*
 ====
 
 image::cmd-login.png[login,700]
 
-You should see something like this (the project names may be different):
+このようなものが表示されるはずです（プロジェクト名が異なる場合があります）。
 
 [source,none]
 ----
@@ -551,17 +519,17 @@ Welcome! See 'oc help' to get started.
 
 [NOTE]
 ====
-After you log in using *Login to OpenShift*, the terminal is no longer usable as a regular terminal. You can close the terminal window. You will still be logged in when you open more terminals later!
+*Login to OpenShift* してログインすると、そのターミナルは通常の端末としては使えなくなります。ターミナルウィンドウを閉じることができます。後からさらに端末を開いてもログインしたままになってしまいます
 ====
 
-Switch to the developer project you created earlier via CodeReady Workspaces Terminal window:
+CodeReady Workspaces ターミナルウィンドウから先ほど作成した開発者プロジェクトに切り替えます。
 
 [source,sh,role="copypaste"]
 ----
 oc project {{ USER_ID }}-coolstore-dev
 ----
 
-Next, label the components so that they get proper icons by running this command in the CodeReady Terminal:
+次に、CodeReady ターミナルでこのコマンドを実行して、コンポーネントに適切なアイコンが表示されるようにラベルを付けます。
 
 [source,sh,role="copypaste"]
 ----
@@ -576,65 +544,58 @@ oc annotate dc/coolstore app.openshift.io/vcs-ref=ocp-4.9 --overwrite
 
 image::coolstore-labels.png[create_new, 600]
 
-You have not yet deployed the container image built in previous steps, but you’ll do that next.
+前のステップで構築したコンテナイメージをまだデプロイしていませんが、次のステップでデプロイします。
 
-=== 15. Deploy application using Binary build
+=== 15.バイナリビルドを利用したアプリケーションのデプロイ
 
-In this development project we have selected to use a process called _binary builds_, which means that instead of pointing to a
-public Git Repository and have the S2I (Source-to-Image) build process download, build, and then create a container image for us
-we are going to build locally and just upload the artifact (e.g. the `.war` file). The binary deployment will speed up the build
-process significantly.
+この開発プロジェクトでは、 _バイナリビルド_ と呼ばれるプロセスを使用することを選択しました。つまり、公開されている Git リポジトリを指す代わりに、S2I  (Source-to-Image) のビルドプロセスをダウンロードしてビルドします。そして、コンテナイメージを作成して、ローカルに構築し、成果物 （例えば `.war` ファイル）をアップロードするだけです。バイナリでのデプロイは、ビルドプロセスを大幅にスピードアップします。
 
-First, build the project once more using the `openshift` Maven profile, which will create a suitable binary for use with
-OpenShift (this is not a container image yet, but just the `.war` file). We will do this with the `oc` command line.
+まず、 `openshift` の Maven プロファイルを使用してプロジェクトをもう一度構築します。これは OpenShift で使用するのに適したバイナリを作成します（これはまだコンテナイメージではなく、 `.war` ファイルだけです）。 `oc` コマンドラインでこれを行います。
 
-Build the project via CodeReady Workspaces Terminal window:
+CodeReady Workspaces ターミナルウィンドウからプロジェクトをビルドします。
 
 [source,sh,role="copypaste"]
 ----
 mvn clean package -Popenshift -f $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/monolith
 ----
 
-Wait for the build to finish and the `BUILD SUCCESS` message!
+ビルドが終了し、 `BUILD SUCCESS` のメッセージが表示されるのを待ちましょう
 
-And finally, start the build process that will take the `.war` file and combine it with JBoss EAP and produce a Linux container
-image which will be automatically deployed into the project, thanks to the _DeploymentConfig_ object created from the template:
+そして最後に、 `.war` ファイルを取得し、JBoss EAP と組み合わせて Linux コンテナイメージを生成するビルドプロセスを開始します。これは自動的にプロジェクトにデプロイされます。これはテンプレートから作成された _DeploymentConfig_ オブジェクトのおかげです。
 
 [source,sh,role="copypaste"]
 ----
 oc start-build coolstore --from-file $CHE_PROJECTS_ROOT/cloud-native-workshop-v2m1-labs/monolith/deployments/ROOT.war --follow
 ----
 
-By adding the `--follow` flag to the command line, you will start seeing S2I build log output flowing into your CRW terminal.
+コマンドラインに「--follow」フラグを追加すると、S2IのビルドログがCRWのターミナルに出力されるようになります。
 
-Meanwhile, back in the topology view, you should see the monolith being built:
+一方、Topology ビューに戻ると、モノリスがビルドされているのがわかります。
 
 image::monolith_build.png[building, 400]
 
-Click on the building icon to see the build log (which should mirror what's being sent to your terminal):
+ビルドのアイコンをクリックすると、ビルドログが表示されます（ターミナルに送られてくる内容を反映しているはずです）:
 
 image::monolith_log.png[building]
 
-Return to the Topology view, and click on the main icon and view the _Overview_:
+Topology ビューに戻り、メインアイコンをクリックして _Overview_ を表示します。
 
 image::monolith_starting.png[building, 700]
 
-Wait for the deployment to complete and the dark blue circle:
+デプロイが完了して紺色の丸が出てくるのを待ちます。
 
 image::monolith_wait.png[building, 700]
 
-Test the application by clicking on the Route link:
+Route リンクをクリックしてアプリケーションをテストします。
 
 image::route_link.png[route_link, 400]
 
-==== Congratulations!
+==== おめでとうございます！
 
-Now you are using the same application that we built locally on OpenShift. That wasn’t too hard right?
+これで、OpenShift 上でローカルに構築したものと同じアプリケーションを使用していることになります。難しくなかったのではないでしょうか？
 
 image::coolstore_web.png[coolstore_web, 700]
 
-==== Summary
+==== まとめ
 
-Now that you have migrated an existing Java EE app to the cloud with JBoss and OpenShift, you are ready to start modernizing the
-application by breaking the monolith into smaller microservices in incremental steps, and employing modern techniques to ensure
-the application runs well in a distributed and containerized environment.
+これで、既存のJava EEアプリをJBossとOpenShiftでクラウドに移行できました。モノリスを段階的に小さなマイクロサービスに分解することで、アプリケーションの近代化を始める準備ができました。これは、アプリケーションが分散およびコンテナ化された環境で正常に動作することを保証するために、最新の技術を採用しています。
