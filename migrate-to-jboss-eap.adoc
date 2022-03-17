@@ -8,7 +8,7 @@
 
 特定された移行問題を含むコードにジャンプしてみましょう。MTAエクスプローラで *monolith* ソースプロジェクトを展開します。そして `monolith > src > main > java > com > redhat > coolstore > utils > StartupListener.java` へ移動します。実際のクラス名 `StartupListener.java` の横にある矢印をクリックすると、ヒントが展開されて表示されます。
 
-TIP: You can use kbd:[CTRL+p] (or kbd:[CMD+p] on Mac OSX) to quickly open a file.  Simply start typing the name of the file in the text box that appears and select your file from the list that is produced.
+TIP: kbd:[CTRL+p]（MacOSXではkbd:[CMD+p]）で、ファイルを素早く開くことができます。表示されるテキストボックスにファイル名を入力し始め、生成されるリストからファイルを選択するだけです。
 
 image::mta_project_issues.png[mta, 500]
 
