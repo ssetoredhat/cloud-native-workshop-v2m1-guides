@@ -15,7 +15,7 @@ image::catalog-goal.png[Greeting, 700]
 
 Spring は最も人気のある Java フレームワークの 1 つであり、Java EE プログラミングモデルに代わるものを提供しています。また、Spring はマイクロサービスアーキテクチャをベースにしたアプリケーションの構築にも人気があります。Spring Boot は Spring エコシステムで人気のあるツールで、Spring と一緒にサードパーティのライブラリを整理して利用するのに役立ちます。また、Apache Tomcat のような組込み可能なランタイムを自動実行するメカニズムも提供しています。起動可能なアプリケーション（ _fat jar_ と呼ばれることもあります）はコンテナモデルに非常によく適合します。OpenShift のようなコンテナプラットフォームでは、アプリケーションの起動、停止、監視などの責任はアプリケーションサーバーの代わりにコンテナプラットフォームで処理されるからです。
 
-*Red Hat* は、 _Spring Boot_ の主要バージョンのサポートとメンテナンスを、定められた期間にわたって提供しています。 https://access.redhat.com/documentation/en-us/red_hat_support_for_spring_boot[さらに学ぶ^]。
+*Red Hat* は、 _Spring Boot_ の主要バージョンのサポートとメンテナンスを、定められた期間にわたって提供しています。 https://access.redhat.com/documentation/ja-jp/red_hat_support_for_spring_boot/2.4[さらに学ぶ^]。
 
 === マイクロサービスの呼び出しを集約
 
