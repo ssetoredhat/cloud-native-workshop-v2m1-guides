@@ -409,7 +409,8 @@ curl -s http://localhost:8080/q/health | jq
 
 [NOTE]
 ====
-`@Liveness` アノテーションと `@Readiness` アノテーションを使用して、個別のライブネスプローブとレディネスプローブを定義できます。そして、これは `/q/health/live` と `/q/health/ready` で別々にそれらにアクセスします。====
+`@Liveness` アノテーションと `@Readiness` アノテーションを使用して、個別のライブネスプローブとレディネスプローブを定義できます。そして、これは `/q/health/live` と `/q/health/ready` で別々にそれらにアクセスします。
+====
 
 ===== 清掃
 
