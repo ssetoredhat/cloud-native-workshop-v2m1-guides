@@ -409,9 +409,10 @@ curl -s http://localhost:8080/q/health | jq
 
 [NOTE]
 ====
-`@Liveness` アノテーションと `@Readiness` アノテーションを使用して、個別のライブネスプローブとレディネスプローブを定義できます。そして、これは `/q/health/live` と `/q/health/ready` で別々にそれらにアクセスします。====
+`@Liveness` アノテーションと `@Readiness` アノテーションを使用して、個別のライブネスプローブとレディネスプローブを定義できます。そして、これは `/q/health/live` と `/q/health/ready` で別々にそれらにアクセスします。
+====
 
-===== 清掃
+===== 終了
 
 `mvn quarkus:dev` コマンドが実行されているターミナルで kbd:[CTRL-C] と入力して Quarkus アプリを停止します。
 
