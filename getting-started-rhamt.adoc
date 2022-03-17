@@ -50,7 +50,7 @@ image::crw-landing-start.png[cdw, 700]
 
 image::che-workspace.png[cdw, 900]
 
-このIDEは、Eclipse Cheをベースにしています（ということは、MicroSoft VS Code editorをベースにしています）。
+このIDEは、Eclipse Cheをベースにしています（ということは、Microsoft VS Code editorをベースにしています）。
 
 プロジェクトエクスプローラ、検索、バージョン管理(Gitなど)、デバッグ、その他のプラグインの間を移動するためのアイコンが左に表示されています。 このワークショップではこれらを使います。自由にクリックして何ができるか見てみてください。
 
