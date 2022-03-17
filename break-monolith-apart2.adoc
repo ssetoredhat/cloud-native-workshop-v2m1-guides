@@ -717,6 +717,8 @@ oc start-build -n {{ USER_ID }}-coolstore-dev coolstore --from-file $CHE_PROJECT
 image::coolstore_web_microservice.png[Greeting, 700]
 
 適正な在庫があれば、画面は同じようになります。しかし、以前の製品である _Women RHEL 8 t-shirt_ は、私たちの新しいカタログマイクロサービスで削除されたため、今ではなくなっていることに注意してください。
+
+.削除された _Women RHEL 8 t-shirt_
 image:coolstore_womans_t.png[Womans Tee, 200]
 
 [NOTE]
