@@ -472,7 +472,7 @@ inventory.url=inventory.{{ USER_ID }}-inventory.svc.cluster.local
 feign.hystrix.enabled=true
 ----
 
-By setting `inventory.url` we are hard coding the actual URL of the service to `{{ USER_ID }}-inventory.svc.cluster.local:8080` (which will point to our inventory microservice we created in the last lab). Using Kubernetes there is no need to have multiple endpoints
+By setting `inventory.url` we are hard coding the actual URL of the service to `inventory.{{ USER_ID }}-inventory.svc.cluster.local` (which will point to our inventory microservice we created in the last lab). Using Kubernetes there is no need to have multiple endpoints
 listed here since Kubernetes has a concept of _Services_ that will internally route between multiple instances of the same
 service.
 
